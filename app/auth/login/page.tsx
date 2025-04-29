@@ -104,7 +104,10 @@ export default function LoginPage() {
                             <span className="text-xl" data-oid="j3t.bbf">
                                 {wallet.icon}
                             </span>
-                            <span className="tracking-wide" data-oid="4cw8s7u">
+                            <span
+                                className="tracking-wide bg-[#FFFFFF00] text-[#FFFFFF]"
+                                data-oid="4cw8s7u"
+                            >
                                 {wallet.name}
                             </span>
                         </motion.button>

@@ -102,7 +102,7 @@ export default function SignupPage() {
                             <span className="text-xl" data-oid="8b.ak_m">
                                 {wallet.icon}
                             </span>
-                            <span className="tracking-wide" data-oid="khd6p7e">
+                            <span className="tracking-wide text-[#FFFFFF]" data-oid="khd6p7e">
                                 {wallet.name}
                             </span>
                         </motion.button>
