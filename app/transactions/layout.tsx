@@ -70,26 +70,26 @@ export default function TransactionsLayout({ children }: { children: React.React
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="9s6.lwx">
+        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="-.s3a6:">
             {/* Header */}
             <motion.header
                 className="w-full p-6 flex justify-between items-center border-b border-gray-800"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                data-oid="8brp709"
+                data-oid=".joyuax"
             >
-                <div className="text-white font-bold text-xl tracking-wide" data-oid="b4vjcyw">
+                <div className="text-white font-bold text-xl tracking-wide" data-oid=".7xj-a8">
                     UMBRA
                 </div>
-                <div className="flex items-center gap-6" data-oid="cw0hvlv">
-                    <div className="text-white tracking-wide" data-oid="92d2dm3">
+                <div className="flex items-center gap-6" data-oid="u07fqct">
+                    <div className="text-white tracking-wide" data-oid="6zqx0vr">
                         WALLET BALANCE: •••••••••
                     </div>
-                    <Link href="/auth" data-oid="xnyx4w8">
+                    <Link href="/auth" data-oid="e3vl4-z">
                         <button
                             className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
-                            data-oid="m5ecd8d"
+                            data-oid="muq2emp"
                         >
                             Logout
                         </button>
@@ -98,23 +98,23 @@ export default function TransactionsLayout({ children }: { children: React.React
             </motion.header>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-6" data-oid="tiegxqn">
+            <div className="flex-1 flex items-center justify-center p-6" data-oid="vfsf9yc">
                 <motion.div
                     className="w-full max-w-[590px]"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3 }}
-                    data-oid="x4qeblc"
+                    data-oid="a7tr4c_"
                 >
                     {/* Tabs */}
-                    <div className="grid grid-cols-3 border border-gray-800" data-oid="iptr65f">
+                    <div className="grid grid-cols-3 border border-gray-800" data-oid="_30p856">
                         <button
                             className={cn(
                                 'py-4 text-center text-white uppercase tracking-wider transition-colors',
                                 activeTab === 'withdraw' && 'bg-[#111]',
                             )}
                             onClick={() => handleTabChange('withdraw')}
-                            data-oid="h8z16ox"
+                            data-oid="k66ti06"
                         >
                             Withdraw
                         </button>
@@ -124,7 +124,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 activeTab === 'deposit' && 'bg-[#111]',
                             )}
                             onClick={() => handleTabChange('deposit')}
-                            data-oid="2:t20yl"
+                            data-oid="uzxgac-"
                         >
                             Deposit
                         </button>
@@ -134,7 +134,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 activeTab === 'transfer' && 'bg-[#111]',
                             )}
                             onClick={() => handleTabChange('transfer')}
-                            data-oid="6i08:x:"
+                            data-oid="wfa_9-6"
                         >
                             Transfer
                         </button>
@@ -143,19 +143,19 @@ export default function TransactionsLayout({ children }: { children: React.React
                     {/* Form Content */}
                     <div
                         className="bg-[#0a0a0f] border border-gray-800 border-t-0 p-7 space-y-5"
-                        data-oid="qjvf-:z"
+                        data-oid="8w.djrx"
                     >
                         <div
                             className="flex justify-between items-center text-white mb-4"
-                            data-oid="nb4-.kn"
+                            data-oid="r6s9t_7"
                         >
-                            <div className="tracking-wide" data-oid="b_zk4of">
+                            <div className="tracking-wide" data-oid="g9ygc3n">
                                 WALLET BALANCE: •••••••••
                             </div>
-                            <div className="flex gap-3" data-oid="o60ap8h">
+                            <div className="flex gap-3" data-oid=".5vit.a">
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
-                                    data-oid="cbyegpp"
+                                    data-oid="d8xul8w"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -168,20 +168,20 @@ export default function TransactionsLayout({ children }: { children: React.React
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className="lucide lucide-download"
-                                        data-oid="b7k:ha7"
+                                        data-oid="roiohzu"
                                     >
                                         <path
                                             d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                                            data-oid="x7d01h5"
+                                            data-oid="k:om:zv"
                                         />
 
-                                        <polyline points="7 10 12 15 17 10" data-oid="irm0-1m" />
-                                        <line x1="12" y1="15" x2="12" y2="3" data-oid="0mwq7wf" />
+                                        <polyline points="7 10 12 15 17 10" data-oid="w003zqf" />
+                                        <line x1="12" y1="15" x2="12" y2="3" data-oid="wpn3g0v" />
                                     </svg>
                                 </button>
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
-                                    data-oid="47ohb8f"
+                                    data-oid="nu_x:by"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +194,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className="lucide lucide-copy"
-                                        data-oid="d5gk8:."
+                                        data-oid="5s-7heq"
                                     >
                                         <rect
                                             width="14"
@@ -203,26 +203,26 @@ export default function TransactionsLayout({ children }: { children: React.React
                                             y="8"
                                             rx="0"
                                             ry="0"
-                                            data-oid="s7ayzyc"
+                                            data-oid="7vtxoaz"
                                         />
 
                                         <path
                                             d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                            data-oid="pc24te:"
+                                            data-oid=":iq44jv"
                                         />
                                     </svg>
                                 </button>
                             </div>
                         </div>
 
-                        <AnimatePresence mode="wait" data-oid="ns4is9c">
+                        <AnimatePresence mode="wait" data-oid="2whknka">
                             <motion.div
                                 key={activeTab}
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                                 transition={{ duration: 0.2 }}
-                                data-oid="j:j9ijj"
+                                data-oid="nsvx_xd"
                             >
                                 {children}
                             </motion.div>

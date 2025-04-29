@@ -33,10 +33,10 @@ export default function TransferPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="s0p7xr5">
+            <div className="relative" data-oid="9.izn3.">
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
-                    data-oid="xrvd89a"
+                    data-oid="enfy:jn"
                 >
                     <input
                         type="text"
@@ -44,28 +44,28 @@ export default function TransferPage() {
                         onChange={(e) => setAmount(e.target.value)}
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
-                        data-oid="4niihxp"
+                        data-oid="5mng-xb"
                     />
 
-                    <div className="flex gap-2 mr-3" data-oid="1_2rwqj">
+                    <div className="flex gap-2 mr-3" data-oid="_njm51w">
                         <button
                             className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
-                            data-oid="7_uvix1"
+                            data-oid="fq8d-zn"
                         >
                             HALF
                         </button>
                         <button
                             className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
-                            data-oid="_f5:d00"
+                            data-oid="jxatzrh"
                         >
                             MAX
                         </button>
                     </div>
-                    <div className="relative" data-oid="72dqznw">
+                    <div className="relative" data-oid="xsrjvjn">
                         <button
                             className="flex items-center gap-2 text-white"
                             onClick={() => setShowTokenDropdown(!showTokenDropdown)}
-                            data-oid="5-ucg-f"
+                            data-oid="bhvrc.h"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -78,21 +78,21 @@ export default function TransferPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-layers"
-                                data-oid="o0mmxar"
+                                data-oid="0f3:vm."
                             >
                                 <path
                                     d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
-                                    data-oid="1-tkrmv"
+                                    data-oid="1:v5ijx"
                                 />
 
                                 <path
                                     d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 12.5"
-                                    data-oid="hf3c8vv"
+                                    data-oid="ro8i95y"
                                 />
 
                                 <path
                                     d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 17.5"
-                                    data-oid="qhhl8um"
+                                    data-oid="j.2zbo:"
                                 />
                             </svg>
                             {selectedToken}
@@ -107,9 +107,9 @@ export default function TransferPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-chevron-down"
-                                data-oid="7qn4cex"
+                                data-oid="7m5lq1-"
                             >
-                                <path d="m6 9 6 6 6-6" data-oid="tz-jks." />
+                                <path d="m6 9 6 6 6-6" data-oid="lycs_a9" />
                             </svg>
                         </button>
 
@@ -120,19 +120,19 @@ export default function TransferPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                data-oid="_2g-.xf"
+                                data-oid="mxl._19"
                             >
-                                <div className="p-2" data-oid="ypmf-g8">
+                                <div className="p-2" data-oid="btritay">
                                     <input
                                         type="text"
                                         placeholder="Search tokens..."
                                         className="w-full bg-[#0a0a0f] text-white p-2 border border-gray-800 outline-none"
                                         value={searchToken}
                                         onChange={(e) => setSearchToken(e.target.value)}
-                                        data-oid="u6.os0_"
+                                        data-oid="8ivbyyo"
                                     />
                                 </div>
-                                <div className="max-h-48 overflow-y-auto" data-oid="bxqphc2">
+                                <div className="max-h-48 overflow-y-auto" data-oid="9fsjin:">
                                     {filteredTokens.map((token) => (
                                         <button
                                             key={token.symbol}
@@ -141,15 +141,15 @@ export default function TransferPage() {
                                                 setSelectedToken(token.symbol);
                                                 setShowTokenDropdown(false);
                                             }}
-                                            data-oid="w5qtxp:"
+                                            data-oid="50h46l7"
                                         >
-                                            <div className="flex items-center" data-oid="ki-uf6s">
-                                                <span className="font-medium" data-oid="qu9c-0q">
+                                            <div className="flex items-center" data-oid="6i25est">
+                                                <span className="font-medium" data-oid="0:n6erx">
                                                     {token.symbol}
                                                 </span>
                                                 <span
                                                     className="ml-2 text-gray-400 text-sm"
-                                                    data-oid="2qw3q-."
+                                                    data-oid="-of71fw"
                                                 >
                                                     {token.name}
                                                 </span>
@@ -164,29 +164,29 @@ export default function TransferPage() {
             </div>
 
             {/* Recipient Address Input */}
-            <div className="relative mt-4" data-oid=":v7pp9x">
+            <div className="relative mt-4" data-oid="xaaa9:-">
                 <input
                     type="text"
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
                     className="w-full bg-transparent text-white border border-gray-800 p-4 outline-none"
                     placeholder="ENTER RECIPIENT ADDRESS"
-                    data-oid="gi-.vj6"
+                    data-oid="0fslce."
                 />
             </div>
 
             {/* Fees Section */}
-            <div className="text-white mt-6" data-oid="9k:vavw">
+            <div className="text-white mt-6" data-oid="hwzhc18">
                 <div
                     className="flex justify-between items-center mb-2 cursor-pointer"
                     onClick={() => setShowFeeDropdown(!showFeeDropdown)}
-                    data-oid="vg:.li."
+                    data-oid="2d61rrd"
                 >
-                    <span className="tracking-wide" data-oid="jlor54h">
+                    <span className="tracking-wide" data-oid="ka-itau">
                         TOTAL FEES
                     </span>
-                    <div className="flex items-center" data-oid="p8i:eyh">
-                        <span data-oid="3je67:k">${totalFees.toFixed(2)}</span>
+                    <div className="flex items-center" data-oid="l2n.m:j">
+                        <span data-oid="aopo0bz">${totalFees.toFixed(2)}</span>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -198,9 +198,9 @@ export default function TransferPage() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             className={`lucide ml-1 transition-transform ${showFeeDropdown ? 'rotate-180' : ''}`}
-                            data-oid="06l9sgu"
+                            data-oid="6qm:5w-"
                         >
-                            <path d="m6 9 6 6 6-6" data-oid="01_va.w" />
+                            <path d="m6 9 6 6 6-6" data-oid="e9k008a" />
                         </svg>
                     </div>
                 </div>
@@ -212,16 +212,16 @@ export default function TransferPage() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        data-oid="tx5n2f8"
+                        data-oid="d_ktt_r"
                     >
                         {feeTypes.map((fee) => (
                             <div
                                 key={fee.id}
                                 className="flex justify-between items-center text-sm text-gray-400 mb-3 last:mb-0"
-                                data-oid="yrcus-g"
+                                data-oid="e:ekti8"
                             >
-                                <div className="flex items-center gap-1" data-oid="jz943c6">
-                                    <span data-oid="ohqk4sc">{fee.name}</span>
+                                <div className="flex items-center gap-1" data-oid="l1pafnf">
+                                    <span data-oid="9fm0_.c">{fee.name}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="14"
@@ -234,18 +234,18 @@ export default function TransferPage() {
                                         strokeLinejoin="round"
                                         className="lucide lucide-circle-help"
                                         title={fee.description}
-                                        data-oid="w53d9cs"
+                                        data-oid="5-50s07"
                                     >
-                                        <circle cx="12" cy="12" r="10" data-oid="h_jf88." />
+                                        <circle cx="12" cy="12" r="10" data-oid="u70nznr" />
                                         <path
                                             d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-                                            data-oid="zzea:zs"
+                                            data-oid="cyukzs1"
                                         />
 
-                                        <path d="M12 17h.01" data-oid=".:3:8he" />
+                                        <path d="M12 17h.01" data-oid="xcudk5a" />
                                     </svg>
                                 </div>
-                                <div data-oid=":hnuze3">
+                                <div data-oid="29iqf_p">
                                     ${fee.amount.toFixed(2)} • {fee.amount} {fee.token}
                                 </div>
                             </div>
@@ -260,7 +260,7 @@ export default function TransferPage() {
                 onClick={handleSubmit}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}
-                data-oid="kazhefk"
+                data-oid="x-bpec_"
             >
                 Transfer
             </motion.button>

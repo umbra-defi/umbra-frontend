@@ -80,23 +80,23 @@ export default function Page() {
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="u74aol_">
+        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="nlvr7_2">
             {/* Header */}
             <header
                 className="w-full p-6 flex justify-between items-center border-b border-gray-900"
-                data-oid="nk5w3d5"
+                data-oid="0xr6r6g"
             >
-                <div className="text-white font-bold text-xl" data-oid="pqlbu77">
+                <div className="text-white font-bold text-xl" data-oid="umt-cdk">
                     UMBRA
                 </div>
-                <div className="flex items-center gap-4" data-oid="yhzcgve">
-                    <div className="text-white" data-oid="qa5b9mr">
+                <div className="flex items-center gap-4" data-oid="m8iz2n3">
+                    <div className="text-white" data-oid="pt:3h:g">
                         WALLET BALANCE: •••••••••
                     </div>
-                    <Link href="/auth" data-oid="y-5p3rk">
+                    <Link href="/auth" data-oid="728pki.">
                         <button
                             className="text-white border border-gray-900 px-4 py-2 hover:bg-gray-900 transition-colors"
-                            data-oid="-de78i5"
+                            data-oid="jb8928f"
                         >
                             Logout
                         </button>
@@ -105,17 +105,17 @@ export default function Page() {
             </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-4" data-oid="sgv-88a">
-                <div className="w-full max-w-[590px]" data-oid=":p-lw1-">
+            <div className="flex-1 flex items-center justify-center p-4" data-oid="jagnxs5">
+                <div className="w-full max-w-[590px]" data-oid="rffc9w9">
                     {/* Tabs */}
-                    <div className="grid grid-cols-3 border border-gray-900" data-oid="-4fk77d">
+                    <div className="grid grid-cols-3 border border-gray-900" data-oid="wpz3s6d">
                         <button
                             className={cn(
                                 'py-3 text-center text-white uppercase',
                                 activeTab === 'withdraw' && 'bg-[#0a0a0f]',
                             )}
                             onClick={() => handleTabChange('withdraw')}
-                            data-oid="-dpl0fg"
+                            data-oid="s._b3en"
                         >
                             Withdraw
                         </button>
@@ -125,7 +125,7 @@ export default function Page() {
                                 activeTab === 'deposit' && 'bg-[#0a0a0f]',
                             )}
                             onClick={() => handleTabChange('deposit')}
-                            data-oid="b3hxz2i"
+                            data-oid="xg1acez"
                         >
                             Deposit
                         </button>
@@ -135,7 +135,7 @@ export default function Page() {
                                 activeTab === 'transfer' && 'bg-[#0a0a0f]',
                             )}
                             onClick={() => handleTabChange('transfer')}
-                            data-oid="xz_8go2"
+                            data-oid="cxozr0s"
                         >
                             Transfer
                         </button>
@@ -144,15 +144,15 @@ export default function Page() {
                     {/* Form Content */}
                     <div
                         className="bg-[#0a0a0f] border border-gray-900 border-t-0 p-6 space-y-4"
-                        data-oid="sw5pvk6"
+                        data-oid="oice0wl"
                     >
                         <div
                             className="flex justify-between items-center text-white mb-4"
-                            data-oid="5mmzhqm"
+                            data-oid="vrs978k"
                         >
-                            <div data-oid="j1l._.w">WALLET BALANCE: •••••••••</div>
-                            <div className="flex gap-2" data-oid="ln9pldj">
-                                <button className="p-1" data-oid="mgji:sh">
+                            <div data-oid="af-e.ta">WALLET BALANCE: •••••••••</div>
+                            <div className="flex gap-2" data-oid="246sr5v">
+                                <button className="p-1" data-oid="gvox4kq">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="24"
@@ -164,18 +164,18 @@ export default function Page() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className="lucide lucide-download"
-                                        data-oid="vx-fguh"
+                                        data-oid="tp3lhx7"
                                     >
                                         <path
                                             d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                                            data-oid="ccj4j0a"
+                                            data-oid="vb04imm"
                                         />
 
-                                        <polyline points="7 10 12 15 17 10" data-oid="t9d2fu9" />
-                                        <line x1="12" y1="15" x2="12" y2="3" data-oid="crrq.s3" />
+                                        <polyline points="7 10 12 15 17 10" data-oid="z2ya6e2" />
+                                        <line x1="12" y1="15" x2="12" y2="3" data-oid="w.1wx.k" />
                                     </svg>
                                 </button>
-                                <button className="p-1" data-oid="-l8o4-q">
+                                <button className="p-1" data-oid="mq-:ga3">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="24"
@@ -187,7 +187,7 @@ export default function Page() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className="lucide lucide-copy"
-                                        data-oid="pm6xet."
+                                        data-oid="mhv17bd"
                                     >
                                         <rect
                                             width="14"
@@ -196,12 +196,12 @@ export default function Page() {
                                             y="8"
                                             rx="0"
                                             ry="0"
-                                            data-oid="0um-1k6"
+                                            data-oid="de5.a-q"
                                         />
 
                                         <path
                                             d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                            data-oid="soe6pqv"
+                                            data-oid="dszwee7"
                                         />
                                     </svg>
                                 </button>
@@ -209,10 +209,10 @@ export default function Page() {
                         </div>
 
                         {/* Amount Input */}
-                        <div className="relative" data-oid="xxz429x">
+                        <div className="relative" data-oid="z0n-b-k">
                             <div
                                 className="flex justify-between items-center border border-gray-900 p-3"
-                                data-oid="ylpb_-z"
+                                data-oid="dqm_f0k"
                             >
                                 <input
                                     type="text"
@@ -220,30 +220,30 @@ export default function Page() {
                                     onChange={(e) => setAmount(e.target.value)}
                                     className="bg-transparent text-white outline-none w-full"
                                     placeholder="0"
-                                    data-oid="t24f1au"
+                                    data-oid="j1k_og-"
                                 />
 
                                 {activeTab === 'transfer' && (
-                                    <div className="flex gap-2" data-oid="1lls279">
+                                    <div className="flex gap-2" data-oid="48_00up">
                                         <button
                                             className="text-white bg-black border border-gray-900 px-3 py-1 text-sm"
-                                            data-oid="wjetp3l"
+                                            data-oid="dfd4uon"
                                         >
                                             HALF
                                         </button>
                                         <button
                                             className="text-white bg-black border border-gray-900 px-3 py-1 text-sm"
-                                            data-oid="g_4oo8z"
+                                            data-oid="w4k-3bg"
                                         >
                                             MAX
                                         </button>
                                     </div>
                                 )}
-                                <div className="relative" data-oid="8:3zzan">
+                                <div className="relative" data-oid="oa_0eo1">
                                     <button
                                         className="flex items-center gap-2 text-white"
                                         onClick={() => setShowTokenDropdown(!showTokenDropdown)}
-                                        data-oid="kk889lf"
+                                        data-oid="qy:zu6p"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -256,21 +256,21 @@ export default function Page() {
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             className="lucide lucide-layers"
-                                            data-oid="xsf.l.d"
+                                            data-oid="v:631fl"
                                         >
                                             <path
                                                 d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
-                                                data-oid="o6avgfj"
+                                                data-oid="w15_jc_"
                                             />
 
                                             <path
                                                 d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 12.5"
-                                                data-oid="a:rpcl-"
+                                                data-oid="j3q_h69"
                                             />
 
                                             <path
                                                 d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 17.5"
-                                                data-oid="usqmmag"
+                                                data-oid="qo.8eji"
                                             />
                                         </svg>
                                         {selectedToken}
@@ -285,30 +285,30 @@ export default function Page() {
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             className="lucide lucide-chevron-down"
-                                            data-oid="nti59w8"
+                                            data-oid=":ezhg1y"
                                         >
-                                            <path d="m6 9 6 6 6-6" data-oid="4_605ot" />
+                                            <path d="m6 9 6 6 6-6" data-oid="tm1jxai" />
                                         </svg>
                                     </button>
 
                                     {showTokenDropdown && (
                                         <div
                                             className="absolute right-0 mt-2 w-48 bg-black border border-gray-900 shadow-lg z-10"
-                                            data-oid="sib08::"
+                                            data-oid="whr:u9b"
                                         >
-                                            <div className="p-2" data-oid="u06xko:">
+                                            <div className="p-2" data-oid="fgan3c1">
                                                 <input
                                                     type="text"
                                                     placeholder="Search tokens..."
                                                     className="w-full bg-[#0a0a0f] text-white p-2 border border-gray-900 outline-none"
                                                     value={searchToken}
                                                     onChange={(e) => setSearchToken(e.target.value)}
-                                                    data-oid=":voq76i"
+                                                    data-oid=":jiz:c2"
                                                 />
                                             </div>
                                             <div
                                                 className="max-h-48 overflow-y-auto"
-                                                data-oid="a_:rkvd"
+                                                data-oid="hlr-l.j"
                                             >
                                                 {filteredTokens.map((token) => (
                                                     <button
@@ -318,21 +318,21 @@ export default function Page() {
                                                             setSelectedToken(token.symbol);
                                                             setShowTokenDropdown(false);
                                                         }}
-                                                        data-oid="p:7b6qa"
+                                                        data-oid="y8nd6ky"
                                                     >
                                                         <div
                                                             className="flex items-center"
-                                                            data-oid="eou6zxh"
+                                                            data-oid="2p5oa29"
                                                         >
                                                             <span
                                                                 className="font-medium"
-                                                                data-oid="w3s.d8t"
+                                                                data-oid="luxlp-4"
                                                             >
                                                                 {token.symbol}
                                                             </span>
                                                             <span
                                                                 className="ml-2 text-gray-400 text-sm"
-                                                                data-oid="p1e-m97"
+                                                                data-oid="xtm17tq"
                                                             >
                                                                 {token.name}
                                                             </span>
@@ -348,28 +348,28 @@ export default function Page() {
 
                         {/* Recipient Address Input (only for Transfer) */}
                         {activeTab === 'transfer' && (
-                            <div className="relative" data-oid="b.dp1j4">
+                            <div className="relative" data-oid="p2lzbp4">
                                 <input
                                     type="text"
                                     value={recipientAddress}
                                     onChange={(e) => setRecipientAddress(e.target.value)}
                                     className="w-full bg-transparent text-white border border-gray-900 p-3 outline-none"
                                     placeholder="ENTER RECIPIENT ADDRESS"
-                                    data-oid="-b7hn-q"
+                                    data-oid="qe6mgwk"
                                 />
                             </div>
                         )}
 
                         {/* Fees Section */}
-                        <div className="text-white" data-oid="c.iqzg4">
+                        <div className="text-white" data-oid="kp_a-mx">
                             <div
                                 className="flex justify-between items-center mb-2 cursor-pointer"
                                 onClick={() => setShowFeeDropdown(!showFeeDropdown)}
-                                data-oid=".t22fqk"
+                                data-oid="eehwxd1"
                             >
-                                <span data-oid="hf:0ogj">TOTAL FEES</span>
-                                <div className="flex items-center" data-oid="d-3e4wy">
-                                    <span data-oid="49fz89b">${totalFees.toFixed(2)}</span>
+                                <span data-oid="nlt_rip">TOTAL FEES</span>
+                                <div className="flex items-center" data-oid="cchdwoj">
+                                    <span data-oid="qo8_aym">${totalFees.toFixed(2)}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="16"
@@ -381,9 +381,9 @@ export default function Page() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className={`lucide ml-1 transition-transform ${showFeeDropdown ? 'rotate-180' : ''}`}
-                                        data-oid="44fcjf7"
+                                        data-oid="wo3ozvn"
                                     >
-                                        <path d="m6 9 6 6 6-6" data-oid="45l1pkj" />
+                                        <path d="m6 9 6 6 6-6" data-oid="bhhh.-r" />
                                     </svg>
                                 </div>
                             </div>
@@ -391,19 +391,19 @@ export default function Page() {
                             {showFeeDropdown && (
                                 <div
                                     className="border border-gray-900 p-3 mb-3 bg-black"
-                                    data-oid="u8hnujs"
+                                    data-oid="3c8s1_e"
                                 >
                                     {feeTypes.map((fee) => (
                                         <div
                                             key={fee.id}
                                             className="flex justify-between items-center text-sm text-gray-400 mb-2 last:mb-0"
-                                            data-oid="h0:9ngk"
+                                            data-oid="kmq.a97"
                                         >
                                             <div
                                                 className="flex items-center gap-1"
-                                                data-oid="ioneaqo"
+                                                data-oid="udqz5ol"
                                             >
-                                                <span data-oid="zrx06z4">{fee.name}</span>
+                                                <span data-oid="ja:6a4j">{fee.name}</span>
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width="14"
@@ -416,24 +416,24 @@ export default function Page() {
                                                     strokeLinejoin="round"
                                                     className="lucide lucide-circle-help"
                                                     title={fee.description}
-                                                    data-oid="edlj81i"
+                                                    data-oid="l0hq0sn"
                                                 >
                                                     <circle
                                                         cx="12"
                                                         cy="12"
                                                         r="10"
-                                                        data-oid="8t79rbg"
+                                                        data-oid="evpnbjo"
                                                     />
 
                                                     <path
                                                         d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-                                                        data-oid="x9437zt"
+                                                        data-oid="bo.:h86"
                                                     />
 
-                                                    <path d="M12 17h.01" data-oid="ze0z82i" />
+                                                    <path d="M12 17h.01" data-oid="8w1yfw-" />
                                                 </svg>
                                             </div>
-                                            <div data-oid="ighavd-">
+                                            <div data-oid="eidjwm1">
                                                 ${fee.amount.toFixed(2)} • {fee.amount} {fee.token}
                                             </div>
                                         </div>
@@ -446,7 +446,7 @@ export default function Page() {
                         <button
                             className="w-full bg-white text-black py-3 font-medium uppercase"
                             onClick={handleSubmit}
-                            data-oid="3_6__ci"
+                            data-oid="aculkbv"
                         >
                             {activeTab}
                         </button>

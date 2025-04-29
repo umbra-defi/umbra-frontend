@@ -127,21 +127,21 @@ export default function AuthPage() {
     return (
         <div
             className="w-full min-h-screen flex flex-col bg-[#000000] text-white"
-            data-oid="ealykgi"
+            data-oid="u7c83pn"
         >
             {/* Header */}
             <header
                 className="w-full p-6 flex justify-between items-center border-b border-gray-900"
-                data-oid="njjsk9t"
+                data-oid="pk0ut1a"
             >
-                <div className="text-white font-bold text-xl" data-oid="o022w:z">
+                <div className="text-white font-bold text-xl" data-oid="-h968gx">
                     UMBRA
                 </div>
-                <div className="flex items-center gap-4" data-oid="m529abf">
-                    <Link href="/" data-oid="a1l4:eo">
+                <div className="flex items-center gap-4" data-oid="_ano0gd">
+                    <Link href="/" data-oid="igh.xzq">
                         <button
                             className="text-white border border-gray-900 px-4 py-2 hover:bg-gray-900 transition-colors"
-                            data-oid="7qgq_a5"
+                            data-oid="cfpitmw"
                         >
                             Home
                         </button>
@@ -150,14 +150,14 @@ export default function AuthPage() {
             </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-4" data-oid="vj0ka-8">
-                <div className="w-full max-w-md" data-oid="6af.5.l">
+            <div className="flex-1 flex items-center justify-center p-4" data-oid="de4ulxo">
+                <div className="w-full max-w-md" data-oid="x2-3arg">
                     {/* Auth Container */}
-                    <div className="border border-gray-900 overflow-hidden" data-oid="aoyu3_8">
+                    <div className="border border-gray-900 overflow-hidden" data-oid="n2cbs5s">
                         {/* Tabs */}
                         <div
                             className="grid grid-cols-2 border-b border-gray-900"
-                            data-oid="cgfdvxe"
+                            data-oid="70c2ltr"
                         >
                             <button
                                 className={`py-3 text-center transition-colors ${
@@ -166,7 +166,7 @@ export default function AuthPage() {
                                         : 'bg-transparent text-gray-400 hover:text-gray-300'
                                 }`}
                                 onClick={() => setActiveTab('signup')}
-                                data-oid="e3b0776"
+                                data-oid="3e0_di2"
                             >
                                 SIGN UP
                             </button>
@@ -177,17 +177,17 @@ export default function AuthPage() {
                                         : 'bg-transparent text-gray-400 hover:text-gray-300'
                                 }`}
                                 onClick={() => setActiveTab('login')}
-                                data-oid="rh.cdyq"
+                                data-oid="33a.4n."
                             >
                                 LOGIN
                             </button>
                         </div>
 
                         {/* Content */}
-                        <div className="bg-[#0a0a0f] p-6" data-oid="rvb4iy0">
+                        <div className="bg-[#0a0a0f] p-6" data-oid="4wyhi90">
                             {!walletConnected ? (
-                                <div className="space-y-3" data-oid="lsdy6y1">
-                                    <p className="text-sm text-gray-400 mb-4" data-oid="jhrh52f">
+                                <div className="space-y-3" data-oid=":4-1kdh">
+                                    <p className="text-sm text-gray-400 mb-4" data-oid="embmwgr">
                                         {activeTab === 'signup'
                                             ? 'Select a wallet to sign up:'
                                             : 'Select a wallet to login:'}
@@ -199,42 +199,42 @@ export default function AuthPage() {
                                             onClick={() => connectWallet(wallet.id)}
                                             disabled={loading}
                                             className="w-full flex items-center justify-center space-x-2 py-3 px-4 border border-gray-900 hover:bg-[#111] transition-colors"
-                                            data-oid="b:3m-2c"
+                                            data-oid="m883p_e"
                                         >
-                                            <span className="text-xl" data-oid="e86so.y">
+                                            <span className="text-xl" data-oid="s-kn2ji">
                                                 {wallet.icon}
                                             </span>
-                                            <span data-oid="rjnv.:n">{wallet.name}</span>
+                                            <span data-oid="t:sjy98">{wallet.name}</span>
                                         </button>
                                     ))}
                                 </div>
                             ) : (
-                                <div data-oid="a6i9:2f">
+                                <div data-oid="wg.q:0f">
                                     {activeTab === 'signup' ? (
                                         <form
                                             onSubmit={handleSignup}
                                             className="space-y-4"
-                                            data-oid="g0hn.1r"
+                                            data-oid="kf6p0y8"
                                         >
                                             <div
                                                 className="bg-black p-3 mb-4 border border-gray-900"
-                                                data-oid="-41.5tu"
+                                                data-oid="7gaempo"
                                             >
                                                 <p
                                                     className="text-sm text-gray-400"
-                                                    data-oid="yl58xo8"
+                                                    data-oid="96:_naw"
                                                 >
                                                     Connected Wallet
                                                 </p>
-                                                <p className="text-sm font-mono" data-oid="p2_lmsb">
+                                                <p className="text-sm font-mono" data-oid="j.jo2.q">
                                                     {walletAddress}
                                                 </p>
                                             </div>
 
-                                            <div data-oid="2hm3-82">
+                                            <div data-oid="bhrk8.b">
                                                 <label
                                                     className="block text-sm text-gray-400 mb-1"
-                                                    data-oid="fsqjjfo"
+                                                    data-oid="fe.38go"
                                                 >
                                                     Set Password
                                                 </label>
@@ -245,14 +245,14 @@ export default function AuthPage() {
                                                     className="w-full bg-black border border-gray-900 p-2 text-white outline-none"
                                                     placeholder="Enter password"
                                                     required
-                                                    data-oid="lj0b::1"
+                                                    data-oid="lx_ztpk"
                                                 />
                                             </div>
 
-                                            <div data-oid="1:0vbiu">
+                                            <div data-oid="n-zx0co">
                                                 <label
                                                     className="block text-sm text-gray-400 mb-1"
-                                                    data-oid="a0tty-y"
+                                                    data-oid=".olfx0o"
                                                 >
                                                     Confirm Password
                                                 </label>
@@ -265,14 +265,14 @@ export default function AuthPage() {
                                                     className="w-full bg-black border border-gray-900 p-2 text-white outline-none"
                                                     placeholder="Confirm password"
                                                     required
-                                                    data-oid="wdei07c"
+                                                    data-oid="qge:_tq"
                                                 />
                                             </div>
 
                                             {error && (
                                                 <p
                                                     className="text-red-500 text-sm"
-                                                    data-oid=".3c43v9"
+                                                    data-oid="s002vip"
                                                 >
                                                     {error}
                                                 </p>
@@ -282,7 +282,7 @@ export default function AuthPage() {
                                                 type="submit"
                                                 disabled={loading}
                                                 className="w-full bg-white text-black py-2 transition-colors"
-                                                data-oid="4t6e9p_"
+                                                data-oid="wkwujpj"
                                             >
                                                 {loading ? 'Processing...' : 'Proceed'}
                                             </button>
@@ -291,27 +291,27 @@ export default function AuthPage() {
                                         <form
                                             onSubmit={handleLogin}
                                             className="space-y-4"
-                                            data-oid=":iqqzvp"
+                                            data-oid="pt21.7g"
                                         >
                                             <div
                                                 className="bg-black p-3 mb-4 border border-gray-900"
-                                                data-oid="79paon_"
+                                                data-oid="5g1n5.d"
                                             >
                                                 <p
                                                     className="text-sm text-gray-400"
-                                                    data-oid="pqh674m"
+                                                    data-oid="sdu3txd"
                                                 >
                                                     Connected Wallet
                                                 </p>
-                                                <p className="text-sm font-mono" data-oid="e.xmd8d">
+                                                <p className="text-sm font-mono" data-oid="n9g677g">
                                                     {walletAddress}
                                                 </p>
                                             </div>
 
-                                            <div data-oid="jj9b8se">
+                                            <div data-oid="n_tk.4o">
                                                 <label
                                                     className="block text-sm text-gray-400 mb-1"
-                                                    data-oid="33klc-8"
+                                                    data-oid="0_hekkl"
                                                 >
                                                     Password
                                                 </label>
@@ -322,14 +322,14 @@ export default function AuthPage() {
                                                     className="w-full bg-black border border-gray-900 p-2 text-white outline-none"
                                                     placeholder="Enter your password"
                                                     required
-                                                    data-oid="_e4ybxv"
+                                                    data-oid="n8yj72n"
                                                 />
                                             </div>
 
                                             {error && (
                                                 <p
                                                     className="text-red-500 text-sm"
-                                                    data-oid="bgfpc1:"
+                                                    data-oid="008ia01"
                                                 >
                                                     {error}
                                                 </p>
@@ -339,7 +339,7 @@ export default function AuthPage() {
                                                 type="submit"
                                                 disabled={loading}
                                                 className="w-full bg-white text-black py-2 transition-colors"
-                                                data-oid="62ur1p5"
+                                                data-oid="ls0g399"
                                             >
                                                 {loading ? 'Verifying...' : 'Login'}
                                             </button>
@@ -349,7 +349,7 @@ export default function AuthPage() {
                                     <button
                                         onClick={resetState}
                                         className="w-full mt-4 text-sm text-gray-400 hover:text-gray-300"
-                                        data-oid="bx4zg7w"
+                                        data-oid="lz-fj46"
                                     >
                                         Disconnect wallet and try another
                                     </button>

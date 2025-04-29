@@ -31,10 +31,10 @@ export default function DepositPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="hvsv3b5">
+            <div className="relative" data-oid="yw2qv2b">
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
-                    data-oid="00cpimj"
+                    data-oid="9zh0u1."
                 >
                     <input
                         type="text"
@@ -42,14 +42,14 @@ export default function DepositPage() {
                         onChange={(e) => setAmount(e.target.value)}
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
-                        data-oid="nq8_v_j"
+                        data-oid="uuak1lj"
                     />
 
-                    <div className="relative" data-oid="bsy-8vu">
+                    <div className="relative" data-oid="i6:f:9y">
                         <button
                             className="flex items-center gap-2 text-white"
                             onClick={() => setShowTokenDropdown(!showTokenDropdown)}
-                            data-oid=":klkkiq"
+                            data-oid="5kfplm5"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -62,21 +62,21 @@ export default function DepositPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-layers"
-                                data-oid="kbwhhhv"
+                                data-oid="rz79tvk"
                             >
                                 <path
                                     d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
-                                    data-oid="0k1kous"
+                                    data-oid="18nx49-"
                                 />
 
                                 <path
                                     d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 12.5"
-                                    data-oid="4izwoyj"
+                                    data-oid=".yy:gc0"
                                 />
 
                                 <path
                                     d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 17.5"
-                                    data-oid="c22bd9k"
+                                    data-oid="gkw8438"
                                 />
                             </svg>
                             {selectedToken}
@@ -91,9 +91,9 @@ export default function DepositPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-chevron-down"
-                                data-oid="yq3ee1u"
+                                data-oid="mf4j:va"
                             >
-                                <path d="m6 9 6 6 6-6" data-oid="g.rd9wd" />
+                                <path d="m6 9 6 6 6-6" data-oid="1d2brj6" />
                             </svg>
                         </button>
 
@@ -104,19 +104,19 @@ export default function DepositPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                data-oid="h2rbx:h"
+                                data-oid="g5mmiw:"
                             >
-                                <div className="p-2" data-oid="kdrl5oj">
+                                <div className="p-2" data-oid="tp9e5s_">
                                     <input
                                         type="text"
                                         placeholder="Search tokens..."
                                         className="w-full bg-[#0a0a0f] text-white p-2 border border-gray-800 outline-none"
                                         value={searchToken}
                                         onChange={(e) => setSearchToken(e.target.value)}
-                                        data-oid="r2v1f1_"
+                                        data-oid="88usrkm"
                                     />
                                 </div>
-                                <div className="max-h-48 overflow-y-auto" data-oid="hhhm-0e">
+                                <div className="max-h-48 overflow-y-auto" data-oid="z0c:7z.">
                                     {filteredTokens.map((token) => (
                                         <button
                                             key={token.symbol}
@@ -125,15 +125,15 @@ export default function DepositPage() {
                                                 setSelectedToken(token.symbol);
                                                 setShowTokenDropdown(false);
                                             }}
-                                            data-oid="mxoklbx"
+                                            data-oid="cr8rcui"
                                         >
-                                            <div className="flex items-center" data-oid="q3.wxqv">
-                                                <span className="font-medium" data-oid="v6fd2sq">
+                                            <div className="flex items-center" data-oid="ouzqjc0">
+                                                <span className="font-medium" data-oid="25fbdnk">
                                                     {token.symbol}
                                                 </span>
                                                 <span
                                                     className="ml-2 text-gray-400 text-sm"
-                                                    data-oid="5axzn4c"
+                                                    data-oid="pslpd:q"
                                                 >
                                                     {token.name}
                                                 </span>
@@ -148,17 +148,17 @@ export default function DepositPage() {
             </div>
 
             {/* Fees Section */}
-            <div className="text-white mt-6" data-oid="8x866oh">
+            <div className="text-white mt-6" data-oid="wjk33:0">
                 <div
                     className="flex justify-between items-center mb-2 cursor-pointer"
                     onClick={() => setShowFeeDropdown(!showFeeDropdown)}
-                    data-oid="yw1k9-u"
+                    data-oid="5a4x-z6"
                 >
-                    <span className="tracking-wide" data-oid="5fh0p9n">
+                    <span className="tracking-wide" data-oid="4j79dxo">
                         TOTAL FEES
                     </span>
-                    <div className="flex items-center" data-oid="0gb8nko">
-                        <span data-oid="6ppoul4">${totalFees.toFixed(2)}</span>
+                    <div className="flex items-center" data-oid="8hw80fs">
+                        <span data-oid="erjlplp">${totalFees.toFixed(2)}</span>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -170,9 +170,9 @@ export default function DepositPage() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             className={`lucide ml-1 transition-transform ${showFeeDropdown ? 'rotate-180' : ''}`}
-                            data-oid="5_98b0n"
+                            data-oid="ojgbtxe"
                         >
-                            <path d="m6 9 6 6 6-6" data-oid="bm7ikmw" />
+                            <path d="m6 9 6 6 6-6" data-oid="34e8_wq" />
                         </svg>
                     </div>
                 </div>
@@ -184,16 +184,16 @@ export default function DepositPage() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        data-oid="r41k23."
+                        data-oid="rb16mu7"
                     >
                         {feeTypes.map((fee) => (
                             <div
                                 key={fee.id}
                                 className="flex justify-between items-center text-sm text-gray-400 mb-3 last:mb-0"
-                                data-oid="7pbp0g."
+                                data-oid="6boj_cl"
                             >
-                                <div className="flex items-center gap-1" data-oid="ngpzs9o">
-                                    <span data-oid="jnoz1.k">{fee.name}</span>
+                                <div className="flex items-center gap-1" data-oid="x9elb6t">
+                                    <span data-oid="yohebe0">{fee.name}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="14"
@@ -206,18 +206,18 @@ export default function DepositPage() {
                                         strokeLinejoin="round"
                                         className="lucide lucide-circle-help"
                                         title={fee.description}
-                                        data-oid="zizege5"
+                                        data-oid="t3wwaw:"
                                     >
-                                        <circle cx="12" cy="12" r="10" data-oid="_ws1jwf" />
+                                        <circle cx="12" cy="12" r="10" data-oid="bbj8dm1" />
                                         <path
                                             d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-                                            data-oid="kxn_1nj"
+                                            data-oid="shmb.85"
                                         />
 
-                                        <path d="M12 17h.01" data-oid="q150:ip" />
+                                        <path d="M12 17h.01" data-oid="z2n40u4" />
                                     </svg>
                                 </div>
-                                <div data-oid="1he1lqs">
+                                <div data-oid="8-q47ty">
                                     ${fee.amount.toFixed(2)} • {fee.amount} {fee.token}
                                 </div>
                             </div>
@@ -232,7 +232,7 @@ export default function DepositPage() {
                 onClick={handleSubmit}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}
-                data-oid="v-mp319"
+                data-oid=":xcq1mj"
             >
                 Deposit
             </motion.button>

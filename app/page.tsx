@@ -21,21 +21,21 @@ export default function Page() {
     return (
         <div
             className="w-full min-h-screen flex flex-col bg-[#000000] text-white"
-            data-oid="wcfo:lo"
+            data-oid="0ae9oo:"
         >
             {/* Header */}
             <header
                 className="w-full p-6 flex justify-between items-center border-b border-gray-900"
-                data-oid="fk4o0sj"
+                data-oid="169-oi4"
             >
-                <div className="text-white font-bold text-xl" data-oid="9p2kifk">
+                <div className="text-white font-bold text-xl" data-oid="0dflmx4">
                     UMBRA
                 </div>
-                <div className="flex items-center gap-4" data-oid="dc06fhh">
-                    <Link href="/auth" data-oid="5t_ibes">
+                <div className="flex items-center gap-4" data-oid="k9zem8w">
+                    <Link href="/auth" data-oid="4nqdbn8">
                         <button
                             className="text-white border border-gray-900 px-4 py-2 hover:bg-gray-900 transition-colors"
-                            data-oid="rfqnzj4"
+                            data-oid="ssr7wcm"
                         >
                             Login
                         </button>
@@ -44,15 +44,15 @@ export default function Page() {
             </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-4" data-oid="-xtyf8m">
+            <div className="flex-1 flex items-center justify-center p-4" data-oid="sw.m-sy">
                 <div
                     className="flex flex-col items-center gap-8 max-w-md text-center"
-                    data-oid="folwxlp"
+                    data-oid="gehco4a"
                 >
-                    <h1 className="text-4xl font-bold" data-oid="kmj3v9u">
+                    <h1 className="text-4xl font-bold" data-oid="22.v:je">
                         Secure Solana Transactions
                     </h1>
-                    <p className="text-gray-400" data-oid="j8k4w86">
+                    <p className="text-gray-400" data-oid="djreipr">
                         Connect your wallet to start making secure deposits, withdrawals, and
                         transfers on the Solana blockchain.
                     </p>
@@ -60,7 +60,7 @@ export default function Page() {
                         onClick={handleConnect}
                         disabled={connecting}
                         className="bg-white text-black px-8 py-3 font-medium hover:bg-gray-200 transition-colors"
-                        data-oid="3r539-0"
+                        data-oid="v5:x_xf"
                     >
                         {connecting ? 'Connecting...' : 'Connect Wallet'}
                     </button>

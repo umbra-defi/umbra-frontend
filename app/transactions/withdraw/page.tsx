@@ -31,10 +31,10 @@ export default function WithdrawPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="d_xq1nu">
+            <div className="relative" data-oid="_kzx3_s">
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
-                    data-oid="-uj_zsq"
+                    data-oid="_x4iyq7"
                 >
                     <input
                         type="text"
@@ -42,14 +42,14 @@ export default function WithdrawPage() {
                         onChange={(e) => setAmount(e.target.value)}
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
-                        data-oid="df_22na"
+                        data-oid="8lswkbm"
                     />
 
-                    <div className="relative" data-oid="n8ijbac">
+                    <div className="relative" data-oid="mv8pw3k">
                         <button
                             className="flex items-center gap-2 text-white"
                             onClick={() => setShowTokenDropdown(!showTokenDropdown)}
-                            data-oid="ct-i.lq"
+                            data-oid="tmjaq0:"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -62,21 +62,21 @@ export default function WithdrawPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-layers"
-                                data-oid="-c2cc2o"
+                                data-oid="e.sq.c8"
                             >
                                 <path
                                     d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
-                                    data-oid="nanmgbh"
+                                    data-oid="q3lic:g"
                                 />
 
                                 <path
                                     d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 12.5"
-                                    data-oid="nau-f8-"
+                                    data-oid="z:j0j6b"
                                 />
 
                                 <path
                                     d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 17.5"
-                                    data-oid="_.n2m21"
+                                    data-oid="7x5u.:1"
                                 />
                             </svg>
                             {selectedToken}
@@ -91,9 +91,9 @@ export default function WithdrawPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-chevron-down"
-                                data-oid="dl2g-mm"
+                                data-oid="k0aw:95"
                             >
-                                <path d="m6 9 6 6 6-6" data-oid="jvihih." />
+                                <path d="m6 9 6 6 6-6" data-oid="5jjejoe" />
                             </svg>
                         </button>
 
@@ -104,19 +104,19 @@ export default function WithdrawPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                data-oid="-js_jfn"
+                                data-oid="s2xrphz"
                             >
-                                <div className="p-2" data-oid="kzj_qug">
+                                <div className="p-2" data-oid="fxf32_u">
                                     <input
                                         type="text"
                                         placeholder="Search tokens..."
                                         className="w-full bg-[#0a0a0f] text-white p-2 border border-gray-800 outline-none"
                                         value={searchToken}
                                         onChange={(e) => setSearchToken(e.target.value)}
-                                        data-oid="jofxr_:"
+                                        data-oid="j:k3eet"
                                     />
                                 </div>
-                                <div className="max-h-48 overflow-y-auto" data-oid="d_:clhc">
+                                <div className="max-h-48 overflow-y-auto" data-oid="pf-j7yx">
                                     {filteredTokens.map((token) => (
                                         <button
                                             key={token.symbol}
@@ -125,15 +125,15 @@ export default function WithdrawPage() {
                                                 setSelectedToken(token.symbol);
                                                 setShowTokenDropdown(false);
                                             }}
-                                            data-oid="y7ry1t-"
+                                            data-oid="zgkeh:v"
                                         >
-                                            <div className="flex items-center" data-oid="jxhlnjk">
-                                                <span className="font-medium" data-oid="l:8o-yd">
+                                            <div className="flex items-center" data-oid="fzq430:">
+                                                <span className="font-medium" data-oid="k0bqvzy">
                                                     {token.symbol}
                                                 </span>
                                                 <span
                                                     className="ml-2 text-gray-400 text-sm"
-                                                    data-oid="8n6dku6"
+                                                    data-oid="sex33pv"
                                                 >
                                                     {token.name}
                                                 </span>
@@ -148,17 +148,17 @@ export default function WithdrawPage() {
             </div>
 
             {/* Fees Section */}
-            <div className="text-white mt-6" data-oid="2f9sr8m">
+            <div className="text-white mt-6" data-oid="1tciugg">
                 <div
                     className="flex justify-between items-center mb-2 cursor-pointer"
                     onClick={() => setShowFeeDropdown(!showFeeDropdown)}
-                    data-oid="9zlrcfw"
+                    data-oid="uqbybxt"
                 >
-                    <span className="tracking-wide" data-oid="sa6ix-e">
+                    <span className="tracking-wide" data-oid="ppy_e3m">
                         TOTAL FEES
                     </span>
-                    <div className="flex items-center" data-oid=".8a5irr">
-                        <span data-oid="z4lgwvf">${totalFees.toFixed(2)}</span>
+                    <div className="flex items-center" data-oid="e-cfw1a">
+                        <span data-oid="1_v_ci7">${totalFees.toFixed(2)}</span>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -170,9 +170,9 @@ export default function WithdrawPage() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             className={`lucide ml-1 transition-transform ${showFeeDropdown ? 'rotate-180' : ''}`}
-                            data-oid="uqawn5o"
+                            data-oid="s_:p1ql"
                         >
-                            <path d="m6 9 6 6 6-6" data-oid="u7h_xii" />
+                            <path d="m6 9 6 6 6-6" data-oid="qf6l6:h" />
                         </svg>
                     </div>
                 </div>
@@ -184,16 +184,16 @@ export default function WithdrawPage() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        data-oid="f9p71y5"
+                        data-oid="lrkz1mm"
                     >
                         {feeTypes.map((fee) => (
                             <div
                                 key={fee.id}
                                 className="flex justify-between items-center text-sm text-gray-400 mb-3 last:mb-0"
-                                data-oid="aoqsbnl"
+                                data-oid="3s9i2mz"
                             >
-                                <div className="flex items-center gap-1" data-oid="7cjmy8-">
-                                    <span data-oid="mmannw7">{fee.name}</span>
+                                <div className="flex items-center gap-1" data-oid="jsotp53">
+                                    <span data-oid="_r0h-3:">{fee.name}</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="14"
@@ -206,18 +206,18 @@ export default function WithdrawPage() {
                                         strokeLinejoin="round"
                                         className="lucide lucide-circle-help"
                                         title={fee.description}
-                                        data-oid="q4a694n"
+                                        data-oid="eh0l1kq"
                                     >
-                                        <circle cx="12" cy="12" r="10" data-oid=":sd5q1b" />
+                                        <circle cx="12" cy="12" r="10" data-oid="_geffkx" />
                                         <path
                                             d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-                                            data-oid="ltq0__4"
+                                            data-oid="jp8mk9x"
                                         />
 
-                                        <path d="M12 17h.01" data-oid="e7678ei" />
+                                        <path d="M12 17h.01" data-oid="u-q9vgz" />
                                     </svg>
                                 </div>
-                                <div data-oid="4i3ds41">
+                                <div data-oid="u3b7-_r">
                                     ${fee.amount.toFixed(2)} • {fee.amount} {fee.token}
                                 </div>
                             </div>
@@ -232,7 +232,7 @@ export default function WithdrawPage() {
                 onClick={handleSubmit}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}
-                data-oid="03_6g55"
+                data-oid="l--tjxg"
             >
                 Withdraw
             </motion.button>
