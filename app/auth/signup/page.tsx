@@ -1,89 +1,126 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { 
+    generateX25519Keypair,
+    generateUmbraAddress, 
+    generateAesKey, 
+    encryptUserInformationWithAesKey, 
+    pushRegistrationToUmbraBackend, 
+    checkIfDatabaseEntryExists } 
+from '@/app/auth/signup/utils';
+import { useUmbraStore } from '@/app/store/umbraStore';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { PhantomWalletName, SolflareWalletName } from '@solana/wallet-adapter-wallets';
+import { toast } from 'react-hot-toast';
+import { toastError } from '@/lib/utils';
 
 export default function SignupPage() {
     const router = useRouter();
-    const [selectedWallet, setSelectedWallet] = useState(null);
-    const [walletConnected, setWalletConnected] = useState(false);
-    const [walletAddress, setWalletAddress] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const wallet = useWallet();
+    const umbraStore = useUmbraStore();
+
     const wallets = [
-        { id: 'phantom', name: 'PHANTOM', icon: '🟣' },
-        { id: 'solflare', name: 'SOLFLARE', icon: '🟡' },
-        { id: 'brave', name: 'BRAVE WALLET', icon: '🟠' },
+        { id: 'phantom', name: 'PHANTOM', icon: '🟣', wallet_name: PhantomWalletName },
+        { id: 'solflare', name: 'SOLFLARE', icon: '🟡', wallet_name: SolflareWalletName },
     ];
 
-    const connectWallet = async (walletId) => {
+    useEffect(() => {
+        wallet.disconnect();
+    }, [])
+
+    useEffect(() => {
+        if (wallet.connected) {
+            router.push('/auth/signup')
+        }
+    }, [wallet.connected])
+
+    const connectWallet = async (walletName: any) => {
         setLoading(true);
-        setError('');
 
         try {
             // Simulating wallet connection with web3.js
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            console.log("Here");
+            await wallet.select(walletName)
+            await wallet.connect();
 
-            // Mock successful connection
-            setSelectedWallet(walletId);
-            setWalletConnected(true);
-            setWalletAddress('8xH4ck...F9jKm'); // Mock wallet address
             setLoading(false);
         } catch (err) {
-            setError('Failed to connect wallet. Please try again.');
             setLoading(false);
+            console.log(err);
         }
     };
 
-    const handleSignup = async (e) => {
+    const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError('');
 
-        if (!walletConnected) {
-            setError('Please connect a wallet first');
+        if (!wallet.connected) {
+            toastError('Please connect a wallet first...')
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            toastError('Passwords do not match');
             return;
         }
 
         if (password.length < 8) {
-            setError('Password must be at least 8 characters');
+            toastError('Password must be at least 8 characters');
             return;
         }
 
         setLoading(true);
-
-        try {
-            // Simulate API call to create user
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            // Redirect to transactions page
-            router.push('/transactions');
-        } catch (err) {
-            setError('Failed to create account. Please try again.');
+        const isUserRegistered = await checkIfDatabaseEntryExists(wallet.publicKey!.toBase58())
+        if (isUserRegistered) {
+            toastError('User with this wallet already exists! Redirecting to Login...')
             setLoading(false);
+            router.push('/auth/login')
+            return;
         }
+        const x25519Keypair = generateX25519Keypair();
+        const umbraAddress = generateUmbraAddress();
+        const aesKey = await generateAesKey(password);
+        const encryptedUserInformation = await encryptUserInformationWithAesKey(
+            x25519Keypair.privateKey,
+            umbraAddress,
+            aesKey
+        );
+
+        const walletAddress = wallet.publicKey!;
+        
+        await pushRegistrationToUmbraBackend(
+            walletAddress,
+            password,
+            encryptedUserInformation
+        );
+        
+        umbraStore.setUmbraAddress(umbraAddress);
+        umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
+        setLoading(false);
+
+        router.push('/transactions/deposit');
+
     };
 
     const resetState = () => {
-        setSelectedWallet(null);
-        setWalletConnected(false);
-        setWalletAddress('');
+
+        if (wallet.connected) {
+            wallet.disconnect();
+        }
+    
         setPassword('');
         setConfirmPassword('');
-        setError('');
     };
 
     return (
         <>
-            {!walletConnected ? (
+            {!wallet.connected ? (
                 <div className="space-y-4" data-oid="zjirn2w">
                     <p className="text-sm text-gray-400 mb-4" data-oid="91pkuwn">
                         Select a wallet to sign up:
@@ -92,7 +129,7 @@ export default function SignupPage() {
                     {wallets.map((wallet) => (
                         <motion.button
                             key={wallet.id}
-                            onClick={() => connectWallet(wallet.id)}
+                            onClick={() => connectWallet(wallet.wallet_name)}
                             disabled={loading}
                             className="w-full flex items-center justify-center space-x-2 py-3 px-4 border border-gray-800 hover:bg-[#111] transition-colors"
                             whileHover={{ backgroundColor: '#111' }}
@@ -116,10 +153,10 @@ export default function SignupPage() {
                             data-oid="--k:-9w"
                         >
                             <p className="text-sm text-gray-400" data-oid="r.jh0lo">
-                                Connected Wallet
+                                {wallet.connected ? "Connected Wallet Address" : wallet.connecting ? "Connecting Your Wallet..." : "Connect Your Wallet..."}
                             </p>
-                            <p className="text-sm font-mono mt-1" data-oid="jny3uj5">
-                                {walletAddress}
+                            <p className="text-sm text-gray-400 font-mono mt-1" data-oid="jny3uj5">
+                                {wallet.publicKey?.toBase58()}
                             </p>
                         </div>
 
@@ -153,18 +190,6 @@ export default function SignupPage() {
                             />
                         </div>
 
-                        {error && (
-                            <motion.p
-                                className="text-red-500 text-sm"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3 }}
-                                data-oid="bxv81ej"
-                            >
-                                {error}
-                            </motion.p>
-                        )}
-
                         <motion.button
                             type="submit"
                             disabled={loading}
@@ -189,3 +214,4 @@ export default function SignupPage() {
         </>
     );
 }
+

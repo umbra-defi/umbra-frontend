@@ -6,16 +6,9 @@ import Link from 'next/link';
 
 export default function Page() {
     const router = useRouter();
-    const [connecting, setConnecting] = useState(false);
 
     const handleConnect = async () => {
-        setConnecting(true);
-
-        // Simulate connection process
-        setTimeout(() => {
-            setConnecting(false);
-            router.push('/auth');
-        }, 1500);
+        router.push('/auth/signup')
     };
 
     return (
@@ -58,11 +51,10 @@ export default function Page() {
                     </p>
                     <button
                         onClick={handleConnect}
-                        disabled={connecting}
                         className="bg-white text-black px-8 py-3 font-medium hover:bg-gray-200 transition-colors"
                         data-oid="v5:x_xf"
                     >
-                        {connecting ? 'Connecting...' : 'Connect Wallet'}
+                        {'Connect Wallet'}
                     </button>
                 </div>
             </div>

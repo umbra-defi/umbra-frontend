@@ -6,11 +6,7 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
     const router = useRouter();
-    const [selectedWallet, setSelectedWallet] = useState(null);
-    const [walletConnected, setWalletConnected] = useState(false);
-    const [walletAddress, setWalletAddress] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const wallets = [
@@ -24,13 +20,7 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // Simulating wallet connection with web3.js
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            // Mock successful connection
-            setSelectedWallet(walletId);
-            setWalletConnected(true);
-            setWalletAddress('8xH4ck...F9jKm'); // Mock wallet address
+            
             setLoading(false);
         } catch (err) {
             setError('Failed to connect wallet. Please try again.');
