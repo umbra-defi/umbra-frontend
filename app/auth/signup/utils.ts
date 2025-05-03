@@ -120,7 +120,7 @@ export async function checkIfDatabaseEntryExists(walletAddress: string): Promise
 
         const data = await response.json();
         console.log(data);
-        return !data.exists;
+        return data.exists;
     } catch (error) {
         console.error('Error checking wallet:', error);
         return false;

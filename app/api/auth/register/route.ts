@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { encryptWithAes, generateAesKeyFromString, hashPassword } from '@/lib/cryptography';
-import { PublicKey } from '@solana/web3.js';
 
 export async function POST(request: Request) {
     try {
@@ -27,18 +25,11 @@ export async function POST(request: Request) {
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // Process the wallet address
-        const walletAddressPublicKey = new PublicKey(walletAddress);
-        const walletAddressBuffer = walletAddressPublicKey.toBuffer();
-
-        // Convert encrypted data from the format sent by the client
-        const encryptedData = new Uint8Array(Buffer.from(aesEncryptedData, 'hex'));
-
         // Prepare data for insertion
         const userData = {
-            user_wallet_address: walletAddressBuffer,
+            user_wallet_address: walletAddress,
             password: hashedPassword,
-            encrypted_data: encryptedData,
+            encrypted_data: aesEncryptedData,
         };
 
         console.log(userData);

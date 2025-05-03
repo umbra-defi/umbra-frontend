@@ -26,35 +26,26 @@ export default function SignupPage() {
     const wallet = useWallet();
     const umbraStore = useUmbraStore();
 
+    useEffect(() => {
+        wallet.disconnect();
+    }, [])
+
     const wallets = [
         { id: 'phantom', name: 'PHANTOM', icon: '🟣', wallet_name: PhantomWalletName },
         { id: 'solflare', name: 'SOLFLARE', icon: '🟡', wallet_name: SolflareWalletName },
     ];
 
-    useEffect(() => {
-        wallet.disconnect();
-    }, [])
-
-    useEffect(() => {
-        if (wallet.connected) {
-            router.push('/auth/signup')
-        }
-    }, [wallet.connected])
-
     const connectWallet = async (walletName: any) => {
         setLoading(true);
 
         try {
-            // Simulating wallet connection with web3.js
-            console.log("Here");
             await wallet.select(walletName)
             await wallet.connect();
-
-            setLoading(false);
         } catch (err) {
-            setLoading(false);
             console.log(err);
         }
+
+        setLoading(false);
     };
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,11 +71,17 @@ export default function SignupPage() {
         if (isUserRegistered) {
             toastError('User with this wallet already exists! Redirecting to Login...')
             setLoading(false);
+            wallet.disconnect();
+            while (wallet.disconnecting);
             router.push('/auth/login')
             return;
         }
         const x25519Keypair = generateX25519Keypair();
         const umbraAddress = generateUmbraAddress();
+
+        console.log(x25519Keypair.privateKey);
+        console.log(umbraAddress);
+
         const aesKey = await generateAesKey(password);
         const encryptedUserInformation = await encryptUserInformationWithAesKey(
             x25519Keypair.privateKey,
@@ -103,7 +100,6 @@ export default function SignupPage() {
         umbraStore.setUmbraAddress(umbraAddress);
         umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
         setLoading(false);
-
         router.push('/transactions/deposit');
 
     };
@@ -145,7 +141,7 @@ export default function SignupPage() {
                         </motion.button>
                     ))}
                 </div>
-            ) : (
+            ) : wallet.disconnecting? "Wallet Disconnecting" : (
                 <div data-oid="b8uatyb">
                     <form onSubmit={handleSignup} className="space-y-5" data-oid="u9di9hc">
                         <div

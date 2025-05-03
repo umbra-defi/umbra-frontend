@@ -1,81 +1,89 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { toastError } from '@/lib/utils';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { generateAesKey } from '../signup/utils';
+import { PhantomWalletName, SolflareWalletName } from '@solana/wallet-adapter-wallets';
+import { decryptUserInformationWithAesKey, tryLogin } from '@/app/auth/login/utils';
+import { compare } from 'bcryptjs';
+import { useUmbraStore } from '@/app/store/umbraStore';
 
 export default function LoginPage() {
     const router = useRouter();
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const wallet = useWallet();
+    const umbraStore = useUmbraStore();
+
+    useEffect(() => {
+        wallet.disconnect();
+    }, [])
+
     const wallets = [
-        { id: 'phantom', name: 'PHANTOM', icon: '🟣' },
-        { id: 'solflare', name: 'SOLFLARE', icon: '🟡' },
-        { id: 'brave', name: 'BRAVE WALLET', icon: '🟠' },
+        { id: 'phantom', name: 'PHANTOM', icon: '🟣', wallet_name: PhantomWalletName },
+        { id: 'solflare', name: 'SOLFLARE', icon: '🟡', wallet_name: SolflareWalletName },
     ];
 
-    const connectWallet = async (walletId) => {
+    const connectWallet = async (walletName: any) => {
         setLoading(true);
-        setError('');
 
         try {
-            
-            setLoading(false);
+            await wallet.select(walletName)
+            await wallet.connect();
         } catch (err) {
-            setError('Failed to connect wallet. Please try again.');
-            setLoading(false);
+            console.log(err);
         }
+
+        setLoading(false);
     };
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError('');
 
-        if (!walletConnected) {
-            setError('Please connect a wallet first');
+        if (!wallet.connected) {
             return;
         }
 
         if (!password) {
-            setError('Password is required');
+            toastError('Password is required');
             return;
         }
 
         setLoading(true);
 
-        try {
-            // Simulate API call to verify user
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            // Mock user verification
-            const userExists = true; // In real app, check if user exists in database
-
-            if (userExists) {
-                // Redirect to transactions page
-                router.push('/transactions');
-            } else {
-                setError('Wallet not registered. Please sign up first.');
-                router.push('/auth/signup');
-                setLoading(false);
-            }
-        } catch (err) {
-            setError('Login failed. Please check your credentials and try again.');
+        const walletDetails = await tryLogin(wallet.publicKey!.toBase58(), password);
+        if (walletDetails === null) {
+            toastError("Wallet is not registered! Redirecting to Signup...")
             setLoading(false);
+            router.push('/auth/signup');
+            return;
         }
+        if (!(await compare(password, walletDetails.password))) {
+            toastError("Incorrect Password!");
+            setPassword('');
+            return;
+        }
+
+        const aesKey = await generateAesKey(password);
+        const {x25519Keypair, umbraAddress} = await decryptUserInformationWithAesKey(walletDetails.encrypted_data, aesKey);
+        umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
+        umbraStore.setUmbraAddress(umbraAddress);
+        router.push('/transactions/deposit');
+        setLoading(false);
+
     };
 
     const resetState = () => {
-        setSelectedWallet(null);
-        setWalletConnected(false);
-        setWalletAddress('');
         setPassword('');
-        setError('');
     };
 
     return (
         <>
-            {!walletConnected ? (
+            {!wallet.connected ? (
                 <div className="space-y-4" data-oid="3wsedef">
                     <p className="text-sm text-gray-400 mb-4" data-oid="i6nw670">
                         Select a wallet to login:
@@ -84,7 +92,7 @@ export default function LoginPage() {
                     {wallets.map((wallet) => (
                         <motion.button
                             key={wallet.id}
-                            onClick={() => connectWallet(wallet.id)}
+                            onClick={() => connectWallet(wallet.wallet_name)}
                             disabled={loading}
                             className="w-full flex items-center justify-center space-x-2 py-3 px-4 border border-gray-800 hover:bg-[#111] transition-colors"
                             whileHover={{ backgroundColor: '#111' }}
@@ -103,7 +111,7 @@ export default function LoginPage() {
                         </motion.button>
                     ))}
                 </div>
-            ) : (
+            ) : wallet.disconnecting ? "Wallet Disconnecting.." : (
                 <div data-oid="06zufpo">
                     <form onSubmit={handleLogin} className="space-y-5" data-oid="6zp6d57">
                         <div
@@ -113,8 +121,8 @@ export default function LoginPage() {
                             <p className="text-sm text-gray-400" data-oid="m7cvkt5">
                                 Connected Wallet
                             </p>
-                            <p className="text-sm font-mono mt-1" data-oid="bwbjt2j">
-                                {walletAddress}
+                            <p className="text-sm text-gray-400 font-mono mt-1" data-oid="bwbjt2j">
+                                {wallet.publicKey!.toBase58()}
                             </p>
                         </div>
 
@@ -132,18 +140,6 @@ export default function LoginPage() {
                                 data-oid="-gredc5"
                             />
                         </div>
-
-                        {error && (
-                            <motion.p
-                                className="text-red-500 text-sm"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3 }}
-                                data-oid="4wkz5bp"
-                            >
-                                {error}
-                            </motion.p>
-                        )}
 
                         <motion.button
                             type="submit"

@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
     const body = await request.json();
-    const { walletAddress }: { walletAddress: string } = body;
+    const { walletAddress, hashedPassword }: { walletAddress: string; hashedPassword: string } =
+        body;
 
     console.log(walletAddress);
 
@@ -28,12 +29,12 @@ export async function POST(request: Request) {
     try {
         const { data, error } = await supabase
             .from('umbra_users') // Replace with your actual table name
-            .select('user_wallet_address')
+            .select('password, encrypted_data')
             .eq('user_wallet_address', walletAddress) // Replace with your actual column name
             .maybeSingle();
 
         if (error) throw error;
-        return NextResponse.json({ exists: data !== null });
+        else return NextResponse.json(data);
     } catch (error) {
         console.error('Error checking wallet:', error);
         return NextResponse.json({ error: 'Failed to check wallet' }, { status: 500 });
