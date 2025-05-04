@@ -45,13 +45,11 @@ export default function DepositPage() {
         
         const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
 
-        const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
-        await getFirstRelayer();
+        const firstRelayer: { publicKey: string; id: string; pdaAddress: string } = await getFirstRelayer();
         const program = getUmbraProgram();
 
         let tokenAccount = undefined;
         try {
-            console.log("HERE");
             tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
             console.log(tokenAccount);
         } catch (error) {
