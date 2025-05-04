@@ -130,17 +130,25 @@ export async function checkIfDatabaseEntryExists(walletAddress: string): Promise
 export async function getFirstRelayer() {
     try {
         const response = await fetch('/api/relayer', {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+                uuid: crypto.randomUUID(),
+            }),
         });
 
         if (!response.ok) {
             throw new Error('Failed to fetch relayer');
         }
 
-        return (await response.json()).relayerList[0];
+        const relayer = await response.json();
+        return {
+            publicKey: relayer.existingRelayer.public_key,
+            pdaAddress: relayer.existingRelayer.pda_address,
+            id: relayer.existingRelayer.uuid,
+        };
     } catch (error) {
         console.error('Error fetching relayer:', error);
         throw error;
@@ -154,6 +162,8 @@ export async function createUserAccountCreationTransaction(
 ): Promise<Transaction> {
     const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
         await getFirstRelayer();
+
+    console.log(firstRelayer);
 
     const program = getUmbraProgram();
     const tx = await createUserAccount(

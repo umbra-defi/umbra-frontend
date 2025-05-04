@@ -104,9 +104,10 @@ export async function POST(request: Request) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { data: existingRelayer, error: checkError } = await supabase
         .from('relayers')
-        .select('public_key')
+        .select('*')
         .eq('public_key', relayerKeypair.publicKey.toBase58())
         .maybeSingle();
+    console.log(existingRelayer);
     if (existingRelayer) {
         return NextResponse.json({ error: 'Already Exists!' });
     }

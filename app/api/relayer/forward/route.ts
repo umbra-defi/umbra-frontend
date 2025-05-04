@@ -1,8 +1,9 @@
-import { Keypair, Transaction } from '@solana/web3.js';
+import { Keypair, LAMPORTS_PER_SOL, Transaction } from '@solana/web3.js';
 import path from 'path';
 import fs from 'fs';
-import { getConnection, getUmbraProgram } from '@/lib/utils';
+import { getConnection } from '@/lib/utils';
 import { NextResponse } from 'next/server';
+import { getUmbraProgram } from '../setup/route';
 
 type requestBody = {
     transaction: string;
@@ -51,14 +52,22 @@ async function sendUpdatedTransaction(transaction: Transaction): Promise<string>
 export async function POST(request: Request) {
     const body: requestBody = await request.json();
 
+    const program = getUmbraProgram(relayerKeypair);
+    const airdropSignature = await program.provider.connection.requestAirdrop(
+        relayerKeypair.publicKey,
+        10 * LAMPORTS_PER_SOL,
+    );
+    await program.provider.connection.confirmTransaction(airdropSignature, 'confirmed');
+    console.log(airdropSignature);
+
     const receivedTransaction = convertTransactionStringToTransaction(body.transaction);
     const relayerCreatedTransaction = removeSignatureFromTransaction(receivedTransaction);
     const recentDetails = await getConnection().getLatestBlockhash();
     relayerCreatedTransaction.recentBlockhash = recentDetails.blockhash;
     relayerCreatedTransaction.lastValidBlockHeight = recentDetails.lastValidBlockHeight;
     relayerCreatedTransaction.feePayer = relayerKeypair.publicKey;
+    console.log(relayerCreatedTransaction);
     relayerCreatedTransaction.sign(relayerKeypair);
     const signature = await sendUpdatedTransaction(relayerCreatedTransaction);
-    console.log(signature);
     return NextResponse.json({ signature });
 }

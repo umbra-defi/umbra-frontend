@@ -36,7 +36,7 @@ export default function DepositPage() {
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async () => {
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
         
@@ -51,7 +51,6 @@ export default function DepositPage() {
         let tokenAccount = undefined;
         try {
             tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
-            console.log(tokenAccount);
         } catch (error) {
 
             console.log(error);

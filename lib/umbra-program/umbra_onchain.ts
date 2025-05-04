@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/umbra_onchain.json`.
  */
 export type UmbraOnchain = {
-  "address": "Ehai71SSaaURd33eZj4yoWJzRCJFGzqcq4yXND4RQYPz",
+  "address": "DkZan98sELEKEwT2KwnjDKbMcw9Cekf35jru94oVN1s7",
   "metadata": {
     "name": "umbraOnchain",
     "version": "0.1.0",

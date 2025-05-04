@@ -1,9 +1,8 @@
-import { NextResponse } from 'next/server';
-import relayerStore from './relayerList';
-import { createClient } from '@supabase/supabase-js';
 import path from 'path';
-import { Keypair } from '@solana/web3.js';
 import fs from 'fs';
+import { Keypair } from '@solana/web3.js';
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 // Function to load keypair from a file
 function loadKeypair(): Keypair {
@@ -18,7 +17,9 @@ function loadKeypair(): Keypair {
     }
 }
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
+    const relayerKeypair = loadKeypair();
+
     const supabaseUrl =
         process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://frfrwohcdmwwtpcibcqh.supabase.co';
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -30,14 +31,11 @@ export async function GET(request: Request) {
         );
     }
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    const relayerKeypair = loadKeypair();
-
     const { data: existingRelayer, error: checkError } = await supabase
         .from('relayers')
-        .select('public_key, pda_address, associated_token, uuid')
+        .select('*')
         .eq('public_key', relayerKeypair.publicKey.toBase58())
         .maybeSingle();
 
-    return NextResponse.json({ existingRelayer });
+    return NextResponse.json({ existingRelayer: existingRelayer });
 }
