@@ -51,6 +51,9 @@ export default function DepositPage() {
         let tokenAccount = undefined;
         try {
             tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
+            const nonce = tokenAccount.nonce[0].toArray('le', 16);
+            const decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce));
+            console.log(decryptedBalance[0]);
         } catch (error) {
 
             console.log(error);
@@ -105,8 +108,7 @@ export default function DepositPage() {
 
         tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA, 'confirmed');
         const encryptedBalance = tokenAccount.balance[0];
-        const encryptionNonce = Buffer.alloc(16);
-        tokenAccount.nonce[0].toBuffer('le', 16).copy(encryptionNonce);
+        const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16)
         const decryptedBalance = cipher.decrypt([encryptedBalance], Uint8Array.from(encryptionNonce))
         console.log(decryptedBalance);
     };

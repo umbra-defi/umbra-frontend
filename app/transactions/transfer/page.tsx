@@ -5,14 +5,13 @@ import { motion } from 'framer-motion';
 import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
-import { createTokenAccount, getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
+import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
 import { getUmbraProgram } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
-import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
-import { PublicKey } from '@solana/web3.js';
 import { AnchorProvider, BN } from '@coral-xyz/anchor';
+import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -50,56 +49,28 @@ export default function TransferPage() {
 
         const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
         let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
-        const nonce = Buffer.alloc(16);
-        tokenAccount.nonce[0].toBuffer('le', 16).copy(nonce);
-        const encryptedBalance = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce))
+        const nonce = tokenAccount.nonce[0].toArray('le', 16);
+        let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0]
+        console.log(decryptedBalance)
+        let encryptedBalance = cipher.encrypt([decryptedBalance, BigInt(amount)], Uint8Array.from(nonce))
 
-        const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
-        await getFirstRelayer();
-        
-        let receiverTokenAccount = undefined;
-        try {
-            receiverTokenAccount = await program.account.umbraTokenAccount.fetch(receiverTokenAccountPDA);
-            console.log(tokenAccount);
-        } catch (error) {
+        const firstRelayer = await getFirstRelayer();
 
-            console.log(error);
-
-            const nonce = randomBytes(16);
-            const zeroBalanceCipherText = cipher.encrypt([BigInt(0)], Uint8Array.from(nonce));
-
-            const createTokenTx = await createTokenAccount(
-                getUmbraProgram(),
-                mintAddress,
-                Buffer.from(zeroBalanceCipherText[0]),
-                nonce,
-                receiverAccountPDA,
-                new PublicKey(firstRelayer.pdaAddress),
-                new PublicKey(firstRelayer.publicKey),
-                receiverTokenAccountPDA,
-                wallet.publicKey!
-            );
-
-            const signedTransaction = await wallet.signTransaction!(createTokenTx);
-            const txSignature = await (await sendTransactionToRelayer(signedTransaction)).json();
-            console.log(txSignature);
-        }
-
-        const computationOffset = BN(randomBytes(8))
+        const computationOffset = new BN(randomBytes(8), 'hex')
         const tx = await transferAmount(
             program,
             userAccountPDA,
             userTokenAccountPDA,
             receiverAccountPDA,
             receiverTokenAccountPDA,
-            Buffer.from(encryptedBalance[0]),
-            new PublicKey(firstRelayer.publicKey),
+            Buffer.from(encryptedBalance[1]),
+            firstRelayer.publicKey,
             computationOffset,
             wallet.publicKey!
-        );
+        )
 
-        const signedTx = await wallet.signTransaction!(tx);
-        const txSignature = await (await sendTransactionToRelayer(signedTx)).json();
+        const withdrawTxSigned = await wallet.signTransaction!(tx);
+        const txSignature = await (await sendTransactionToRelayer(withdrawTxSigned)).json();
         await awaitComputationFinalization(
             new AnchorProvider(
                 program.provider.connection,
@@ -111,7 +82,12 @@ export default function TransferPage() {
             'confirmed'
         );
         console.log(txSignature);
-        
+
+        tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA, 'confirmed');
+        encryptedBalance = tokenAccount.balance;
+        const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16)
+        decryptedBalance = cipher.decrypt([encryptedBalance[0]], Uint8Array.from(encryptionNonce))[0]
+        console.log(decryptedBalance);
     };
 
     return (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn, toastError } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUmbraStore } from '../store/umbraStore';
 
 // // Mock data for tokens
 // export const tokens = [
@@ -68,6 +69,8 @@ export default function TransactionsLayout({ children }: { children: React.React
     const handleTabChange = (tab: string) => {
         router.push(`/transactions/${tab}`);
     };
+
+    const umbraStore = useUmbraStore();
 
     return (
         <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="-.s3a6:">
@@ -182,6 +185,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
                                     data-oid="nu_x:by"
+                                    onClick={() => {
+                                        const hexAddress = Buffer.from(umbraStore.umbraAddress).toString('hex');
+                                        navigator.clipboard.writeText(hexAddress);
+                                    }}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"

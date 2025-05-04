@@ -5,6 +5,14 @@ import { motion } from 'framer-motion';
 import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
+import { getTokenAccountPDA, getUserAccountPDA, withdrawAmount } from '@/lib/umbra-program/umbra';
+import { getUmbraProgram } from '@/lib/utils';
+import { mxePublicKey } from '@/lib/constants';
+import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
+import { randomBytes } from 'crypto';
+import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
+import { AnchorProvider, BN } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -28,12 +36,55 @@ export default function WithdrawPage() {
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
-    const handleSubmit = () => {
-        console.log({
-            type: 'withdraw',
-            amount,
-            token: selectedToken,
-        });
+    const handleSubmit = async () => {
+        const program = getUmbraProgram();
+
+        const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
+        const mintAddress = selectedTokenData!.mintAddress;
+
+        const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+        const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+
+        const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
+        const nonce = randomBytes(16);
+        const withdrawalAmountEncrypted = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce));
+
+        const firstRelayer = await getFirstRelayer();
+
+        const computationOffset = new BN(randomBytes(8), 'hex')
+
+        const withdrawTx = await withdrawAmount(
+            program,
+            userAccountPDA,
+            userTokenAccountPDA,
+            Buffer.from(withdrawalAmountEncrypted[0]),
+            nonce,
+            firstRelayer.publicKey,
+            computationOffset,
+            wallet.publicKey!,
+            new PublicKey(firstRelayer.pdaAddress),
+        );
+
+        const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
+        const txSignature = await (await sendTransactionToRelayer(withdrawTxSigned)).json();
+        await awaitComputationFinalization(
+            new AnchorProvider(
+                program.provider.connection,
+                program.provider.wallet!,
+                { commitment: 'confirmed' }
+            ), 
+            computationOffset,
+            program.programId,
+            'confirmed'
+        );
+
+        console.log(txSignature);
+
+        const tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA, 'confirmed');
+        const encryptedBalance = tokenAccount.balance[0];
+        const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16)
+        const decryptedBalance = cipher.decrypt([encryptedBalance], Uint8Array.from(encryptionNonce))
+        console.log(decryptedBalance);
     };
 
     return (

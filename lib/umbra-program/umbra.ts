@@ -231,3 +231,47 @@ export async function transferAmount(
 
     return tx;
 }
+
+export async function withdrawAmount(
+    program: Program<UmbraOnchain>,
+    userAccountPDA: PublicKey,
+    tokenAccountPDA: PublicKey,
+    withdrawalAmount: Buffer,
+    nonce: Buffer,
+    payer: PublicKey,
+    computation_offset: BN,
+    clientSidePublicKey: PublicKey,
+    relayerPDA: PublicKey,
+): Promise<Transaction> {
+    const compDefOffset = getCompDefAccOffset('withdraw_amount');
+    const compDefPDA = getCompDefAcc(program.programId, Buffer.from(compDefOffset).readUInt32LE());
+
+    const tx = await program.methods
+        .withdrawAmount(
+            { 0: Array.from(withdrawalAmount) },
+            { 0: new BN(deserializeLE(Uint8Array.from(nonce)).toString()) },
+            computation_offset,
+        )
+        .accounts({
+            withdrawerUserAccount: userAccountPDA,
+            withdrawerTokenAccount: tokenAccountPDA,
+            payer: payer,
+            relayer: relayerPDA,
+
+            computationAccount: getComputationAcc(program.programId, computation_offset),
+            clusterAccount: arciumClusterKey,
+            mxeAccount: getMXEAccAcc(program.programId),
+            mempoolAccount: getMempoolAcc(program.programId),
+            executingPool: getExecutingPoolAcc(program.programId),
+            compDefAccount: compDefPDA,
+        })
+        .transaction();
+
+    const connection = getConnection();
+    const recentData = await connection.getLatestBlockhash();
+    tx.recentBlockhash = recentData.blockhash;
+    tx.lastValidBlockHeight = recentData.lastValidBlockHeight;
+    tx.feePayer = clientSidePublicKey;
+
+    return tx;
+}
