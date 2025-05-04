@@ -1,16 +1,16 @@
-import { encryptWithAes, generateAesKeyFromString, hashPassword } from '@/lib/cryptography';
-import { UmbraDatabaseSchema } from '@/lib/utils';
+import {
+    encryptWithAes,
+    generateAesKeyFromString,
+    hashPassword,
+    X25519Keypair,
+    X25519PrivateKey,
+    X25519PublicKey,
+} from '@/lib/cryptography';
+import { createUserAccount } from '@/lib/umbra-program/umbra';
+import { getMainnetConnection, getTokenBalance, getUmbraProgram } from '@/lib/utils';
 import { x25519 } from '@arcium-hq/client';
-import { PublicKey } from '@solana/web3.js';
-import { createClient } from '@supabase/supabase-js';
-import { hash } from 'bcryptjs';
-
-export type X25519PrivateKey = Uint8Array<ArrayBufferLike>;
-export type X25519PublicKey = Uint8Array<ArrayBufferLike>;
-export type X25519Keypair = {
-    privateKey: X25519PrivateKey;
-    publicKey: X25519PublicKey;
-};
+import { PublicKey, Transaction } from '@solana/web3.js';
+import { tokens } from '@/lib/constants';
 
 export function generateX25519Keypair(): X25519Keypair {
     const x25519PrivKey = x25519.utils.randomPrivateKey();
@@ -124,5 +124,112 @@ export async function checkIfDatabaseEntryExists(walletAddress: string): Promise
     } catch (error) {
         console.error('Error checking wallet:', error);
         return false;
+    }
+}
+
+export async function getFirstRelayer() {
+    try {
+        const response = await fetch('/api/relayer', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch relayer');
+        }
+
+        return (await response.json()).relayerList[0];
+    } catch (error) {
+        console.error('Error fetching relayer:', error);
+        throw error;
+    }
+}
+
+export async function createUserAccountCreationTransaction(
+    x25519PublicKey: X25519PublicKey,
+    umbraAddress: UmbraAddress,
+    connectedWalletAddress: PublicKey,
+): Promise<Transaction> {
+    const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
+        await getFirstRelayer();
+
+    const program = getUmbraProgram();
+    const tx = await createUserAccount(
+        program,
+        new PublicKey(firstRelayer.publicKey),
+        new PublicKey(firstRelayer.pdaAddress),
+        Buffer.from(umbraAddress),
+        Buffer.from(x25519PublicKey),
+        connectedWalletAddress,
+    );
+
+    return tx;
+}
+
+export async function sendUserAccountCreationTransaction(tx: Transaction): Promise<Response> {
+    const serializedTx = tx.serialize({ requireAllSignatures: false });
+    const base64Tx = serializedTx.toString('base64');
+
+    // Send transaction to relayer for forwarding
+    try {
+        const response = await fetch('/api/relayer/forward', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                transaction: base64Tx,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Relayer forwarding failed: ${response.statusText}`);
+        }
+
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function MintTokensToUser(userPublicKey: PublicKey) {
+    try {
+        const response = await fetch('/api/mintTokens', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userPublicKey: userPublicKey.toBase58() }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to mint tokens: ${response.statusText}`);
+        }
+
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function fetchTokenList(userPublicKey: PublicKey) {
+    try {
+        const response = await fetch('/api/mintTokens', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userPublicKey: userPublicKey.toBase58() }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to mint tokens: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw error;
     }
 }

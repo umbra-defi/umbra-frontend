@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     try {
         const { data, error } = await supabase
             .from('umbra_users') // Replace with your actual table name
-            .select('password, encrypted_data')
+            .select('password, encrypted_data, encrypted_token_list')
             .eq('user_wallet_address', walletAddress) // Replace with your actual column name
             .maybeSingle();
 

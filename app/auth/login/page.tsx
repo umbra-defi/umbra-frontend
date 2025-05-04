@@ -68,10 +68,14 @@ export default function LoginPage() {
             return;
         }
 
+        const tokenList = JSON.parse(walletDetails.encrypted_token_list);
         const aesKey = await generateAesKey(password);
         const {x25519Keypair, umbraAddress} = await decryptUserInformationWithAesKey(walletDetails.encrypted_data, aesKey);
+
         umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
         umbraStore.setUmbraAddress(umbraAddress);
+        umbraStore.setTokenList(tokenList);
+
         router.push('/transactions/deposit');
         setLoading(false);
 

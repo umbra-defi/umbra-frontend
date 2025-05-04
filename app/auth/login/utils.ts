@@ -1,10 +1,6 @@
 import { decryptWithAes, hashPassword } from '@/lib/cryptography';
-import {
-    Aes256EncryptedData,
-    UmbraAddress,
-    X25519Keypair,
-    X25519PrivateKey,
-} from '@/app/auth/signup/utils';
+import { Aes256EncryptedData, UmbraAddress } from '@/app/auth/signup/utils';
+import { X25519Keypair, X25519PrivateKey } from '@/lib/cryptography';
 import { x25519 } from '@arcium-hq/client';
 
 export async function tryLogin(walletAddress: string, password: string) {

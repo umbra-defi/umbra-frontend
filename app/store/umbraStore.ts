@@ -1,27 +1,39 @@
 import { create } from 'zustand';
-import { UmbraAddress, X25519PrivateKey, X25519Keypair } from '@/app/auth/signup/utils';
+import { UmbraAddress } from '@/app/auth/signup/utils';
+import { X25519Keypair, X25519PrivateKey } from '@/lib/cryptography';
 import { x25519 } from '@arcium-hq/client';
+import { PublicKey } from '@solana/web3.js';
 
 export enum UmbraStoreError {
     UNINITIALIZED_PRIVATE_KEY,
     UNINITIALIZED_UMBRA_ADDRESS,
+    UNINITIALIZED_TOKEN_LIST,
 }
+
+export type TokenListing = {
+    mintAddress: PublicKey;
+    ticker: string;
+};
 
 interface UmbraStoreState {
     // Example state values
     x25519PrivKey: X25519PrivateKey;
     umbraAddress: UmbraAddress;
+    tokenList: Array<TokenListing>;
 
     hasX25519PrivKeyBeenSet: boolean;
     hasUmbraAddressBeenSet: boolean;
+    hasTokenListBeenSet: boolean;
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
     setUmbraAddress: (newAddress: UmbraAddress) => void;
+    setTokenList: (tokenList: Array<{ mintAddress: PublicKey; ticker: string }>) => void;
 
     // Getters
     getX25519Keypair: () => X25519Keypair | UmbraStoreError;
     getUmbraAddress: () => UmbraAddress | UmbraStoreError;
+    getTokenList: () => Array<TokenListing> | UmbraStoreError;
 }
 
 // Create initial garbage values (random bytes)
@@ -53,6 +65,8 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
     umbraAddress: initialUmbraAddress,
     hasX25519PrivKeyBeenSet: false,
     hasUmbraAddressBeenSet: false,
+    hasTokenListBeenSet: false,
+    tokenList: [],
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -67,13 +81,19 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
             hasUmbraAddressBeenSet: true,
         })),
 
+    setTokenList: (tokenList: Array<TokenListing>) =>
+        set(() => ({
+            tokenList: tokenList,
+            hasTokenListBeenSet: true,
+        })),
+
     // Getters
     getX25519Keypair: () => {
         const state = get();
 
-        if (!state.hasX25519PrivKeyBeenSet) {
-            return UmbraStoreError.UNINITIALIZED_PRIVATE_KEY;
-        }
+        // if (!state.hasX25519PrivKeyBeenSet) {
+        //     return UmbraStoreError.UNINITIALIZED_PRIVATE_KEY;
+        // }
 
         const x25519PublicKey = x25519.getPublicKey(state.x25519PrivKey);
         return { privateKey: state.x25519PrivKey, publicKey: x25519PublicKey };
@@ -82,10 +102,19 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
     getUmbraAddress: () => {
         const state = get();
 
-        if (!state.hasUmbraAddressBeenSet) {
-            return UmbraStoreError.UNINITIALIZED_UMBRA_ADDRESS;
-        }
+        // if (!state.hasUmbraAddressBeenSet) {
+        //     return UmbraStoreError.UNINITIALIZED_UMBRA_ADDRESS;
+        // }
 
         return state.umbraAddress;
+    },
+
+    getTokenList: () => {
+        const state = get();
+        if (!state.hasTokenListBeenSet) {
+            return UmbraStoreError.UNINITIALIZED_TOKEN_LIST;
+        }
+
+        return state.tokenList;
     },
 }));

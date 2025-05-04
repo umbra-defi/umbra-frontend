@@ -3,17 +3,17 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn, toastError } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Mock data for tokens
-export const tokens = [
-    { symbol: 'SOL', name: 'Solana' },
-    { symbol: 'USDC', name: 'USD Coin' },
-    { symbol: 'USDT', name: 'Tether' },
-    { symbol: 'BTC', name: 'Bitcoin (Wrapped)' },
-    { symbol: 'ETH', name: 'Ethereum (Wrapped)' },
-];
+// // Mock data for tokens
+// export const tokens = [
+//     { symbol: 'SOL', name: 'Solana' },
+//     { symbol: 'USDC', name: 'USD Coin' },
+//     { symbol: 'USDT', name: 'Tether' },
+//     { symbol: 'BTC', name: 'Bitcoin (Wrapped)' },
+//     { symbol: 'ETH', name: 'Ethereum (Wrapped)' },
+// ];
 
 // Fee types
 export const feeTypes = [

@@ -1,21 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { tokens, feeTypes } from '../layout';
+import { feeTypes } from '../layout';
+import Link from 'next/link';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useUmbraStore } from '@/app/store/umbraStore';
+import { TokenListing } from '@/app/store/umbraStore';
+import { PublicKey } from '@solana/web3.js';
+import { UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED } from '@/lib/constants';
+import { toastError } from '@/lib/utils';
 
 export default function DepositPage() {
-    const [amount, setAmount] = useState<string>('0');
-    const [selectedToken, setSelectedToken] = useState<string>('SOL');
-    const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
-    const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
     const [searchToken, setSearchToken] = useState<string>('');
-
+    const wallet = useWallet();
+    const umbraStore = useUmbraStore();
+    const tokenList = umbraStore.getTokenList();
+    const tokens = Array.isArray(tokenList) ? tokenList : [];
     const filteredTokens = tokens.filter(
         (token) =>
-            token.symbol.toLowerCase().includes(searchToken.toLowerCase()) ||
-            token.name.toLowerCase().includes(searchToken.toLowerCase()),
+            token.ticker.toLowerCase().includes(searchToken.toLowerCase()) ||
+            token.ticker.toLowerCase().includes(searchToken.toLowerCase()),
     );
+
+
+    const [amount, setAmount] = useState<string>('0');
+    const [selectedToken, setSelectedToken] = useState<string>(filteredTokens[0]?.ticker);
+    const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
+    const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
 
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
@@ -27,9 +39,16 @@ export default function DepositPage() {
             token: selectedToken,
         });
     };
-
+    
     return (
         <>
+            {/* Faucet Link */}
+            <div className="text-center mb-4">
+                <Link href="/faucet" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Need test tokens? Visit our <span className="underline">Token Simulator</span> to mint tokens of your choice.
+                </Link>
+            </div>
+            
             {/* Amount Input */}
             <div className="relative" data-oid="yw2qv2b">
                 <div
@@ -119,23 +138,23 @@ export default function DepositPage() {
                                 <div className="max-h-48 overflow-y-auto" data-oid="z0c:7z.">
                                     {filteredTokens.map((token) => (
                                         <button
-                                            key={token.symbol}
+                                            key={token.ticker}
                                             className="w-full text-left p-3 hover:bg-[#111] text-white"
                                             onClick={() => {
-                                                setSelectedToken(token.symbol);
+                                                setSelectedToken(token.ticker);
                                                 setShowTokenDropdown(false);
                                             }}
                                             data-oid="cr8rcui"
                                         >
                                             <div className="flex items-center" data-oid="ouzqjc0">
                                                 <span className="font-medium" data-oid="25fbdnk">
-                                                    {token.symbol}
+                                                    {token.ticker}
                                                 </span>
                                                 <span
                                                     className="ml-2 text-gray-400 text-sm"
                                                     data-oid="pslpd:q"
                                                 >
-                                                    {token.name}
+                                                    {token.ticker}
                                                 </span>
                                             </div>
                                         </button>
@@ -205,7 +224,7 @@ export default function DepositPage() {
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         className="lucide lucide-circle-help"
-                                        title={fee.description}
+                                        // title={fee.description}
                                         data-oid="t3wwaw:"
                                     >
                                         <circle cx="12" cy="12" r="10" data-oid="bbj8dm1" />

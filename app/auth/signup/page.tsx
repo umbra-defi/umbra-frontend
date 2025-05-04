@@ -9,20 +9,27 @@ import {
     generateAesKey, 
     encryptUserInformationWithAesKey, 
     pushRegistrationToUmbraBackend, 
-    checkIfDatabaseEntryExists } 
+    checkIfDatabaseEntryExists, 
+    getFirstRelayer,
+    createUserAccountCreationTransaction,
+    sendUserAccountCreationTransaction,
+    MintTokensToUser,
+    fetchTokenList} 
 from '@/app/auth/signup/utils';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PhantomWalletName, SolflareWalletName } from '@solana/wallet-adapter-wallets';
-import { toast } from 'react-hot-toast';
-import { toastError } from '@/lib/utils';
+import { getTokenBalance, getUmbraProgram, toastError } from '@/lib/utils';
+import { createUserAccount } from '@/lib/umbra-program/umbra';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export default function SignupPage() {
     const router = useRouter();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [mintingTokens, setMintingTokens] = useState<boolean>(false);
+ 
     const wallet = useWallet();
     const umbraStore = useUmbraStore();
 
@@ -76,32 +83,41 @@ export default function SignupPage() {
             router.push('/auth/login')
             return;
         }
+
+        // Client Side Creation!
         const x25519Keypair = generateX25519Keypair();
         const umbraAddress = generateUmbraAddress();
-
-        console.log(x25519Keypair.privateKey);
-        console.log(umbraAddress);
-
         const aesKey = await generateAesKey(password);
         const encryptedUserInformation = await encryptUserInformationWithAesKey(
             x25519Keypair.privateKey,
             umbraAddress,
             aesKey
         );
-
         const walletAddress = wallet.publicKey!;
-        
+
+        // Setting the Zustand Store
+        umbraStore.setUmbraAddress(umbraAddress);
+        umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
+
+
+        // Sending the blockchain transactions
+        const tx = await createUserAccountCreationTransaction(x25519Keypair.publicKey, umbraAddress, wallet.publicKey!)
+        await wallet.signTransaction!(tx);
+        let response = await sendUserAccountCreationTransaction(tx);
+        console.log((await response.json()).signature);
+
         await pushRegistrationToUmbraBackend(
             walletAddress,
             password,
             encryptedUserInformation
         );
-        
-        umbraStore.setUmbraAddress(umbraAddress);
-        umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
-        setLoading(false);
+        // setMintingTokens(true)
+        // Mint balances on equivalent mints
+        // await MintTokensToUser(wallet.publicKey!)
+        // const tokenList = await fetchTokenList(wallet.publicKey!)
+        // umbraStore.setTokenList(tokenList.tokenList);
         router.push('/transactions/deposit');
-
+        setLoading(false);
     };
 
     const resetState = () => {
@@ -194,7 +210,7 @@ export default function SignupPage() {
                             whileTap={{ scale: 0.98 }}
                             data-oid="13v3tdl"
                         >
-                            {loading ? 'Processing...' : 'Create Account'}
+                            {loading ? mintingTokens ? 'Minting Your Tokens...' : "Processing..." : 'Create Account'}
                         </motion.button>
                     </form>
 
@@ -210,4 +226,3 @@ export default function SignupPage() {
         </>
     );
 }
-

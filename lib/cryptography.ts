@@ -77,3 +77,10 @@ export async function hashPassword(password: string, saltRounds: number = 10): P
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
 }
+
+export type X25519PrivateKey = Uint8Array<ArrayBufferLike>;
+export type X25519PublicKey = Uint8Array<ArrayBufferLike>;
+export type X25519Keypair = {
+    privateKey: X25519PrivateKey;
+    publicKey: X25519PublicKey;
+};
