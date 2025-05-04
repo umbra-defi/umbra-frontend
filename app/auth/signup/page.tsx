@@ -12,9 +12,9 @@ import {
     checkIfDatabaseEntryExists, 
     getFirstRelayer,
     createUserAccountCreationTransaction,
-    sendUserAccountCreationTransaction,
     MintTokensToUser,
-    fetchTokenList} 
+    fetchTokenList,
+    sendTransactionToRelayer} 
 from '@/app/auth/signup/utils';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -103,7 +103,7 @@ export default function SignupPage() {
         // Sending the blockchain transactions
         const tx = await createUserAccountCreationTransaction(x25519Keypair.publicKey, umbraAddress, wallet.publicKey!)
         await wallet.signTransaction!(tx);
-        let response = await sendUserAccountCreationTransaction(tx);
+        let response = await sendTransactionToRelayer(tx);
         console.log((await response.json()).signature);
 
         await pushRegistrationToUmbraBackend(

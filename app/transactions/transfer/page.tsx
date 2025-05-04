@@ -5,6 +5,11 @@ import { motion } from 'framer-motion';
 import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
+import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
+import { getUmbraProgram } from '@/lib/utils';
+import { RescueCipher, x25519 } from '@arcium-hq/client';
+import { mxePublicKey } from '@/lib/constants';
+import { randomBytes } from 'crypto';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -28,13 +33,34 @@ export default function TransferPage() {
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
-    const handleSubmit = () => {
-        console.log({
-            type: 'transfer',
-            amount,
-            token: selectedToken,
-            recipientAddress,
-        });
+    const handleSubmit = async () => {
+
+        const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
+        const mintAddress = selectedTokenData!.mintAddress;
+
+        const program = getUmbraProgram();
+        const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+        const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+
+        const receiverAccountPDA = getUserAccountPDA(Buffer.from(recipientAddress, 'hex'))
+        const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
+
+        const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
+        let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
+        const nonce = Buffer.alloc(16);
+        tokenAccount.nonce[0].toBuffer('le', 16).copy(nonce);
+        const encryptedBalance = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce))
+
+        const computationOffset = BN(randomBytes(8))
+        const tx = await transferAmount(
+            program,
+            userAccountPDA,
+            userTokenAccountPDA,
+            receiverAccountPDA,
+            receiverTokenAccountPDA,
+            encryptedBalance[0],
+
+        )
     };
 
     return (

@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { feeTypes } from '../layout';
 import Link from 'next/link';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { ConnectionProvider, useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
-import { TokenListing } from '@/app/store/umbraStore';
-import { PublicKey } from '@solana/web3.js';
-import { UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED } from '@/lib/constants';
-import { toastError } from '@/lib/utils';
+import { Commitment, PublicKey } from '@solana/web3.js';
+import { mxePublicKey, UMBRA_PDA_DERIVATION_SEED, UMBRA_TOKEN_ACCOUNT_DERIVATION_SEED } from '@/lib/constants';
+import { createTokenAccount, depositAmount, getTokenAccountPDA, getUserAccountPDA } from '@/lib/umbra-program/umbra';
+import { getUmbraProgram } from '@/lib/utils';
+import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
+import { randomBytes, sign } from 'crypto';
+import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
+import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -32,12 +36,82 @@ export default function DepositPage() {
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
-    const handleSubmit = () => {
-        console.log({
-            type: 'deposit',
-            amount,
-            token: selectedToken,
-        });
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
+        const mintAddress = selectedTokenData!.mintAddress;
+        
+        const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+        const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+        
+        const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
+
+        const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
+        await getFirstRelayer();
+        const program = getUmbraProgram();
+
+        let tokenAccount = undefined;
+        try {
+            console.log("HERE");
+            tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
+            console.log(tokenAccount);
+        } catch (error) {
+
+            console.log(error);
+
+            const nonce = randomBytes(16);
+            const zeroBalanceCipherText = cipher.encrypt([BigInt(0)], Uint8Array.from(nonce));
+
+            const createTokenTx = await createTokenAccount(
+                getUmbraProgram(),
+                mintAddress,
+                Buffer.from(zeroBalanceCipherText[0]),
+                nonce,
+                userAccountPDA,
+                new PublicKey(firstRelayer.pdaAddress),
+                new PublicKey(firstRelayer.publicKey),
+                tokenAccountPDA,
+                wallet.publicKey!
+            )
+    
+            const signedTransaction = await wallet.signTransaction!(createTokenTx);
+            const txSignature = await (await sendTransactionToRelayer(signedTransaction)).json();
+            console.log(txSignature);
+        }
+
+        const nonce = randomBytes(16);
+        const newDepositCipherText = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce))
+
+        const computationOffset = new BN(randomBytes(8), 'hex')
+        const depositTx = await depositAmount(
+            program,
+            new PublicKey(firstRelayer.pdaAddress),
+            userAccountPDA, tokenAccountPDA,
+            Buffer.from(newDepositCipherText[0]),
+            nonce,
+            new PublicKey(firstRelayer.publicKey),
+            computationOffset,
+            wallet.publicKey!
+        );
+        const depositTxSigned = await wallet.signTransaction!(depositTx);
+        const txSignature = await (await sendTransactionToRelayer(depositTxSigned)).json();
+        await awaitComputationFinalization(
+            new AnchorProvider(
+                program.provider.connection,
+                program.provider.wallet!,
+                { commitment: 'confirmed' }
+            ), 
+            computationOffset,
+            program.programId,
+            'confirmed'
+        );
+        console.log(txSignature);
+
+        tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA, 'confirmed');
+        const encryptedBalance = tokenAccount.balance[0];
+        const encryptionNonce = Buffer.alloc(16);
+        tokenAccount.nonce[0].toBuffer('le', 16).copy(encryptionNonce);
+        const decryptedBalance = cipher.decrypt([encryptedBalance], Uint8Array.from(encryptionNonce))
+        console.log(decryptedBalance);
     };
     
     return (

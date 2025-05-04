@@ -10,6 +10,7 @@ import { PhantomWalletName, SolflareWalletName } from '@solana/wallet-adapter-wa
 import { decryptUserInformationWithAesKey, tryLogin } from '@/app/auth/login/utils';
 import { compare } from 'bcryptjs';
 import { useUmbraStore } from '@/app/store/umbraStore';
+import { PublicKey } from '@solana/web3.js';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -69,12 +70,16 @@ export default function LoginPage() {
         }
 
         const tokenList = JSON.parse(walletDetails.encrypted_token_list);
+        const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
+            ...token,
+            mintAddress: new PublicKey(token.mintAddress)
+        })): [];
         const aesKey = await generateAesKey(password);
         const {x25519Keypair, umbraAddress} = await decryptUserInformationWithAesKey(walletDetails.encrypted_data, aesKey);
 
         umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
         umbraStore.setUmbraAddress(umbraAddress);
-        umbraStore.setTokenList(tokenList);
+        umbraStore.setTokenList(tokenListWithPubkeys);
 
         router.push('/transactions/deposit');
         setLoading(false);

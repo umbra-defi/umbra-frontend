@@ -168,7 +168,7 @@ export async function createUserAccountCreationTransaction(
     return tx;
 }
 
-export async function sendUserAccountCreationTransaction(tx: Transaction): Promise<Response> {
+export async function sendTransactionToRelayer(tx: Transaction): Promise<Response> {
     const serializedTx = tx.serialize({ requireAllSignatures: false });
     const base64Tx = serializedTx.toString('base64');
 
@@ -188,7 +188,7 @@ export async function sendUserAccountCreationTransaction(tx: Transaction): Promi
             throw new Error(`Relayer forwarding failed: ${response.statusText}`);
         }
 
-        return response;
+        return await response;
     } catch (error) {
         throw error;
     }

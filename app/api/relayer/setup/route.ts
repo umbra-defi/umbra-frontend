@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import relayerStore from '../relayerList';
 import umbraOnChainIDL from '@/lib/umbra-program/umbra_onchain.json';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { createClient } from '@supabase/supabase-js';
 
 export function getUmbraProgram(anchorWalletKeypair: Keypair) {
     let wallet = new NodeWallet(anchorWalletKeypair);
@@ -88,38 +89,62 @@ export type RelayerSetupBody = {
 };
 
 export async function POST(request: Request) {
-    if (!alreadySetup) {
-        const relayerKeypair = loadKeypair();
-        const program = getUmbraProgram(relayerKeypair);
-        const airdropSignature = await program.provider.connection.requestAirdrop(
-            relayerKeypair.publicKey,
-            10 * LAMPORTS_PER_SOL,
+    const relayerKeypair = loadKeypair();
+
+    const supabaseUrl =
+        process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://frfrwohcdmwwtpcibcqh.supabase.co';
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseServiceKey) {
+        return NextResponse.json(
+            { error: 'Server configuration error: Missing service role key' },
+            { status: 500 },
         );
-        await program.provider.connection.confirmTransaction(airdropSignature, 'confirmed');
-
-        const body: RelayerSetupBody = await request.json();
-        const unique_identifier = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
-
-        const relayerFeeBN = new BN(body.relayerFee);
-        const relayerAssociatedTokenPublicKey = new PublicKey(body.relayerAssociatedToken);
-
-        const relayerPDA = await createRelayer(
-            program,
-            relayerKeypair,
-            relayerFeeBN,
-            relayerAssociatedTokenPublicKey,
-            unique_identifier,
-        );
-
-        const unique_identifier_string = unique_identifier.toString('hex');
-        relayerStore.addRelayer({
-            pdaAddress: relayerPDA,
-            id: unique_identifier_string,
-            publicKey: relayerKeypair.publicKey,
-        });
-
-        return NextResponse.json({ unique_identifier_string, relayerPDA });
-    } else {
-        return NextResponse.json({ error: 'Already Setup!' });
     }
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: existingRelayer, error: checkError } = await supabase
+        .from('relayers')
+        .select('public_key')
+        .eq('public_key', relayerKeypair.publicKey.toBase58())
+        .maybeSingle();
+    if (existingRelayer) {
+        return NextResponse.json({ error: 'Already Exists!' });
+    }
+
+    const program = getUmbraProgram(relayerKeypair);
+    const airdropSignature = await program.provider.connection.requestAirdrop(
+        relayerKeypair.publicKey,
+        10 * LAMPORTS_PER_SOL,
+    );
+    await program.provider.connection.confirmTransaction(airdropSignature, 'confirmed');
+
+    const body: RelayerSetupBody = await request.json();
+    const unique_identifier = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
+
+    const relayerFeeBN = new BN(body.relayerFee);
+    const relayerAssociatedTokenPublicKey = new PublicKey(body.relayerAssociatedToken);
+
+    const relayerPDA = await createRelayer(
+        program,
+        relayerKeypair,
+        relayerFeeBN,
+        relayerAssociatedTokenPublicKey,
+        unique_identifier,
+    );
+
+    const unique_identifier_string = unique_identifier.toString('hex');
+    relayerStore.addRelayer({
+        pdaAddress: relayerPDA,
+        id: unique_identifier_string,
+        publicKey: relayerKeypair.publicKey,
+    });
+
+    await supabase.from('relayers').insert({
+        public_key: relayerKeypair.publicKey.toBase58(),
+        pda_address: relayerPDA.toBase58(),
+        associated_token: relayerAssociatedTokenPublicKey.toBase58(),
+        uuid: unique_identifier_string,
+    });
+
+    return NextResponse.json({ unique_identifier_string, relayerPDA });
 }

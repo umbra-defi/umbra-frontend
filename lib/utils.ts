@@ -59,7 +59,9 @@ export function getConnection() {
 }
 
 export function getUmbraProgram() {
-    const program = new Program<UmbraOnchain>(umbraOnChainIDL, window.solana);
+    const connection = getLocalnetConnection();
+    const provider = new AnchorProvider(connection, window.solana, {});
+    const program = new Program<UmbraOnchain>(umbraOnChainIDL, provider);
     return program;
 }
 
