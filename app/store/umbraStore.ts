@@ -20,6 +20,9 @@ interface UmbraStoreState {
     x25519PrivKey: X25519PrivateKey;
     umbraAddress: UmbraAddress;
     tokenList: Array<TokenListing>;
+    umbraWalletBalance: number | undefined;
+    availableOnChainBalance: number | undefined;
+    selectedTokenTicker: string | undefined;
 
     hasX25519PrivKeyBeenSet: boolean;
     hasUmbraAddressBeenSet: boolean;
@@ -29,6 +32,9 @@ interface UmbraStoreState {
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
     setUmbraAddress: (newAddress: UmbraAddress) => void;
     setTokenList: (tokenList: Array<{ mintAddress: PublicKey; ticker: string }>) => void;
+    setUmbraWalletBalance: (balance: number) => void;
+    setAvailableOnChainBalance: (balance: number) => void;
+    setSelectedTokenTicker: (ticker: string) => void;
 
     // Getters
     getX25519Keypair: () => X25519Keypair | UmbraStoreError;
@@ -67,6 +73,9 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
     hasUmbraAddressBeenSet: false,
     hasTokenListBeenSet: false,
     tokenList: [],
+    umbraWalletBalance: undefined,
+    availableOnChainBalance: undefined,
+    selectedTokenTicker: undefined,
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -85,6 +94,21 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
         set(() => ({
             tokenList: tokenList,
             hasTokenListBeenSet: true,
+        })),
+
+    setUmbraWalletBalance: (balance: number) =>
+        set(() => ({
+            umbraWalletBalance: balance,
+        })),
+
+    setAvailableOnChainBalance: (balance: number) =>
+        set(() => ({
+            availableOnChainBalance: balance,
+        })),
+
+    setSelectedTokenTicker: (ticker: string) =>
+        set(() => ({
+            selectedTokenTicker: ticker,
         })),
 
     // Getters

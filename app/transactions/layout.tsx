@@ -71,6 +71,10 @@ export default function TransactionsLayout({ children }: { children: React.React
     };
 
     const umbraStore = useUmbraStore();
+    const { umbraWalletBalance, availableOnChainBalance, selectedTokenTicker } = umbraStore;
+    const tokenList = umbraStore.getTokenList();
+    const tokens = Array.isArray(tokenList) ? tokenList : [];
+    const activeToken = tokens.length > 0 ? tokens[0].ticker : '';
 
     return (
         <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="-.s3a6:">
@@ -87,7 +91,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                 </div>
                 <div className="flex items-center gap-6" data-oid="u07fqct">
                     <div className="text-white tracking-wide" data-oid="6zqx0vr">
-                        WALLET BALANCE: •••••••••
+                        WALLET BALANCE: {}
                     </div>
                     <Link href="/auth" data-oid="e3vl4-z">
                         <button
@@ -152,36 +156,15 @@ export default function TransactionsLayout({ children }: { children: React.React
                             className="flex justify-between items-center text-white mb-4"
                             data-oid="r6s9t_7"
                         >
-                            <div className="tracking-wide" data-oid="g9ygc3n">
-                                WALLET BALANCE: •••••••••
+                            <div className="flex flex-col">
+                                <div className="tracking-wide" data-oid="g9ygc3n">
+                                    UMBRA WALLET BALANCE: {umbraWalletBalance !== undefined ? umbraWalletBalance.toLocaleString() : '—'} {selectedTokenTicker || ''}
+                                </div>
+                                <div className="tracking-wide mt-1 text-gray-400">
+                                    AVAILABLE ON-CHAIN BALANCE: {availableOnChainBalance !== undefined ? availableOnChainBalance.toLocaleString() : '—'} {selectedTokenTicker || ''}
+                                </div>
                             </div>
                             <div className="flex gap-3" data-oid=".5vit.a">
-                                <button
-                                    className="p-1 hover:text-gray-300 transition-colors"
-                                    data-oid="d8xul8w"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="22"
-                                        height="22"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-download"
-                                        data-oid="roiohzu"
-                                    >
-                                        <path
-                                            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                                            data-oid="k:om:zv"
-                                        />
-
-                                        <polyline points="7 10 12 15 17 10" data-oid="w003zqf" />
-                                        <line x1="12" y1="15" x2="12" y2="3" data-oid="wpn3g0v" />
-                                    </svg>
-                                </button>
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
                                     data-oid="nu_x:by"

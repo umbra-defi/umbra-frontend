@@ -1,4 +1,4 @@
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo, getMint } from '@solana/spl-token';
 import fs from 'fs';
 import path from 'path';
@@ -13,7 +13,7 @@ export type CreateMintPostRequestBody = {
     amountToMint: number;
     mintAddressOnMainnet: string;
     mintTicker: string;
-    recipient?: string; // Public key of recipient for minted tokens
+    recipient: string; // Public key of recipient for minted tokens
 };
 
 // Function to load keypair from a file
@@ -139,12 +139,13 @@ async function addToTokenListTable(
     }
 }
 
-export async function POST(request: Request) {
+export async function createLaunchAndMintTokens(
+    amountToMint: number,
+    mintAddressOnMainnet: string,
+    mintTicker: string,
+    recipient: string,
+) {
     try {
-        // Parse request body
-        const body: CreateMintPostRequestBody = await request.json();
-        const { amountToMint, mintAddressOnMainnet, mintTicker, recipient } = body;
-
         // Load payer keypair from file (never expose this in requests)
         const payerKeypair = loadKeypair();
 
@@ -163,6 +164,15 @@ export async function POST(request: Request) {
 
         const connection = localnetConnection;
 
+        // Fund the relayer keypair with some test SOL
+        const airdropSignature = await connection.requestAirdrop(
+            payerKeypair.publicKey,
+            2 * LAMPORTS_PER_SOL, // Airdrop 2 SOL
+        );
+
+        // Wait for confirmation
+        await connection.confirmTransaction(airdropSignature, 'confirmed');
+
         // Check if token already exists in token_list table
         const supabase = initSupabase();
         const { data: existingToken, error: fetchError } = await supabase
@@ -177,8 +187,6 @@ export async function POST(request: Request) {
         }
 
         let mintAddress: PublicKey;
-        console.log(existingToken);
-
         if (existingToken?.mint_address_on_devnet) {
             // Use existing devnet mint address
             mintAddress = new PublicKey(existingToken.mint_address_on_devnet);
@@ -218,6 +226,7 @@ export async function POST(request: Request) {
                 },
             );
 
+            console.log('Minting for ', mintAddress.toBase58());
             await mintTo(
                 localnetConnection,
                 payerKeypair,
@@ -232,14 +241,13 @@ export async function POST(request: Request) {
         }
 
         // If recipient is provided, mint tokens to them
-        if (amountToMint > 0 && recipient) {
+        if (amountToMint >= 0 && recipient) {
             const recipientPubkey = new PublicKey(recipient);
 
             // Get mainnet mint info for decimals (needed for both new and existing mints)
             const mainnetMintPubkey = new PublicKey(mintAddressOnMainnet);
             const mainnetMintInfo = await getMint(mainnetConnection, mainnetMintPubkey);
 
-            console.log('Here');
             // Get or create an Associated Token Account for the recipient
             const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
                 localnetConnection,
@@ -252,7 +260,6 @@ export async function POST(request: Request) {
                     commitment: 'confirmed',
                 },
             );
-            console.log('here');
 
             // Mint tokens to the recipient's token account
             await mintTo(
@@ -291,4 +298,10 @@ export async function POST(request: Request) {
             { status: 500 },
         );
     }
+}
+
+export async function POST(request: Request) {
+    const body: CreateMintPostRequestBody = await request.json();
+    const { amountToMint, mintAddressOnMainnet, mintTicker, recipient } = body;
+    return createLaunchAndMintTokens(amountToMint, mintAddressOnMainnet, mintTicker, recipient);
 }

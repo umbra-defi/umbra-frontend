@@ -1,6 +1,6 @@
 import { tokens } from '@/lib/constants';
 import { getMainnetConnection, getTokenBalance } from '@/lib/utils';
-import { createAndMintTokens } from '../launchMint/route';
+import { createLaunchAndMintTokens } from '../launchMint/route';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -13,7 +13,12 @@ export async function POST(request: Request) {
         } catch (error) {}
 
         console.log('minting: ', amount);
-        createAndMintTokens(amount ? amount : 0, token.mint, token.symbol, userPublicKey);
+        await createLaunchAndMintTokens(
+            amount ? amount : 0,
+            token.mint,
+            token.symbol,
+            userPublicKey,
+        );
     }
     return NextResponse.json({});
 }

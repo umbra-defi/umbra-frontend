@@ -226,12 +226,12 @@ export async function MintTokensToUser(userPublicKey: PublicKey) {
 
 export async function fetchTokenList(userPublicKey: PublicKey) {
     try {
-        const response = await fetch('/api/mintTokens', {
+        const response = await fetch('/api/tokenList', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userPublicKey: userPublicKey.toBase58() }),
+            body: JSON.stringify({ walletAddress: userPublicKey.toBase58() }),
         });
 
         if (!response.ok) {

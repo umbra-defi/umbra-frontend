@@ -111,11 +111,19 @@ export default function SignupPage() {
             password,
             encryptedUserInformation
         );
-        // setMintingTokens(true)
+        setMintingTokens(true)
+
         // Mint balances on equivalent mints
-        // await MintTokensToUser(wallet.publicKey!)
-        // const tokenList = await fetchTokenList(wallet.publicKey!)
-        // umbraStore.setTokenList(tokenList.tokenList);
+        await MintTokensToUser(wallet.publicKey!)
+
+        let tokenListRaw = await fetchTokenList(wallet.publicKey!)
+        const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
+        const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
+            ...token,
+            mintAddress: new PublicKey(token.mintAddress)
+        })): [];
+
+        umbraStore.setTokenList(tokenListWithPubkeys);
         router.push('/transactions/deposit');
         setLoading(false);
     };

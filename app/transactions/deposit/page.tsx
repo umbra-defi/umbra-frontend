@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { feeTypes } from '../layout';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/c
 import { randomBytes, sign } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
-import { createTransferInstruction, getAssociatedTokenAddress } from "@solana/spl-token";
+import { createTransferInstruction, getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -22,20 +22,126 @@ export default function DepositPage() {
     const umbraStore = useUmbraStore();
     const tokenList = umbraStore.getTokenList();
     const tokens = Array.isArray(tokenList) ? tokenList : [];
+    
     const filteredTokens = tokens.filter(
         (token) =>
             token.ticker.toLowerCase().includes(searchToken.toLowerCase()) ||
             token.ticker.toLowerCase().includes(searchToken.toLowerCase()),
     );
 
-
     const [amount, setAmount] = useState<string>('0');
-    const [selectedToken, setSelectedToken] = useState<string>(filteredTokens[0]?.ticker);
+    const [selectedToken, setSelectedToken] = useState<string>(filteredTokens.length > 0 ? filteredTokens[0]?.ticker : 'SOL');
     const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
     const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
+    
+    // If the token list changes and selected token is not in the list, update it
+    useEffect(() => {
+        if (filteredTokens.length > 0 && !filteredTokens.some(token => token.ticker === selectedToken)) {
+            setSelectedToken(filteredTokens[0].ticker);
+            umbraStore.setSelectedTokenTicker(filteredTokens[0].ticker);
+        }
+    }, [filteredTokens, selectedToken]);
+
+    // Update umbraStore selected token when it changes
+    useEffect(() => {
+        if (selectedToken) {
+            umbraStore.setSelectedTokenTicker(selectedToken);
+        }
+    }, [selectedToken]);
 
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
+
+    // Fetch on-chain balance when wallet or selected token changes
+    useEffect(() => {
+        let isMounted = true;
+        
+        async function fetchOnChainBalance() {
+            if (!wallet.publicKey || !selectedToken) return;
+            
+            try {
+                const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
+                if (!selectedTokenData) return;
+                
+                const connection = new Connection('http://localhost:8899', 'confirmed');
+                const mintAddress = selectedTokenData.mintAddress;
+                
+                const userAssociatedTokenAccount = await getAssociatedTokenAddress(
+                    mintAddress,
+                    wallet.publicKey
+                );
+                
+                try {
+                    const tokenAccount = await getAccount(connection, userAssociatedTokenAccount, 'confirmed');
+                    if (isMounted) {
+                        const balance = Number(tokenAccount.amount);
+                        umbraStore.setAvailableOnChainBalance(balance);
+                        umbraStore.setSelectedTokenTicker(selectedToken);
+                    }
+                } catch (error) {
+                    console.log("Token account not found:", error);
+                    if (isMounted) {
+                        umbraStore.setAvailableOnChainBalance(0);
+                        umbraStore.setSelectedTokenTicker(selectedToken);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching on-chain balance:", error);
+            }
+        }
+        
+        fetchOnChainBalance();
+        
+        return () => {
+            isMounted = false;
+        };
+    }, [wallet.publicKey, selectedToken]);
+    
+    // Fetch Umbra wallet balance
+    useEffect(() => {
+        let isMounted = true;
+        
+        async function fetchUmbraWalletBalance() {
+            if (!selectedToken) return;
+            
+            try {
+                const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
+                if (!selectedTokenData) return;
+                
+                const mintAddress = selectedTokenData.mintAddress;
+                const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+                const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+                
+                const program = getUmbraProgram();
+                const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
+                
+                try {
+                    const tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
+                    const nonce = tokenAccount.nonce[0].toArray('le', 16);
+                    const decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce));
+                    
+                    if (isMounted) {
+                        umbraStore.setUmbraWalletBalance(Number(decryptedBalance[0]));
+                        umbraStore.setSelectedTokenTicker(selectedToken);
+                    }
+                } catch (error) {
+                    console.log("Umbra token account not found:", error);
+                    if (isMounted) {
+                        umbraStore.setUmbraWalletBalance(0);
+                        umbraStore.setSelectedTokenTicker(selectedToken);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching Umbra wallet balance:", error);
+            }
+        }
+        
+        fetchUmbraWalletBalance();
+        
+        return () => {
+            isMounted = false;
+        };
+    }, [selectedToken]);
 
     const handleSubmit = async () => {
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
@@ -50,7 +156,7 @@ export default function DepositPage() {
             getUmbraProgram().programId
         )
 
-        const connection = new Connection('http://localhost:8899')
+        const connection = new Connection('http://localhost:8899', 'confirmed')
         
         // Get the associated token account for the PDA
         const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
@@ -136,7 +242,9 @@ export default function DepositPage() {
             computationOffset,
             wallet.publicKey!
         );
+        console.log("Signing");
         const depositTxSigned = await wallet.signTransaction!(depositTx);
+        console.log("Signing Done");
         const txSignature = await (await sendTransactionToRelayer(depositTxSigned)).json();
         await awaitComputationFinalization(
             new AnchorProvider(
@@ -155,6 +263,25 @@ export default function DepositPage() {
         const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16)
         const decryptedBalance = cipher.decrypt([encryptedBalance], Uint8Array.from(encryptionNonce))
         console.log(decryptedBalance);
+
+        // After the transaction is complete, update balances
+        try {
+            // Update on-chain balance
+            const connection = new Connection('http://localhost:8899', 'confirmed');
+            const userAssociatedTokenAccount = await getAssociatedTokenAddress(
+                mintAddress,
+                wallet.publicKey!
+            );
+            
+            const tokenAccount = await getAccount(connection, userAssociatedTokenAccount, 'confirmed');
+            umbraStore.setAvailableOnChainBalance(Number(tokenAccount.amount));
+            umbraStore.setUmbraWalletBalance(Number(decryptedBalance));
+            umbraStore.setSelectedTokenTicker(selectedToken);
+            
+            // Umbra wallet balance was already updated in the existing code
+        } catch (error) {
+            console.error("Error updating balances after deposit:", error);
+        }
     };
     
     return (
@@ -260,6 +387,7 @@ export default function DepositPage() {
                                             onClick={() => {
                                                 setSelectedToken(token.ticker);
                                                 setShowTokenDropdown(false);
+                                                umbraStore.setSelectedTokenTicker(token.ticker);
                                             }}
                                             data-oid="cr8rcui"
                                         >

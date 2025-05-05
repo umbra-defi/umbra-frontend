@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWallet } from '@solana/wallet-adapter-react';
+import Link from 'next/link';
 
 export default function FaucetPage() {
     const [mintAddress, setMintAddress] = useState<string>('');
@@ -55,6 +56,11 @@ export default function FaucetPage() {
     return (
         <div className="flex justify-center items-center min-h-screen bg-black">
             <div className="w-full max-w-md p-6 border border-gray-800 bg-black">
+                <div className="mb-4">
+                    <Link href="/transactions/deposit" className="text-sm text-gray-400 hover:text-white">
+                        ← Back to Deposits
+                    </Link>
+                </div>
                 <h1 className="text-2xl font-bold text-white mb-2 text-center">Token Simulator</h1>
                 <p className="text-gray-400 text-sm text-center mb-6">
                     Simulate your main-net tokens on devnet by minting your current balance. 
