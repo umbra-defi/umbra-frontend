@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, withdrawAmount } from '@/lib/umbra-program/umbra';
-import { getConnection, getUmbraProgram } from '@/lib/utils';
+import { getConnection, getUmbraProgram, toastError } from '@/lib/utils';
 import { mxePublicKey, UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED } from '@/lib/constants';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes } from 'crypto';
@@ -156,11 +156,38 @@ export default function WithdrawPage() {
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
     const handleSubmit = async () => {
+        // Input validation
+        if (!amount || amount === '0') {
+            toastError("Please enter an amount greater than zero");
+            return;
+        }
+
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum)) {
+            toastError("Please enter a valid number");
+            return;
+        }
+
+        if (amountNum < 0) {
+            toastError("Amount cannot be negative");
+            return;
+        }
+
         const program = getUmbraProgram();
 
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
         const decimals = selectedTokenData?.decimals || 9;
+
+        // Check if user has enough balance in Umbra wallet
+        if (umbraStore.umbraWalletBalance !== undefined && 
+            umbraStore.selectedTokenDecimals !== undefined) {
+            const maxBalance = umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals);
+            if (amountNum > maxBalance) {
+                toastError(`Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`);
+                return;
+            }
+        }
         
         // Convert input amount to token amount with proper decimals
         const rawAmount = Math.floor(parseFloat(amount) * (10 ** decimals));

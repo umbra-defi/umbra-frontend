@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
-import { getLocalnetConnection, getUmbraProgram } from '@/lib/utils';
+import { getLocalnetConnection, getUmbraProgram, toastError } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
@@ -157,10 +157,47 @@ export default function TransferPage() {
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
     const handleSubmit = async () => {
+        // Input validation
+        if (!amount || amount === '0') {
+            toastError("Please enter an amount greater than zero");
+            return;
+        }
+
+        const amountNum = parseFloat(amount);
+        if (isNaN(amountNum)) {
+            toastError("Please enter a valid number");
+            return;
+        }
+
+        if (amountNum < 0) {
+            toastError("Amount cannot be negative");
+            return;
+        }
+
+        if (!recipientAddress || recipientAddress.trim() === '') {
+            toastError("Please enter a recipient address");
+            return;
+        }
+
+        // Validate recipient address format (basic check)
+        if (recipientAddress.length !== 64) {
+            toastError("Invalid recipient address format");
+            return;
+        }
 
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
         const decimals = selectedTokenData?.decimals || 9;
+        
+        // Check if user has enough balance in Umbra wallet
+        if (umbraStore.umbraWalletBalance !== undefined && 
+            umbraStore.selectedTokenDecimals !== undefined) {
+            const maxBalance = umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals);
+            if (amountNum > maxBalance) {
+                toastError(`Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`);
+                return;
+            }
+        }
         
         // Convert input amount to token amount with proper decimals
         const rawAmount = Math.floor(parseFloat(amount) * (10 ** decimals));
