@@ -19,9 +19,14 @@ export type CreateMintPostRequestBody = {
 // Function to load keypair from a file
 function loadKeypair(): Keypair {
     try {
-        // Path to your keypair file (keep this secure and outside public directories)
-        const keypairPath = path.resolve(process.cwd(), 'private', 'mint-authority.json');
-        const keypairData = JSON.parse(fs.readFileSync(keypairPath, 'utf-8'));
+        // Path to your keypair file (keep this secure and outside public directories
+        const mintAuthorityEnv = process.env.MINT_AUTHORITY;
+        if (!mintAuthorityEnv) {
+            throw new Error('MINT_AUTHORITY environment variable is not set');
+        }
+        const keypairData = JSON.parse(mintAuthorityEnv);
+        // const keypairPath = path.resolve(process.cwd(), 'private', 'mint-authority.json');
+        // const keypairData = JSON.parse(fs.readFileSync(keypairPath, 'utf-8'));
         return Keypair.fromSecretKey(new Uint8Array(keypairData));
     } catch (error) {
         console.error('Error loading keypair:', error);
