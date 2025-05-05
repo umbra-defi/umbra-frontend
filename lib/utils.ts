@@ -48,7 +48,7 @@ export function getMainnetConnection(): Connection {
 }
 
 export function getConnection() {
-    const SELECTION = 'LOCALNET';
+    const SELECTION: string = 'DEVNET';
     if (SELECTION === 'LOCALNET') {
         return getLocalnetConnection();
     } else if (SELECTION === 'DEVNET') {
@@ -59,7 +59,7 @@ export function getConnection() {
 }
 
 export function getUmbraProgram() {
-    const connection = getLocalnetConnection();
+    const connection = getConnection();
     const provider = new AnchorProvider(connection, window.solana, {});
     const program = new Program<UmbraOnchain>(umbraOnChainIDL, provider);
     return program;

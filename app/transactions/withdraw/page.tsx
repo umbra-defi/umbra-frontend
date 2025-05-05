@@ -51,7 +51,7 @@ export default function WithdrawPage() {
                 const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
                 if (!selectedTokenData) return;
                 
-                const connection = new Connection('http://localhost:8899');
+                const connection = getConnection();
                 const mintAddress = selectedTokenData.mintAddress;
                 
                 // Get mint info to get decimals
@@ -282,7 +282,7 @@ export default function WithdrawPage() {
 
         try {
             // Update on-chain balance
-            const connection = new Connection('http://localhost:8899', 'confirmed');
+            const connection = getConnection();
             const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                 mintAddress,
                 wallet.publicKey!

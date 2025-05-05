@@ -51,15 +51,6 @@ async function sendUpdatedTransaction(transaction: Transaction): Promise<string>
 
 export async function POST(request: Request) {
     const body: requestBody = await request.json();
-
-    const program = getUmbraProgram(relayerKeypair);
-    const airdropSignature = await program.provider.connection.requestAirdrop(
-        relayerKeypair.publicKey,
-        10 * LAMPORTS_PER_SOL,
-    );
-    await program.provider.connection.confirmTransaction(airdropSignature, 'confirmed');
-    console.log(airdropSignature);
-
     const receivedTransaction = convertTransactionStringToTransaction(body.transaction);
     const relayerCreatedTransaction = removeSignatureFromTransaction(receivedTransaction);
     const recentDetails = await getConnection().getLatestBlockhash();

@@ -9,6 +9,7 @@
         "lint": "next lint",
         "format": "prettier --write ."
     },
+    "type": "module",
     "dependencies": {
         "@arcium-hq/client": "^0.1.46",
         "@coral-xyz/anchor": "^0.31.1",

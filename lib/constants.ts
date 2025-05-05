@@ -1,3 +1,4 @@
+import { getClusterAcc } from '@arcium-hq/client';
 import { PublicKey } from '@solana/web3.js';
 
 export const UMBRA_PDA_DERIVATION_SEED = 'Umbra_Cal_Pranay_Froggie_Pata';
@@ -7,7 +8,7 @@ export const UMBRA_USER_ACCOUNT_DERIVATION_SEED = 'User_Account';
 export const UMBRA_TOKEN_ACCOUNT_DERIVATION_SEED = 'Token_Account';
 export const UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED = 'Associated_Token_Account';
 
-export const arciumClusterKey = new PublicKey('GgSqqAyH7AVY3Umcv8NvncrjFaNJuQLmxzxFxPoPW2Yd');
+export const arciumClusterKey = getClusterAcc(2326510165);
 
 export const tokens = [
     { symbol: 'wSOL', mint: 'So11111111111111111111111111111111111111112' },

@@ -113,11 +113,6 @@ export async function POST(request: Request) {
     }
 
     const program = getUmbraProgram(relayerKeypair);
-    const airdropSignature = await program.provider.connection.requestAirdrop(
-        relayerKeypair.publicKey,
-        10 * LAMPORTS_PER_SOL,
-    );
-    await program.provider.connection.confirmTransaction(airdropSignature, 'confirmed');
 
     const body: RelayerSetupBody = await request.json();
     const unique_identifier = Buffer.from(crypto.getRandomValues(new Uint8Array(32)));

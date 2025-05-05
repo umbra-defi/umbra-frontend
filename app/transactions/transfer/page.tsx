@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
-import { getLocalnetConnection, getUmbraProgram, toastError } from '@/lib/utils';
+import { getConnection, getLocalnetConnection, getUmbraProgram, toastError } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
@@ -52,7 +52,7 @@ export default function TransferPage() {
                 const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
                 if (!selectedTokenData) return;
                 
-                const connection = new Connection('http://localhost:8899', 'confirmed');
+                const connection = getConnection();
                 const mintAddress = selectedTokenData.mintAddress;
                 
                 // Get mint info to get decimals
@@ -254,7 +254,7 @@ export default function TransferPage() {
         // After the transaction is complete, update balances
         try {
             // Update on-chain balance
-            const connection = new Connection('http://localhost:8899', 'confirmed');
+            const connection = getConnection();
             const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                 mintAddress,
                 wallet.publicKey!

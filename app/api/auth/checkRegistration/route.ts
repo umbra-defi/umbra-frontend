@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
 
     if (!walletAddress) {
         return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });

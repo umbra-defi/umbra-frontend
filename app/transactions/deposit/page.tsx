@@ -9,7 +9,7 @@ import { useUmbraStore } from '@/app/store/umbraStore';
 import { Commitment, Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { mxePublicKey, UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED, UMBRA_TOKEN_ACCOUNT_DERIVATION_SEED } from '@/lib/constants';
 import { createTokenAccount, depositAmount, getTokenAccountPDA, getUserAccountPDA } from '@/lib/umbra-program/umbra';
-import { getUmbraProgram, toastError } from '@/lib/utils';
+import { getConnection, getDevnetConnection, getUmbraProgram, toastError } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes, sign } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
@@ -63,7 +63,7 @@ export default function DepositPage() {
                 const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
                 if (!selectedTokenData) return;
                 
-                const connection = new Connection('http://localhost:8899', 'confirmed');
+                const connection = getConnection();
                 const mintAddress = selectedTokenData.mintAddress;
                 
                 // Get mint info to get decimals
@@ -208,8 +208,7 @@ export default function DepositPage() {
             getUmbraProgram().programId
         )
 
-        const connection = new Connection('http://localhost:8899', 'confirmed')
-        
+        const connection = getConnection();        
         // Get the associated token account for the PDA
         const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
             mintAddress, 
@@ -298,9 +297,10 @@ export default function DepositPage() {
         const depositTxSigned = await wallet.signTransaction!(depositTx);
         console.log("Signing Done");
         const txSignature = await (await sendTransactionToRelayer(depositTxSigned)).json();
+        console.log("Transaction Signature Finalization: ", txSignature);
         await awaitComputationFinalization(
             new AnchorProvider(
-                program.provider.connection,
+                getDevnetConnection(),
                 program.provider.wallet!,
                 { commitment: 'confirmed' }
             ), 
@@ -319,7 +319,7 @@ export default function DepositPage() {
         // After the transaction is complete, update balances
         try {
             // Update on-chain balance
-            const connection = new Connection('http://localhost:8899', 'confirmed');
+            const connection = getConnection();
             const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                 mintAddress,
                 wallet.publicKey!

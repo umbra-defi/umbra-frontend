@@ -13,7 +13,7 @@ export type CreateMintPostRequestBody = {
     amountToMint: number;
     mintAddressOnMainnet: string;
     mintTicker: string;
-    recipient: string; // Public key of recipient for minted tokens
+    recipient?: string; // Public key of recipient for minted tokens
 };
 
 // Function to load keypair from a file
@@ -160,19 +160,6 @@ export async function createLaunchAndMintTokens(
             'confirmed',
         );
 
-        const localnetConnection = new Connection('http://localhost:8899', 'confirmed');
-
-        const connection = localnetConnection;
-
-        // Fund the relayer keypair with some test SOL
-        const airdropSignature = await connection.requestAirdrop(
-            payerKeypair.publicKey,
-            2 * LAMPORTS_PER_SOL, // Airdrop 2 SOL
-        );
-
-        // Wait for confirmation
-        await connection.confirmTransaction(airdropSignature, 'confirmed');
-
         // Check if token already exists in token_list table
         const supabase = initSupabase();
         const { data: existingToken, error: fetchError } = await supabase
@@ -187,6 +174,8 @@ export async function createLaunchAndMintTokens(
         }
 
         let mintAddress: PublicKey;
+        console.log(existingToken);
+
         if (existingToken?.mint_address_on_devnet) {
             // Use existing devnet mint address
             mintAddress = new PublicKey(existingToken.mint_address_on_devnet);
@@ -198,7 +187,7 @@ export async function createLaunchAndMintTokens(
 
             // Create a new mint on devnet with the same properties
             mintAddress = await createMint(
-                localnetConnection,
+                devnetConnection,
                 payerKeypair,
                 payerKeypair.publicKey, // Mint authority
                 payerKeypair.publicKey, // Freeze authority
@@ -215,7 +204,7 @@ export async function createLaunchAndMintTokens(
             );
 
             const umbraTokenAccount = await getOrCreateAssociatedTokenAccount(
-                localnetConnection,
+                devnetConnection,
                 payerKeypair,
                 mintAddress,
                 umbraPDA,
@@ -226,9 +215,8 @@ export async function createLaunchAndMintTokens(
                 },
             );
 
-            console.log('Minting for ', mintAddress.toBase58());
             await mintTo(
-                localnetConnection,
+                devnetConnection,
                 payerKeypair,
                 mintAddress,
                 umbraTokenAccount.address,
@@ -241,16 +229,17 @@ export async function createLaunchAndMintTokens(
         }
 
         // If recipient is provided, mint tokens to them
-        if (amountToMint >= 0 && recipient) {
+        if (amountToMint > 0 && recipient) {
             const recipientPubkey = new PublicKey(recipient);
 
             // Get mainnet mint info for decimals (needed for both new and existing mints)
             const mainnetMintPubkey = new PublicKey(mintAddressOnMainnet);
             const mainnetMintInfo = await getMint(mainnetConnection, mainnetMintPubkey);
 
+            console.log('Here');
             // Get or create an Associated Token Account for the recipient
             const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
-                localnetConnection,
+                devnetConnection,
                 payerKeypair,
                 mintAddress,
                 recipientPubkey,
@@ -260,10 +249,11 @@ export async function createLaunchAndMintTokens(
                     commitment: 'confirmed',
                 },
             );
+            console.log('here');
 
             // Mint tokens to the recipient's token account
             await mintTo(
-                localnetConnection,
+                devnetConnection,
                 payerKeypair,
                 mintAddress,
                 recipientTokenAccount.address,
@@ -286,7 +276,7 @@ export async function createLaunchAndMintTokens(
             success: true,
             mintAddress: mintAddress.toBase58(),
             isNewMint: !existingToken?.mint_address_on_devnet,
-            decimals: (await getMint(localnetConnection, mintAddress)).decimals,
+            decimals: (await getMint(devnetConnection, mintAddress)).decimals,
         });
     } catch (error) {
         console.error('Error creating mint:', error);
@@ -303,5 +293,5 @@ export async function createLaunchAndMintTokens(
 export async function POST(request: Request) {
     const body: CreateMintPostRequestBody = await request.json();
     const { amountToMint, mintAddressOnMainnet, mintTicker, recipient } = body;
-    return createLaunchAndMintTokens(amountToMint, mintAddressOnMainnet, mintTicker, recipient);
+    return createLaunchAndMintTokens(amountToMint, mintAddressOnMainnet, mintTicker, recipient!);
 }
