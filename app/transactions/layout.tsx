@@ -71,7 +71,9 @@ export default function TransactionsLayout({ children }: { children: React.React
     };
 
     const umbraStore = useUmbraStore();
-    const { umbraWalletBalance, availableOnChainBalance, selectedTokenTicker } = umbraStore;
+    const { selectedTokenTicker } = umbraStore;
+    const formattedUmbraBalance = umbraStore.getFormattedUmbraWalletBalance();
+    const formattedOnChainBalance = umbraStore.getFormattedOnChainBalance();
     const tokenList = umbraStore.getTokenList();
     const tokens = Array.isArray(tokenList) ? tokenList : [];
     const activeToken = tokens.length > 0 ? tokens[0].ticker : '';
@@ -158,10 +160,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                         >
                             <div className="flex flex-col">
                                 <div className="tracking-wide" data-oid="g9ygc3n">
-                                    UMBRA WALLET BALANCE: {umbraWalletBalance !== undefined ? umbraWalletBalance.toLocaleString() : '—'} {selectedTokenTicker || ''}
+                                    UMBRA WALLET BALANCE: {formattedUmbraBalance} {selectedTokenTicker || ''}
                                 </div>
                                 <div className="tracking-wide mt-1 text-gray-400">
-                                    AVAILABLE ON-CHAIN BALANCE: {availableOnChainBalance !== undefined ? availableOnChainBalance.toLocaleString() : '—'} {selectedTokenTicker || ''}
+                                    AVAILABLE ON-CHAIN BALANCE: {formattedOnChainBalance} {selectedTokenTicker || ''}
                                 </div>
                             </div>
                             <div className="flex gap-3" data-oid=".5vit.a">

@@ -11,9 +11,9 @@ import { mxePublicKey, UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
-import { AnchorProvider, BN } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
+import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -53,6 +53,27 @@ export default function WithdrawPage() {
                 
                 const connection = new Connection('http://localhost:8899');
                 const mintAddress = selectedTokenData.mintAddress;
+                
+                // Get mint info to get decimals
+                try {
+                    const mintInfo = await getMint(connection, mintAddress);
+                    // Update token with decimals if it's not already set
+                    if (selectedTokenData.decimals === undefined) {
+                        const updatedTokenList = [...umbraStore.tokenList];
+                        const tokenIndex = updatedTokenList.findIndex(t => t.ticker === selectedToken);
+                        if (tokenIndex >= 0) {
+                            updatedTokenList[tokenIndex] = {
+                                ...updatedTokenList[tokenIndex],
+                                decimals: mintInfo.decimals
+                            };
+                            umbraStore.setTokenList(updatedTokenList);
+                        }
+                    }
+                    // Set selected token decimals
+                    umbraStore.setSelectedTokenDecimals(mintInfo.decimals);
+                } catch (error) {
+                    console.error("Error fetching mint info:", error);
+                }
                 
                 const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                     mintAddress,
@@ -139,13 +160,17 @@ export default function WithdrawPage() {
 
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
+        const decimals = selectedTokenData?.decimals || 9;
+        
+        // Convert input amount to token amount with proper decimals
+        const rawAmount = Math.floor(parseFloat(amount) * (10 ** decimals));
 
         const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
         const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
         const cipher = new RescueCipher(x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey));
         const nonce = randomBytes(16);
-        const withdrawalAmountEncrypted = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce));
+        const withdrawalAmountEncrypted = cipher.encrypt([BigInt(rawAmount)], Uint8Array.from(nonce));
 
         const firstRelayer = await getFirstRelayer();
 
@@ -209,7 +234,7 @@ export default function WithdrawPage() {
 
         const tx = await program.methods
             .claimTransfer(
-                new BN(BigInt(amount))
+                new BN(BigInt(rawAmount))
             )
             .accounts({
                 mint: new PublicKey(mintAddress),
@@ -263,6 +288,31 @@ export default function WithdrawPage() {
                         placeholder="0"
                         data-oid="8lswkbm"
                     />
+
+                    <div className="flex gap-2 mr-3">
+                        <button
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
+                            onClick={() => {
+                                if (umbraStore.umbraWalletBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const halfBalance = umbraStore.umbraWalletBalance / (2 * (10 ** umbraStore.selectedTokenDecimals));
+                                    setAmount(halfBalance.toString());
+                                }
+                            }}
+                        >
+                            HALF
+                        </button>
+                        <button
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
+                            onClick={() => {
+                                if (umbraStore.umbraWalletBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const maxBalance = umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals);
+                                    setAmount(maxBalance.toString());
+                                }
+                            }}
+                        >
+                            MAX
+                        </button>
+                    </div>
 
                     <div className="relative" data-oid="mv8pw3k">
                         <button

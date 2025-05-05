@@ -14,7 +14,7 @@ import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/c
 import { randomBytes, sign } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
-import { createTransferInstruction, getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
+import { createTransferInstruction, getAssociatedTokenAddress, getAccount, getMint } from "@solana/spl-token";
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -65,6 +65,27 @@ export default function DepositPage() {
                 
                 const connection = new Connection('http://localhost:8899', 'confirmed');
                 const mintAddress = selectedTokenData.mintAddress;
+                
+                // Get mint info to get decimals
+                try {
+                    const mintInfo = await getMint(connection, mintAddress);
+                    // Update token with decimals if it's not already set
+                    if (selectedTokenData.decimals === undefined) {
+                        const updatedTokenList = [...umbraStore.tokenList];
+                        const tokenIndex = updatedTokenList.findIndex(t => t.ticker === selectedToken);
+                        if (tokenIndex >= 0) {
+                            updatedTokenList[tokenIndex] = {
+                                ...updatedTokenList[tokenIndex],
+                                decimals: mintInfo.decimals
+                            };
+                            umbraStore.setTokenList(updatedTokenList);
+                        }
+                    }
+                    // Set selected token decimals
+                    umbraStore.setSelectedTokenDecimals(mintInfo.decimals);
+                } catch (error) {
+                    console.error("Error fetching mint info:", error);
+                }
                 
                 const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                     mintAddress,
@@ -146,6 +167,10 @@ export default function DepositPage() {
     const handleSubmit = async () => {
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
+        const decimals = selectedTokenData?.decimals || 9;
+        
+        // Convert input amount to token amount with proper decimals
+        const rawAmount = Math.floor(parseFloat(amount) * (10 ** decimals));
 
         const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
             [
@@ -177,7 +202,7 @@ export default function DepositPage() {
             userAssociatedTokenAccount,
             umbraPDAassociatedTokenAccount,
             wallet.publicKey!,
-            BigInt(amount),
+            BigInt(rawAmount),
         );
 
         // Create and sign transaction
@@ -229,7 +254,7 @@ export default function DepositPage() {
         }
 
         const nonce = randomBytes(16);
-        const newDepositCipherText = cipher.encrypt([BigInt(amount)], Uint8Array.from(nonce))
+        const newDepositCipherText = cipher.encrypt([BigInt(rawAmount)], Uint8Array.from(nonce))
 
         const computationOffset = new BN(randomBytes(8), 'hex')
         const depositTx = await depositAmount(
@@ -307,6 +332,31 @@ export default function DepositPage() {
                         placeholder="0"
                         data-oid="uuak1lj"
                     />
+
+                    <div className="flex gap-2 mr-3">
+                        <button
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
+                            onClick={() => {
+                                if (umbraStore.availableOnChainBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const halfBalance = umbraStore.availableOnChainBalance / (2 * (10 ** umbraStore.selectedTokenDecimals));
+                                    setAmount(halfBalance.toString());
+                                }
+                            }}
+                        >
+                            HALF
+                        </button>
+                        <button
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
+                            onClick={() => {
+                                if (umbraStore.availableOnChainBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const maxBalance = umbraStore.availableOnChainBalance / (10 ** umbraStore.selectedTokenDecimals);
+                                    setAmount(maxBalance.toString());
+                                }
+                            }}
+                        >
+                            MAX
+                        </button>
+                    </div>
 
                     <div className="relative" data-oid="i6:f:9y">
                         <button

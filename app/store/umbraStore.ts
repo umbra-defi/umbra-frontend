@@ -13,6 +13,7 @@ export enum UmbraStoreError {
 export type TokenListing = {
     mintAddress: PublicKey;
     ticker: string;
+    decimals?: number;
 };
 
 interface UmbraStoreState {
@@ -23,6 +24,7 @@ interface UmbraStoreState {
     umbraWalletBalance: number | undefined;
     availableOnChainBalance: number | undefined;
     selectedTokenTicker: string | undefined;
+    selectedTokenDecimals: number | undefined;
 
     hasX25519PrivKeyBeenSet: boolean;
     hasUmbraAddressBeenSet: boolean;
@@ -31,15 +33,20 @@ interface UmbraStoreState {
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
     setUmbraAddress: (newAddress: UmbraAddress) => void;
-    setTokenList: (tokenList: Array<{ mintAddress: PublicKey; ticker: string }>) => void;
+    setTokenList: (
+        tokenList: Array<{ mintAddress: PublicKey; ticker: string; decimals?: number }>,
+    ) => void;
     setUmbraWalletBalance: (balance: number) => void;
     setAvailableOnChainBalance: (balance: number) => void;
     setSelectedTokenTicker: (ticker: string) => void;
+    setSelectedTokenDecimals: (decimals: number) => void;
 
     // Getters
     getX25519Keypair: () => X25519Keypair | UmbraStoreError;
     getUmbraAddress: () => UmbraAddress | UmbraStoreError;
     getTokenList: () => Array<TokenListing> | UmbraStoreError;
+    getFormattedUmbraWalletBalance: () => string;
+    getFormattedOnChainBalance: () => string;
 }
 
 // Create initial garbage values (random bytes)
@@ -76,6 +83,7 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
     umbraWalletBalance: undefined,
     availableOnChainBalance: undefined,
     selectedTokenTicker: undefined,
+    selectedTokenDecimals: undefined,
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -107,8 +115,17 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
         })),
 
     setSelectedTokenTicker: (ticker: string) =>
+        set((state) => {
+            const tokenData = state.tokenList.find((token) => token.ticker === ticker);
+            return {
+                selectedTokenTicker: ticker,
+                selectedTokenDecimals: tokenData?.decimals,
+            };
+        }),
+
+    setSelectedTokenDecimals: (decimals: number) =>
         set(() => ({
-            selectedTokenTicker: ticker,
+            selectedTokenDecimals: decimals,
         })),
 
     // Getters
@@ -140,5 +157,28 @@ export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
         }
 
         return state.tokenList;
+    },
+
+    getFormattedUmbraWalletBalance: () => {
+        const state = get();
+        if (state.umbraWalletBalance === undefined || state.selectedTokenDecimals === undefined) {
+            return '—';
+        }
+        const decimals = state.selectedTokenDecimals || 9;
+        const formatted = state.umbraWalletBalance / 10 ** decimals;
+        return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
+    },
+
+    getFormattedOnChainBalance: () => {
+        const state = get();
+        if (
+            state.availableOnChainBalance === undefined ||
+            state.selectedTokenDecimals === undefined
+        ) {
+            return '—';
+        }
+        const decimals = state.selectedTokenDecimals || 9;
+        const formatted = state.availableOnChainBalance / 10 ** decimals;
+        return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
     },
 }));

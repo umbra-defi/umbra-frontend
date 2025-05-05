@@ -13,7 +13,7 @@ import { randomBytes } from 'crypto';
 import { AnchorProvider, BN } from '@coral-xyz/anchor';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { Connection } from '@solana/web3.js';
-import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
+import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -54,6 +54,27 @@ export default function TransferPage() {
                 
                 const connection = new Connection('http://localhost:8899', 'confirmed');
                 const mintAddress = selectedTokenData.mintAddress;
+                
+                // Get mint info to get decimals
+                try {
+                    const mintInfo = await getMint(connection, mintAddress);
+                    // Update token with decimals if it's not already set
+                    if (selectedTokenData.decimals === undefined) {
+                        const updatedTokenList = [...umbraStore.tokenList];
+                        const tokenIndex = updatedTokenList.findIndex(t => t.ticker === selectedToken);
+                        if (tokenIndex >= 0) {
+                            updatedTokenList[tokenIndex] = {
+                                ...updatedTokenList[tokenIndex],
+                                decimals: mintInfo.decimals
+                            };
+                            umbraStore.setTokenList(updatedTokenList);
+                        }
+                    }
+                    // Set selected token decimals
+                    umbraStore.setSelectedTokenDecimals(mintInfo.decimals);
+                } catch (error) {
+                    console.error("Error fetching mint info:", error);
+                }
                 
                 const userAssociatedTokenAccount = await getAssociatedTokenAddress(
                     mintAddress,
@@ -139,6 +160,10 @@ export default function TransferPage() {
 
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
+        const decimals = selectedTokenData?.decimals || 9;
+        
+        // Convert input amount to token amount with proper decimals
+        const rawAmount = Math.floor(parseFloat(amount) * (10 ** decimals));
 
         const program = getUmbraProgram();
         const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
@@ -152,7 +177,7 @@ export default function TransferPage() {
         const nonce = tokenAccount.nonce[0].toArray('le', 16);
         let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0]
         console.log(decryptedBalance)
-        let encryptedBalance = cipher.encrypt([decryptedBalance, BigInt(amount)], Uint8Array.from(nonce))
+        let encryptedBalance = cipher.encrypt([decryptedBalance, BigInt(rawAmount)], Uint8Array.from(nonce))
 
         const firstRelayer = await getFirstRelayer();
 
@@ -230,12 +255,24 @@ export default function TransferPage() {
                         <button
                             className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
                             data-oid="fq8d-zn"
+                            onClick={() => {
+                                if (umbraStore.umbraWalletBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const halfBalance = umbraStore.umbraWalletBalance / (2 * (10 ** umbraStore.selectedTokenDecimals));
+                                    setAmount(halfBalance.toString());
+                                }
+                            }}
                         >
                             HALF
                         </button>
                         <button
                             className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
                             data-oid="jxatzrh"
+                            onClick={() => {
+                                if (umbraStore.umbraWalletBalance !== undefined && umbraStore.selectedTokenDecimals !== undefined) {
+                                    const maxBalance = umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals);
+                                    setAmount(maxBalance.toString());
+                                }
+                            }}
                         >
                             MAX
                         </button>
