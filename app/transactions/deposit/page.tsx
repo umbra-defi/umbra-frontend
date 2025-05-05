@@ -6,14 +6,15 @@ import { feeTypes } from '../layout';
 import Link from 'next/link';
 import { ConnectionProvider, useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
-import { Commitment, PublicKey } from '@solana/web3.js';
-import { mxePublicKey, UMBRA_PDA_DERIVATION_SEED, UMBRA_TOKEN_ACCOUNT_DERIVATION_SEED } from '@/lib/constants';
+import { Commitment, Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { mxePublicKey, UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED, UMBRA_TOKEN_ACCOUNT_DERIVATION_SEED } from '@/lib/constants';
 import { createTokenAccount, depositAmount, getTokenAccountPDA, getUserAccountPDA } from '@/lib/umbra-program/umbra';
 import { getUmbraProgram } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes, sign } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
+import { createTransferInstruction, getAssociatedTokenAddress } from "@solana/spl-token";
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -39,6 +40,49 @@ export default function DepositPage() {
     const handleSubmit = async () => {
         const selectedTokenData = umbraStore.tokenList.find(token => token.ticker === selectedToken);
         const mintAddress = selectedTokenData!.mintAddress;
+
+        const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
+            [
+                Buffer.from(UMBRA_PDA_DERIVATION_SEED),
+                Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
+                mintAddress.toBuffer(),
+            ], 
+            getUmbraProgram().programId
+        )
+
+        const connection = new Connection('http://localhost:8899')
+        
+        // Get the associated token account for the PDA
+        const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
+            mintAddress, 
+            umbraPDA,
+            true
+        );
+
+        console.log(umbraPDA.toBase58());
+
+        const userAssociatedTokenAccount = await getAssociatedTokenAddress(
+            mintAddress,
+            wallet.publicKey!,
+        )
+
+        // Create transfer instruction
+        const transferInstruction = createTransferInstruction(
+            userAssociatedTokenAccount,
+            umbraPDAassociatedTokenAccount,
+            wallet.publicKey!,
+            BigInt(amount),
+        );
+
+        // Create and sign transaction
+        const transaction = new Transaction().add(transferInstruction);
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = wallet.publicKey!;
+
+        const signedTx = await wallet.signTransaction!(transaction);
+        const signature = await connection.sendRawTransaction(signedTx.serialize());
+        await connection.confirmTransaction(signature);
         
         const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
         const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);

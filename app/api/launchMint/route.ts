@@ -3,6 +3,11 @@ import { createMint, getOrCreateAssociatedTokenAccount, mintTo, getMint } from '
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import {
+    UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED,
+    UMBRA_PDA_DERIVATION_SEED,
+} from '@/lib/constants';
+import { getUmbraProgram } from '../relayer/setup/route';
 
 export type CreateMintPostRequestBody = {
     amountToMint: number;
@@ -154,6 +159,10 @@ export async function POST(request: Request) {
             'confirmed',
         );
 
+        const localnetConnection = new Connection('http://localhost:8899', 'confirmed');
+
+        const connection = localnetConnection;
+
         // Check if token already exists in token_list table
         const supabase = initSupabase();
         const { data: existingToken, error: fetchError } = await supabase
@@ -181,11 +190,41 @@ export async function POST(request: Request) {
 
             // Create a new mint on devnet with the same properties
             mintAddress = await createMint(
-                devnetConnection,
+                localnetConnection,
                 payerKeypair,
                 payerKeypair.publicKey, // Mint authority
                 payerKeypair.publicKey, // Freeze authority
                 mainnetMintInfo.decimals, // Use the same decimals as the mainnet token
+            );
+
+            const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
+                [
+                    Buffer.from(UMBRA_PDA_DERIVATION_SEED),
+                    Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
+                    mintAddress.toBuffer(),
+                ],
+                getUmbraProgram(payerKeypair).programId,
+            );
+
+            const umbraTokenAccount = await getOrCreateAssociatedTokenAccount(
+                localnetConnection,
+                payerKeypair,
+                mintAddress,
+                umbraPDA,
+                true,
+                'confirmed',
+                {
+                    commitment: 'confirmed',
+                },
+            );
+
+            await mintTo(
+                localnetConnection,
+                payerKeypair,
+                mintAddress,
+                umbraTokenAccount.address,
+                payerKeypair,
+                1 * 10 ** mainnetMintInfo.decimals,
             );
 
             // Add entry to token_list table
@@ -203,7 +242,7 @@ export async function POST(request: Request) {
             console.log('Here');
             // Get or create an Associated Token Account for the recipient
             const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
-                devnetConnection,
+                localnetConnection,
                 payerKeypair,
                 mintAddress,
                 recipientPubkey,
@@ -217,7 +256,7 @@ export async function POST(request: Request) {
 
             // Mint tokens to the recipient's token account
             await mintTo(
-                devnetConnection,
+                localnetConnection,
                 payerKeypair,
                 mintAddress,
                 recipientTokenAccount.address,
@@ -240,7 +279,7 @@ export async function POST(request: Request) {
             success: true,
             mintAddress: mintAddress.toBase58(),
             isNewMint: !existingToken?.mint_address_on_devnet,
-            decimals: (await getMint(devnetConnection, mintAddress)).decimals,
+            decimals: (await getMint(localnetConnection, mintAddress)).decimals,
         });
     } catch (error) {
         console.error('Error creating mint:', error);

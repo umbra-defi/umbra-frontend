@@ -6,13 +6,14 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, withdrawAmount } from '@/lib/umbra-program/umbra';
-import { getUmbraProgram } from '@/lib/utils';
-import { mxePublicKey } from '@/lib/constants';
+import { getConnection, getUmbraProgram } from '@/lib/utils';
+import { mxePublicKey, UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED, UMBRA_PDA_DERIVATION_SEED } from '@/lib/constants';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { AnchorProvider, BN } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -85,6 +86,50 @@ export default function WithdrawPage() {
         const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16)
         const decryptedBalance = cipher.decrypt([encryptedBalance], Uint8Array.from(encryptionNonce))
         console.log(decryptedBalance);
+
+        const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
+            [
+                Buffer.from(UMBRA_PDA_DERIVATION_SEED),
+                Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
+                mintAddress.toBuffer(),
+            ], 
+            getUmbraProgram().programId
+        )
+
+        const connection = getConnection();
+        
+        // Get the associated token account for the PDA
+        const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
+            mintAddress, 
+            umbraPDA,
+            true
+        );
+
+        const receiverATA = await getAssociatedTokenAddress(
+            new PublicKey(mintAddress),
+            new PublicKey(wallet.publicKey!),
+        )
+
+        const tx = await program.methods
+            .claimTransfer(
+                new BN(BigInt(amount))
+            )
+            .accounts({
+                mint: new PublicKey(mintAddress),
+                umbraPda: new PublicKey(umbraPDA),
+                umbraAtaAccount: umbraPDAassociatedTokenAccount,
+                receiverAtaAccount: receiverATA,
+            })
+            .transaction();
+        
+        const recentData = await connection.getLatestBlockhash();
+        tx.recentBlockhash = recentData.blockhash;
+        tx.lastValidBlockHeight = recentData.lastValidBlockHeight;
+        tx.feePayer = wallet.publicKey!;
+    
+        const signedTx = await wallet.signTransaction!(tx);
+        const txSign = await (await sendTransactionToRelayer(signedTx)).json();
+        console.log(txSign);
     };
 
     return (
