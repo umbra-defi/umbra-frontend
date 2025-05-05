@@ -13,12 +13,12 @@ export default function Page() {
 
     return (
         <div
-            className="w-full min-h-screen flex flex-col bg-[#000000] text-white"
+            className="w-full min-h-screen flex flex-col text-white"
             data-oid="0ae9oo:"
         >
             {/* Header */}
             <header
-                className="w-full p-6 flex justify-between items-center border-b border-gray-900"
+                className="w-full p-6 flex justify-between items-center border-b border-gray-900 bg-black"
                 data-oid="169-oi4"
             >
                 <div className="text-white font-bold text-xl" data-oid="0dflmx4">

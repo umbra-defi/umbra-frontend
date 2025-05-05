@@ -79,10 +79,10 @@ export default function TransactionsLayout({ children }: { children: React.React
     const activeToken = tokens.length > 0 ? tokens[0].ticker : '';
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid="-.s3a6:">
+        <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
             {/* Header */}
             <motion.header
-                className="w-full p-6 flex justify-between items-center border-b border-gray-800"
+                className="w-full p-6 flex justify-between items-center border-b border-gray-800 bg-black"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}

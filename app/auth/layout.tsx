@@ -28,10 +28,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-[#000000]" data-oid=".qr4p:6">
+        <div className="w-full min-h-screen flex flex-col" data-oid=".qr4p:6">
             {/* Header */}
             <motion.header
-                className="w-full p-6 flex justify-between items-center border-b border-gray-800"
+                className="w-full p-6 flex justify-between items-center border-b border-gray-800 bg-black"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}

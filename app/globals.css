@@ -24,7 +24,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: transparent;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -51,7 +51,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
+    --background: transparent;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -83,6 +83,36 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/images/IMG1.png');
+    background-position: center bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.5;
+    z-index: -1;
+  }
+  
+  html {
+    background-color: #000000;
+  }
+  
+  /* Adjust background for different screen sizes */
+  @media (max-width: 768px) {
+    body::before {
+      background-size: cover;
+    }
   }
 }
