@@ -231,8 +231,8 @@ export default function TransferPage() {
             wallet.publicKey!
         )
 
-        const withdrawTxSigned = await wallet.signTransaction!(tx);
-        const txSignature = await (await sendTransactionToRelayer(withdrawTxSigned)).json();
+        // const withdrawTxSigned = await wallet.signTransaction!(tx);
+        const txSignature = await (await sendTransactionToRelayer(tx)).json();
         await awaitComputationFinalization(
             new AnchorProvider(
                 program.provider.connection,

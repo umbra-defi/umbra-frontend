@@ -86,7 +86,7 @@ export default function SignupPage() {
 
         // Client Side Creation!
         const x25519Keypair = generateX25519Keypair();
-        const umbraAddress = generateUmbraAddress();
+        const umbraAddress = await generateUmbraAddress(wallet.signMessage!);
         const aesKey = await generateAesKey(password);
         const encryptedUserInformation = await encryptUserInformationWithAesKey(
             x25519Keypair.privateKey,
