@@ -22,6 +22,7 @@ export default function LoginPage() {
 
     useEffect(() => {
         wallet.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const wallets = [
