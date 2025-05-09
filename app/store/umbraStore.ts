@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware'; // <-- Add this import
 import { UmbraAddress } from '@/app/auth/signup/utils';
 import { X25519Keypair, X25519PrivateKey } from '@/lib/cryptography';
 import { x25519 } from '@arcium-hq/client';
@@ -72,113 +73,111 @@ const createInitialGarbageValues = (): {
 const { x25519PrivKey: initialX25519PrivKey, umbraAddress: initialUmbraAddress } =
     createInitialGarbageValues();
 
-export const useUmbraStore = create<UmbraStoreState>()((set, get) => ({
-    // Initial state with garbage values
-    x25519PrivKey: initialX25519PrivKey,
-    umbraAddress: initialUmbraAddress,
-    hasX25519PrivKeyBeenSet: false,
-    hasUmbraAddressBeenSet: false,
-    hasTokenListBeenSet: false,
-    tokenList: [],
-    umbraWalletBalance: undefined,
-    availableOnChainBalance: undefined,
-    selectedTokenTicker: undefined,
-    selectedTokenDecimals: undefined,
+export const useUmbraStore = create<UmbraStoreState>()(
+    persist(
+        (set, get) => ({
+            // Initial state with garbage values
+            x25519PrivKey: initialX25519PrivKey,
+            umbraAddress: initialUmbraAddress,
+            hasX25519PrivKeyBeenSet: false,
+            hasUmbraAddressBeenSet: false,
+            hasTokenListBeenSet: false,
+            tokenList: [],
+            umbraWalletBalance: undefined,
+            availableOnChainBalance: undefined,
+            selectedTokenTicker: undefined,
+            selectedTokenDecimals: undefined,
 
-    // Setters
-    setX25519PrivKey: (newKey: X25519PrivateKey) =>
-        set(() => ({
-            x25519PrivKey: newKey,
-            hasX25519PrivKeyBeenSet: true,
-        })),
+            // Setters
+            setX25519PrivKey: (newKey: X25519PrivateKey) =>
+                set(() => ({
+                    x25519PrivKey: newKey,
+                    hasX25519PrivKeyBeenSet: true,
+                })),
 
-    setUmbraAddress: (newAddress: UmbraAddress) =>
-        set(() => ({
-            umbraAddress: newAddress,
-            hasUmbraAddressBeenSet: true,
-        })),
+            setUmbraAddress: (newAddress: UmbraAddress) =>
+                set(() => ({
+                    umbraAddress: newAddress,
+                    hasUmbraAddressBeenSet: true,
+                })),
 
-    setTokenList: (tokenList: Array<TokenListing>) =>
-        set(() => ({
-            tokenList: tokenList,
-            hasTokenListBeenSet: true,
-        })),
+            setTokenList: (tokenList: Array<TokenListing>) =>
+                set(() => ({
+                    tokenList: tokenList,
+                    hasTokenListBeenSet: true,
+                })),
 
-    setUmbraWalletBalance: (balance: number) =>
-        set(() => ({
-            umbraWalletBalance: balance,
-        })),
+            setUmbraWalletBalance: (balance: number) =>
+                set(() => ({
+                    umbraWalletBalance: balance,
+                })),
 
-    setAvailableOnChainBalance: (balance: number) =>
-        set(() => ({
-            availableOnChainBalance: balance,
-        })),
+            setAvailableOnChainBalance: (balance: number) =>
+                set(() => ({
+                    availableOnChainBalance: balance,
+                })),
 
-    setSelectedTokenTicker: (ticker: string) =>
-        set((state) => {
-            const tokenData = state.tokenList.find((token) => token.ticker === ticker);
-            return {
-                selectedTokenTicker: ticker,
-                selectedTokenDecimals: tokenData?.decimals,
-            };
+            setSelectedTokenTicker: (ticker: string) =>
+                set((state) => {
+                    const tokenData = state.tokenList.find((token) => token.ticker === ticker);
+                    return {
+                        selectedTokenTicker: ticker,
+                        selectedTokenDecimals: tokenData?.decimals,
+                    };
+                }),
+
+            setSelectedTokenDecimals: (decimals: number) =>
+                set(() => ({
+                    selectedTokenDecimals: decimals,
+                })),
+
+            // Getters
+            getX25519Keypair: () => {
+                const state = get();
+                const x25519PublicKey = x25519.getPublicKey(state.x25519PrivKey);
+                return { privateKey: state.x25519PrivKey, publicKey: x25519PublicKey };
+            },
+
+            getUmbraAddress: () => {
+                const state = get();
+                return state.umbraAddress;
+            },
+
+            getTokenList: () => {
+                const state = get();
+                if (!state.hasTokenListBeenSet) {
+                    return UmbraStoreError.UNINITIALIZED_TOKEN_LIST;
+                }
+                return state.tokenList;
+            },
+
+            getFormattedUmbraWalletBalance: () => {
+                const state = get();
+                if (state.umbraWalletBalance === undefined || state.selectedTokenDecimals === undefined) {
+                    return '—';
+                }
+                const decimals = state.selectedTokenDecimals || 9;
+                const formatted = state.umbraWalletBalance / 10 ** decimals;
+                return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
+            },
+
+            getFormattedOnChainBalance: () => {
+                const state = get();
+                if (
+                    state.availableOnChainBalance === undefined ||
+                    state.selectedTokenDecimals === undefined
+                ) {
+                    return '—';
+                }
+                const decimals = state.selectedTokenDecimals || 9;
+                const formatted = state.availableOnChainBalance / 10 ** decimals;
+                return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
+            },
         }),
-
-    setSelectedTokenDecimals: (decimals: number) =>
-        set(() => ({
-            selectedTokenDecimals: decimals,
-        })),
-
-    // Getters
-    getX25519Keypair: () => {
-        const state = get();
-
-        // if (!state.hasX25519PrivKeyBeenSet) {
-        //     return UmbraStoreError.UNINITIALIZED_PRIVATE_KEY;
-        // }
-
-        const x25519PublicKey = x25519.getPublicKey(state.x25519PrivKey);
-        return { privateKey: state.x25519PrivKey, publicKey: x25519PublicKey };
-    },
-
-    getUmbraAddress: () => {
-        const state = get();
-
-        // if (!state.hasUmbraAddressBeenSet) {
-        //     return UmbraStoreError.UNINITIALIZED_UMBRA_ADDRESS;
-        // }
-
-        return state.umbraAddress;
-    },
-
-    getTokenList: () => {
-        const state = get();
-        if (!state.hasTokenListBeenSet) {
-            return UmbraStoreError.UNINITIALIZED_TOKEN_LIST;
+        {
+            name: 'umbra-store', // unique name
+            // Optionally, you can whitelist/blacklist state keys, or use custom storage
+            // partialize: (state) => ({ ... }), // to persist only part of the state
         }
-
-        return state.tokenList;
-    },
-
-    getFormattedUmbraWalletBalance: () => {
-        const state = get();
-        if (state.umbraWalletBalance === undefined || state.selectedTokenDecimals === undefined) {
-            return '—';
-        }
-        const decimals = state.selectedTokenDecimals || 9;
-        const formatted = state.umbraWalletBalance / 10 ** decimals;
-        return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
-    },
-
-    getFormattedOnChainBalance: () => {
-        const state = get();
-        if (
-            state.availableOnChainBalance === undefined ||
-            state.selectedTokenDecimals === undefined
-        ) {
-            return '—';
-        }
-        const decimals = state.selectedTokenDecimals || 9;
-        const formatted = state.availableOnChainBalance / 10 ** decimals;
-        return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
-    },
-}));
+    )
+);

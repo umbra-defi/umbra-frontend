@@ -25,7 +25,7 @@ export default function Page() {
                     UMBRA
                 </div>
                 <div className="flex items-center gap-4" data-oid="k9zem8w">
-                    <Link href="/auth" data-oid="4nqdbn8">
+                    <Link href="/auth/login" data-oid="4nqdbn8">
                         <button
                             className="text-white border border-gray-900 px-4 py-2 hover:bg-gray-900 transition-colors"
                             data-oid="ssr7wcm"

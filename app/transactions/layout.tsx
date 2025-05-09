@@ -95,7 +95,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                     <div className="text-white tracking-wide" data-oid="6zqx0vr">
                         WALLET BALANCE: {}
                     </div>
-                    <Link href="/auth" data-oid="e3vl4-z">
+                    <Link href="/auth/login" data-oid="e3vl4-z">
                         <button
                             className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
                             data-oid="muq2emp"
