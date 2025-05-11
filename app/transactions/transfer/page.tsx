@@ -195,11 +195,11 @@ export default function TransferPage() {
             return;
         }
 
-        // Validate recipient address format (basic check)
-        if (recipientAddress.length !== 64) {
-            toastError('Invalid recipient address format');
-            return;
-        }
+        // // Validate recipient address format (basic check)
+        // if (recipientAddress.length !== 64) {
+        //     toastError('Invalid recipient address format');
+        //     return;
+        // }
 
         const selectedTokenData = umbraStore.tokenList.find(
             (token) => token.ticker === selectedToken,
