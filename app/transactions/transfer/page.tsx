@@ -22,11 +22,13 @@ import { Connection } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import bs58 from 'bs58';
 import React from 'react';
-import { ScanQrCode } from 'lucide-react';
+import { ScanBarcodeIcon, ScanQrCode, ScanQrCodeIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
     const [searchToken, setSearchToken] = useState<string>('');
+    const router = useRouter();
     const wallet = useWallet();
     const umbraStore = useUmbraStore();
     const tokenList = umbraStore.getTokenList();
@@ -127,6 +129,10 @@ export default function TransferPage() {
         };
     }, [wallet.publicKey, selectedToken]);
 
+    useEffect(() => {
+        setRecipientAddress(umbraStore.lastScannedAddress || '');
+    }, [umbraStore.lastScannedAddress]);
+
     // Fetch Umbra wallet balance
     useEffect(() => {
         let isMounted = true;
@@ -181,7 +187,7 @@ export default function TransferPage() {
         return () => {
             isMounted = false;
         };
-    }, [selectedToken]);
+    }, [selectedToken, umbraStore]);
 
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
@@ -491,16 +497,24 @@ export default function TransferPage() {
             </div>
 
             {/* Recipient Address Input */}
-            <div className="relative mt-4" data-oid="xaaa9:-">
+            <div className="relative mt-4 flex" data-oid="xaaa9:-">
                 <input
                     type="text"
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
-                    className="w-full bg-transparent text-white border border-gray-800 p-4 outline-none"
+                    className="w-10/12 flex-1 bg-transparent text-white border border-gray-800 p-4 outline-none"
                     placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
                 />
-                <ScanQrCode />
+                <div className="flex items-center justify-center bg-black border border-gray-800 p-2 cursor-pointer sm:hidden">
+                    <ScanQrCodeIcon
+                        size={24}
+                        className="text-white"
+                        onClick={() => {
+                            router.push('/scan');
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Fees Section */}
