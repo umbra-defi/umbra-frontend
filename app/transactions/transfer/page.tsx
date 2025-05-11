@@ -424,7 +424,7 @@ export default function TransferPage() {
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
                     className="w-full bg-transparent text-white border border-gray-800 p-4 outline-none"
-                    placeholder="ENTER RECIPIENT ADDRESS"
+                    placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
                 />
             </div>
