@@ -6,7 +6,13 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
-import { getConnection, getLocalnetConnection, getUmbraProgram, toastError, toastSuccess } from '@/lib/utils';
+import {
+    getConnection,
+    getLocalnetConnection,
+    getUmbraProgram,
+    toastError,
+    toastSuccess,
+} from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
@@ -16,6 +22,7 @@ import { Connection } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import bs58 from 'bs58';
 import React from 'react';
+import { ScanQrCode } from 'lucide-react';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -239,7 +246,9 @@ export default function TransferPage() {
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-            const receiverAccountPDA = getUserAccountPDA(Buffer.from(bs58.decode(recipientAddress)));
+            const receiverAccountPDA = getUserAccountPDA(
+                Buffer.from(bs58.decode(recipientAddress)),
+            );
             const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
 
             const cipher = new RescueCipher(
@@ -247,7 +256,10 @@ export default function TransferPage() {
             );
             let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
             const nonce = tokenAccount.nonce[0].toArray('le', 16);
-            let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0];
+            let decryptedBalance = cipher.decrypt(
+                [tokenAccount.balance[0]],
+                Uint8Array.from(nonce),
+            )[0];
             console.log(decryptedBalance);
             let encryptedBalance = cipher.encrypt(
                 [decryptedBalance, BigInt(rawAmount)],
@@ -488,6 +500,7 @@ export default function TransferPage() {
                     placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
                 />
+                <ScanQrCode />
             </div>
 
             {/* Fees Section */}
@@ -575,7 +588,12 @@ export default function TransferPage() {
                 {balanceLoading ? (
                     <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
                 ) : (
-                    <span className="text-white">{typeof umbraStore.umbraWalletBalance === 'number' && typeof umbraStore.selectedTokenDecimals === 'number' ? (umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals)) : 0}</span>
+                    <span className="text-white">
+                        {typeof umbraStore.umbraWalletBalance === 'number' &&
+                        typeof umbraStore.selectedTokenDecimals === 'number'
+                            ? umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals
+                            : 0}
+                    </span>
                 )}
                 {selectedToken}
             </div>
@@ -609,8 +627,12 @@ export default function TransferPage() {
                     display: inline-block;
                 }
                 @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
                 }
             `}</style>
         </>
