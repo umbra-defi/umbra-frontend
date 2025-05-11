@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
-import { getConnection, getLocalnetConnection, getUmbraProgram, toastError } from '@/lib/utils';
+import { getConnection, getLocalnetConnection, getUmbraProgram, toastError, toastSuccess } from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
@@ -15,6 +15,7 @@ import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/uti
 import { Connection } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import bs58 from 'bs58';
+import React from 'react';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -33,6 +34,7 @@ export default function TransferPage() {
     const [selectedToken, setSelectedToken] = useState<string>(filteredTokens[0]?.ticker);
     const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
     const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
 
     // Update umbraStore selected token when it changes
     useEffect(() => {
@@ -173,137 +175,145 @@ export default function TransferPage() {
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
     const handleSubmit = async () => {
-        // Input validation
-        if (!amount || amount === '0') {
-            toastError('Please enter an amount greater than zero');
-            return;
-        }
-
-        const amountNum = parseFloat(amount);
-        if (isNaN(amountNum)) {
-            toastError('Please enter a valid number');
-            return;
-        }
-
-        if (amountNum < 0) {
-            toastError('Amount cannot be negative');
-            return;
-        }
-
-        if (!recipientAddress || recipientAddress.trim() === '') {
-            toastError('Please enter a recipient address');
-            return;
-        }
-
-        // // Validate recipient address format (basic check)
-        // if (recipientAddress.length !== 64) {
-        //     toastError('Invalid recipient address format');
-        //     return;
-        // }
-
-        const selectedTokenData = umbraStore.tokenList.find(
-            (token) => token.ticker === selectedToken,
-        );
-        const mintAddress = selectedTokenData!.mintAddress;
-        const decimals = selectedTokenData?.decimals || 9;
-
-        // Check if user has enough balance in Umbra wallet
-        if (
-            umbraStore.umbraWalletBalance !== undefined &&
-            umbraStore.selectedTokenDecimals !== undefined
-        ) {
-            const maxBalance =
-                umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals;
-            if (amountNum > maxBalance) {
-                toastError(
-                    `Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`,
-                );
+        if (loading) return;
+        setLoading(true);
+        try {
+            // Input validation
+            if (!amount || amount === '0') {
+                toastError('Please enter an amount greater than zero');
                 return;
             }
-        }
 
-        // Convert input amount to token amount with proper decimals
-        const rawAmount = Math.floor(parseFloat(amount) * 10 ** decimals);
+            const amountNum = parseFloat(amount);
+            if (isNaN(amountNum)) {
+                toastError('Please enter a valid number');
+                return;
+            }
 
-        const program = getUmbraProgram();
-        const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
-        const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+            if (amountNum < 0) {
+                toastError('Amount cannot be negative');
+                return;
+            }
 
-        const receiverAccountPDA = getUserAccountPDA(Buffer.from(bs58.decode(recipientAddress)));
-        const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
+            if (!recipientAddress || recipientAddress.trim() === '') {
+                toastError('Please enter a recipient address');
+                return;
+            }
 
-        const cipher = new RescueCipher(
-            x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-        );
-        let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
-        const nonce = tokenAccount.nonce[0].toArray('le', 16);
-        let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0];
-        console.log(decryptedBalance);
-        let encryptedBalance = cipher.encrypt(
-            [decryptedBalance, BigInt(rawAmount)],
-            Uint8Array.from(nonce),
-        );
+            // // Validate recipient address format (basic check)
+            // if (recipientAddress.length !== 64) {
+            //     toastError('Invalid recipient address format');
+            //     return;
+            // }
 
-        const firstRelayer = await getFirstRelayer();
+            const selectedTokenData = umbraStore.tokenList.find(
+                (token) => token.ticker === selectedToken,
+            );
+            const mintAddress = selectedTokenData!.mintAddress;
+            const decimals = selectedTokenData?.decimals || 9;
 
-        const computationOffset = new BN(randomBytes(8), 'hex');
-        const tx = await transferAmount(
-            program,
-            userAccountPDA,
-            userTokenAccountPDA,
-            receiverAccountPDA,
-            receiverTokenAccountPDA,
-            Buffer.from(encryptedBalance[1]),
-            firstRelayer.publicKey,
-            computationOffset,
-            wallet.publicKey!,
-        );
+            // Check if user has enough balance in Umbra wallet
+            if (
+                umbraStore.umbraWalletBalance !== undefined &&
+                umbraStore.selectedTokenDecimals !== undefined
+            ) {
+                const maxBalance =
+                    umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals;
+                if (amountNum > maxBalance) {
+                    toastError(
+                        `Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`,
+                    );
+                    return;
+                }
+            }
 
-        // const withdrawTxSigned = await wallet.signTransaction!(tx);
-        const txSignature = await (await sendTransactionToRelayer(tx)).json();
-        await awaitComputationFinalization(
-            new AnchorProvider(program.provider.connection, program.provider.wallet!, {
-                commitment: 'confirmed',
-            }),
-            computationOffset,
-            program.programId,
-            'confirmed',
-        );
-        console.log(txSignature);
+            // Convert input amount to token amount with proper decimals
+            const rawAmount = Math.floor(parseFloat(amount) * 10 ** decimals);
 
-        tokenAccount = await program.account.umbraTokenAccount.fetch(
-            userTokenAccountPDA,
-            'confirmed',
-        );
-        encryptedBalance = tokenAccount.balance;
-        const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16);
-        decryptedBalance = cipher.decrypt(
-            [encryptedBalance[0]],
-            Uint8Array.from(encryptionNonce),
-        )[0];
-        console.log(decryptedBalance);
+            const program = getUmbraProgram();
+            const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+            const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-        // After the transaction is complete, update balances
-        try {
-            // Update on-chain balance
-            const connection = getConnection();
-            const userAssociatedTokenAccount = await getAssociatedTokenAddress(
-                mintAddress,
+            const receiverAccountPDA = getUserAccountPDA(Buffer.from(bs58.decode(recipientAddress)));
+            const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
+
+            const cipher = new RescueCipher(
+                x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
+            );
+            let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
+            const nonce = tokenAccount.nonce[0].toArray('le', 16);
+            let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0];
+            console.log(decryptedBalance);
+            let encryptedBalance = cipher.encrypt(
+                [decryptedBalance, BigInt(rawAmount)],
+                Uint8Array.from(nonce),
+            );
+
+            const firstRelayer = await getFirstRelayer();
+
+            const computationOffset = new BN(randomBytes(8), 'hex');
+            const tx = await transferAmount(
+                program,
+                userAccountPDA,
+                userTokenAccountPDA,
+                receiverAccountPDA,
+                receiverTokenAccountPDA,
+                Buffer.from(encryptedBalance[1]),
+                firstRelayer.publicKey,
+                computationOffset,
                 wallet.publicKey!,
             );
 
-            const tokenAccount = await getAccount(
-                connection,
-                userAssociatedTokenAccount,
+            // const withdrawTxSigned = await wallet.signTransaction!(tx);
+            const txSignature = await (await sendTransactionToRelayer(tx)).json();
+            await awaitComputationFinalization(
+                new AnchorProvider(program.provider.connection, program.provider.wallet!, {
+                    commitment: 'confirmed',
+                }),
+                computationOffset,
+                program.programId,
                 'confirmed',
             );
-            umbraStore.setAvailableOnChainBalance(Number(tokenAccount.amount));
-            umbraStore.setUmbraWalletBalance(Number(decryptedBalance));
-            umbraStore.setSelectedTokenTicker(selectedToken);
+            console.log(txSignature);
 
-            // Umbra wallet balance was already updated in the existing code
+            tokenAccount = await program.account.umbraTokenAccount.fetch(
+                userTokenAccountPDA,
+                'confirmed',
+            );
+            encryptedBalance = tokenAccount.balance;
+            const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16);
+            decryptedBalance = cipher.decrypt(
+                [encryptedBalance[0]],
+                Uint8Array.from(encryptionNonce),
+            )[0];
+            console.log(decryptedBalance);
+
+            // After the transaction is complete, update balances
+            try {
+                // Update on-chain balance
+                const connection = getConnection();
+                const userAssociatedTokenAccount = await getAssociatedTokenAddress(
+                    mintAddress,
+                    wallet.publicKey!,
+                );
+
+                const tokenAccount = await getAccount(
+                    connection,
+                    userAssociatedTokenAccount,
+                    'confirmed',
+                );
+                umbraStore.setAvailableOnChainBalance(Number(tokenAccount.amount));
+                umbraStore.setUmbraWalletBalance(Number(decryptedBalance));
+                umbraStore.setSelectedTokenTicker(selectedToken);
+                toastSuccess('Transfer successful!');
+            } catch (error) {
+                console.error('Error updating balances after deposit:', error);
+            }
         } catch (error) {
-            console.error('Error updating balances after deposit:', error);
+            toastError('Transfer failed. Please try again.');
+            console.error('Error submitting transaction:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -556,14 +566,37 @@ export default function TransferPage() {
 
             {/* Action Button */}
             <motion.button
-                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6"
+                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleSubmit}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}
                 data-oid="x-bpec_"
+                disabled={loading}
             >
-                Transfer
+                {loading ? (
+                    <span className="flex items-center gap-2">
+                        <span className="loader-spinner"></span>
+                        Processing...
+                    </span>
+                ) : (
+                    'Transfer'
+                )}
             </motion.button>
+            <style jsx global>{`
+                .loader-spinner {
+                    border: 3px solid #f3f3f3;
+                    border-top: 3px solid #222;
+                    border-radius: 50%;
+                    width: 18px;
+                    height: 18px;
+                    animation: spin 0.8s linear infinite;
+                    display: inline-block;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </>
     );
 }

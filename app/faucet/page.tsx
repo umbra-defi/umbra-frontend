@@ -23,6 +23,7 @@ export default function FaucetPage() {
         { label: 'Raydium (RAY)', symbol: 'RAY', mint: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R' },
         { label: 'Jito (JTO)', symbol: 'JTO', mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL' },
         { label: 'Orca (ORCA)', symbol: 'ORCA', mint: 'orcaEKta1tGJ5yY6zTz6z5QdE5Q3QkektZE' },
+        { label: 'Other token', symbol: '', mint: '' },
     ];
     const [selectedToken, setSelectedToken] = useState<string>('');
 
@@ -90,9 +91,12 @@ export default function FaucetPage() {
                         onChange={(e) => {
                             const selected = famousTokens.find(t => t.mint === e.target.value);
                             setSelectedToken(e.target.value);
-                            if (selected) {
+                            if (selected && selected.label !== 'Other token') {
                                 setMintAddress(selected.mint);
                                 setMintTicker(selected.symbol);
+                            } else {
+                                setMintAddress('');
+                                setMintTicker('');
                             }
                         }}
                         className="w-full bg-[#18181b] text-white border border-gray-800 p-3 outline-none rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150 appearance-none"
@@ -103,44 +107,48 @@ export default function FaucetPage() {
                     >
                         <option value="" className="bg-[#18181b] text-gray-400">-- Select a token --</option>
                         {famousTokens.map(token => (
-                            <option key={token.mint} value={token.mint} className="bg-[#18181b] text-white">
+                            <option key={token.label} value={token.mint} className="bg-[#18181b] text-white">
                                 {token.label}
                             </option>
                         ))}
                     </select>
                 </div>
                 
-                {/* Mint Address Input */}
-                <div className="mb-4">
-                    <label htmlFor="mintAddress" className="block text-sm text-gray-400 mb-2">
-                        Mint Address
-                    </label>
-                    <input
-                        id="mintAddress"
-                        type="text"
-                        value={mintAddress}
-                        onChange={(e) => setMintAddress(e.target.value)}
-                        className="w-full bg-transparent text-white border border-gray-800 p-3 outline-none"
-                        placeholder="Enter mint address"
-                    />
-                </div>
+                {/* Mint Address and Ticker Inputs: Only show if 'Other token' is selected */}
+                {selectedToken === '' || famousTokens.find(t => t.mint === selectedToken)?.label === 'Other token' ? (
+                    <>
+                        {/* Mint Address Input */}
+                        <div className="mb-4">
+                            <label htmlFor="mintAddress" className="block text-sm text-gray-400 mb-2">
+                                Mint Address
+                            </label>
+                            <input
+                                id="mintAddress"
+                                type="text"
+                                value={mintAddress}
+                                onChange={(e) => setMintAddress(e.target.value)}
+                                className="w-full bg-transparent text-white border border-gray-800 p-3 outline-none"
+                                placeholder="Enter mint address"
+                            />
+                        </div>
+                        {/* Mint Ticker Input */}
+                        <div className="mb-4">
+                            <label htmlFor="mintTicker" className="block text-sm text-gray-400 mb-2">
+                                Mint Ticker (Optional)
+                            </label>
+                            <input
+                                id="mintTicker"
+                                type="text"
+                                value={mintTicker}
+                                onChange={(e) => setMintTicker(e.target.value)}
+                                className="w-full bg-transparent text-white border border-gray-800 p-3 outline-none"
+                                placeholder="Enter token symbol (e.g. SOL) - only if metadata cannot be found"
+                            />
+                        </div>
+                    </>
+                ) : null}
                 
-                {/* Mint Ticker Input */}
-                <div className="mb-4">
-                    <label htmlFor="mintTicker" className="block text-sm text-gray-400 mb-2">
-                        Mint Ticker (Optional)
-                    </label>
-                    <input
-                        id="mintTicker"
-                        type="text"
-                        value={mintTicker}
-                        onChange={(e) => setMintTicker(e.target.value)}
-                        className="w-full bg-transparent text-white border border-gray-800 p-3 outline-none"
-                        placeholder="Enter token symbol (e.g. SOL) - only if metadata cannot be found"
-                    />
-                </div>
-                
-                {/* Amount Input */}
+                {/* Amount Input: Always show */}
                 <div className="mb-6">
                     <label htmlFor="amount" className="block text-sm text-gray-400 mb-2">
                         Amount

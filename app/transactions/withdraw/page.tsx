@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, withdrawAmount } from '@/lib/umbra-program/umbra';
-import { getConnection, getUmbraProgram, toastError } from '@/lib/utils';
+import { getConnection, getUmbraProgram, toastError, toastSuccess } from '@/lib/utils';
 import {
     mxePublicKey,
     UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED,
@@ -18,6 +18,7 @@ import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/uti
 import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
+import React from 'react';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -36,6 +37,7 @@ export default function WithdrawPage() {
     const [selectedToken, setSelectedToken] = useState<string>(filteredTokens[0]?.ticker);
     const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
     const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
 
     // Update umbraStore selected token when it changes
     useEffect(() => {
@@ -171,164 +173,172 @@ export default function WithdrawPage() {
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
 
     const handleSubmit = async () => {
-        // Input validation
-        if (!amount || amount === '0') {
-            toastError('Please enter an amount greater than zero');
-            return;
-        }
-
-        const amountNum = parseFloat(amount);
-        if (isNaN(amountNum)) {
-            toastError('Please enter a valid number');
-            return;
-        }
-
-        if (amountNum < 0) {
-            toastError('Amount cannot be negative');
-            return;
-        }
-
-        const program = getUmbraProgram();
-
-        const selectedTokenData = umbraStore.tokenList.find(
-            (token) => token.ticker === selectedToken,
-        );
-        const mintAddress = selectedTokenData!.mintAddress;
-        const decimals = selectedTokenData?.decimals || 9;
-
-        // Check if user has enough balance in Umbra wallet
-        if (
-            umbraStore.umbraWalletBalance !== undefined &&
-            umbraStore.selectedTokenDecimals !== undefined
-        ) {
-            const maxBalance =
-                umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals;
-            if (amountNum > maxBalance) {
-                toastError(
-                    `Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`,
-                );
+        if (loading) return;
+        setLoading(true);
+        try {
+            // Input validation
+            if (!amount || amount === '0') {
+                toastError('Please enter an amount greater than zero');
                 return;
             }
-        }
 
-        // Convert input amount to token amount with proper decimals
-        const rawAmount = Math.floor(parseFloat(amount) * 10 ** decimals);
+            const amountNum = parseFloat(amount);
+            if (isNaN(amountNum)) {
+                toastError('Please enter a valid number');
+                return;
+            }
 
-        const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
-        const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
+            if (amountNum < 0) {
+                toastError('Amount cannot be negative');
+                return;
+            }
 
-        const cipher = new RescueCipher(
-            x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-        );
-        const nonce = randomBytes(16);
-        const withdrawalAmountEncrypted = cipher.encrypt(
-            [BigInt(rawAmount)],
-            Uint8Array.from(nonce),
-        );
+            const program = getUmbraProgram();
 
-        const firstRelayer = await getFirstRelayer();
+            const selectedTokenData = umbraStore.tokenList.find(
+                (token) => token.ticker === selectedToken,
+            );
+            const mintAddress = selectedTokenData!.mintAddress;
+            const decimals = selectedTokenData?.decimals || 9;
 
-        const computationOffset = new BN(randomBytes(8), 'hex');
+            // Check if user has enough balance in Umbra wallet
+            if (
+                umbraStore.umbraWalletBalance !== undefined &&
+                umbraStore.selectedTokenDecimals !== undefined
+            ) {
+                const maxBalance =
+                    umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals;
+                if (amountNum > maxBalance) {
+                    toastError(
+                        `Insufficient balance. Maximum available: ${maxBalance.toFixed(6)} ${selectedToken}`,
+                    );
+                    return;
+                }
+            }
 
-        const withdrawTx = await withdrawAmount(
-            program,
-            userAccountPDA,
-            userTokenAccountPDA,
-            Buffer.from(withdrawalAmountEncrypted[0]),
-            nonce,
-            firstRelayer.publicKey,
-            computationOffset,
-            wallet.publicKey!,
-            new PublicKey(firstRelayer.pdaAddress),
-        );
+            // Convert input amount to token amount with proper decimals
+            const rawAmount = Math.floor(parseFloat(amount) * 10 ** decimals);
 
-        // const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
-        const txSignature = await (await sendTransactionToRelayer(withdrawTx)).json();
-        await awaitComputationFinalization(
-            new AnchorProvider(program.provider.connection, program.provider.wallet!, {
-                commitment: 'confirmed',
-            }),
-            computationOffset,
-            program.programId,
-            'confirmed',
-        );
+            const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
+            const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-        console.log(txSignature);
-
-        const tokenAccount = await program.account.umbraTokenAccount.fetch(
-            userTokenAccountPDA,
-            'confirmed',
-        );
-        const encryptedBalance = tokenAccount.balance[0];
-        const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16);
-        const decryptedBalance = cipher.decrypt(
-            [encryptedBalance],
-            Uint8Array.from(encryptionNonce),
-        );
-        console.log(decryptedBalance);
-
-        const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
-            [
-                Buffer.from(UMBRA_PDA_DERIVATION_SEED),
-                Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
-                mintAddress.toBuffer(),
-            ],
-            getUmbraProgram().programId,
-        );
-
-        const connection = getConnection();
-
-        // Get the associated token account for the PDA
-        const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
-            mintAddress,
-            umbraPDA,
-            true,
-        );
-
-        const receiverATA = await getAssociatedTokenAddress(
-            new PublicKey(mintAddress),
-            new PublicKey(wallet.publicKey!),
-        );
-
-        const tx = await program.methods
-            .claimTransfer(new BN(BigInt(rawAmount)))
-            .accounts({
-                mint: new PublicKey(mintAddress),
-                umbraPda: new PublicKey(umbraPDA),
-                umbraAtaAccount: umbraPDAassociatedTokenAccount,
-                receiverAtaAccount: receiverATA,
-            })
-            .transaction();
-
-        const recentData = await connection.getLatestBlockhash();
-        tx.recentBlockhash = recentData.blockhash;
-        tx.lastValidBlockHeight = recentData.lastValidBlockHeight;
-        tx.feePayer = wallet.publicKey!;
-
-        // const signedTx = await wallet.signTransaction!(tx);
-        const txSign = await (await sendTransactionToRelayer(tx)).json();
-        console.log(txSign);
-
-        try {
-            // Update on-chain balance
-            const connection = getConnection();
-            const userAssociatedTokenAccount = await getAssociatedTokenAddress(
-                mintAddress,
-                wallet.publicKey!,
+            const cipher = new RescueCipher(
+                x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
+            );
+            const nonce = randomBytes(16);
+            const withdrawalAmountEncrypted = cipher.encrypt(
+                [BigInt(rawAmount)],
+                Uint8Array.from(nonce),
             );
 
-            const tokenAccount = await getAccount(
-                connection,
-                userAssociatedTokenAccount,
+            const firstRelayer = await getFirstRelayer();
+
+            const computationOffset = new BN(randomBytes(8), 'hex');
+
+            const withdrawTx = await withdrawAmount(
+                program,
+                userAccountPDA,
+                userTokenAccountPDA,
+                Buffer.from(withdrawalAmountEncrypted[0]),
+                nonce,
+                firstRelayer.publicKey,
+                computationOffset,
+                wallet.publicKey!,
+                new PublicKey(firstRelayer.pdaAddress),
+            );
+
+            // const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
+            const txSignature = await (await sendTransactionToRelayer(withdrawTx)).json();
+            await awaitComputationFinalization(
+                new AnchorProvider(program.provider.connection, program.provider.wallet!, {
+                    commitment: 'confirmed',
+                }),
+                computationOffset,
+                program.programId,
                 'confirmed',
             );
-            umbraStore.setAvailableOnChainBalance(Number(tokenAccount.amount));
-            umbraStore.setUmbraWalletBalance(Number(decryptedBalance));
-            umbraStore.setSelectedTokenTicker(selectedToken);
 
-            // Umbra wallet balance was already updated in the existing code
+            console.log(txSignature);
+
+            const tokenAccount = await program.account.umbraTokenAccount.fetch(
+                userTokenAccountPDA,
+                'confirmed',
+            );
+            const encryptedBalance = tokenAccount.balance[0];
+            const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16);
+            const decryptedBalance = cipher.decrypt(
+                [encryptedBalance],
+                Uint8Array.from(encryptionNonce),
+            );
+            console.log(decryptedBalance);
+
+            const [umbraPDA, _bump] = PublicKey.findProgramAddressSync(
+                [
+                    Buffer.from(UMBRA_PDA_DERIVATION_SEED),
+                    Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
+                    mintAddress.toBuffer(),
+                ],
+                getUmbraProgram().programId,
+            );
+
+            const connection = getConnection();
+
+            // Get the associated token account for the PDA
+            const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
+                mintAddress,
+                umbraPDA,
+                true,
+            );
+
+            const receiverATA = await getAssociatedTokenAddress(
+                new PublicKey(mintAddress),
+                new PublicKey(wallet.publicKey!),
+            );
+
+            const tx = await program.methods
+                .claimTransfer(new BN(BigInt(rawAmount)))
+                .accounts({
+                    mint: new PublicKey(mintAddress),
+                    umbraPda: new PublicKey(umbraPDA),
+                    umbraAtaAccount: umbraPDAassociatedTokenAccount,
+                    receiverAtaAccount: receiverATA,
+                })
+                .transaction();
+
+            const recentData = await connection.getLatestBlockhash();
+            tx.recentBlockhash = recentData.blockhash;
+            tx.lastValidBlockHeight = recentData.lastValidBlockHeight;
+            tx.feePayer = wallet.publicKey!;
+
+            // const signedTx = await wallet.signTransaction!(tx);
+            const txSign = await (await sendTransactionToRelayer(tx)).json();
+            console.log(txSign);
+
+            try {
+                // Update on-chain balance
+                const connection = getConnection();
+                const userAssociatedTokenAccount = await getAssociatedTokenAddress(
+                    mintAddress,
+                    wallet.publicKey!,
+                );
+
+                const tokenAccount = await getAccount(
+                    connection,
+                    userAssociatedTokenAccount,
+                    'confirmed',
+                );
+                umbraStore.setAvailableOnChainBalance(Number(tokenAccount.amount));
+                umbraStore.setUmbraWalletBalance(Number(decryptedBalance));
+                umbraStore.setSelectedTokenTicker(selectedToken);
+                toastSuccess('Withdrawal successful!');
+            } catch (error) {
+                console.error('Error updating balances after deposit:', error);
+            }
         } catch (error) {
-            console.error('Error updating balances after deposit:', error);
+            toastError('Withdrawal failed. Please try again.');
+            console.error('Error processing withdrawal:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -568,14 +578,37 @@ export default function WithdrawPage() {
 
             {/* Action Button */}
             <motion.button
-                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6"
+                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleSubmit}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}
                 data-oid="l--tjxg"
+                disabled={loading}
             >
-                Withdraw
+                {loading ? (
+                    <span className="flex items-center gap-2">
+                        <span className="loader-spinner"></span>
+                        Processing...
+                    </span>
+                ) : (
+                    'Withdraw'
+                )}
             </motion.button>
+            <style jsx global>{`
+                .loader-spinner {
+                    border: 3px solid #f3f3f3;
+                    border-top: 3px solid #222;
+                    border-radius: 50%;
+                    width: 18px;
+                    height: 18px;
+                    animation: spin 0.8s linear infinite;
+                    display: inline-block;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </>
     );
 }
