@@ -30,10 +30,12 @@ interface UmbraStoreState {
     hasX25519PrivKeyBeenSet: boolean;
     hasUmbraAddressBeenSet: boolean;
     hasTokenListBeenSet: boolean;
+    lastScannedAddress: string | undefined;
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
     setUmbraAddress: (newAddress: UmbraAddress) => void;
+    setLastScannedAddress: (address: string) => void;
     setTokenList: (
         tokenList: Array<{ mintAddress: PublicKey; ticker: string; decimals?: number }>,
     ) => void;
@@ -87,6 +89,7 @@ export const useUmbraStore = create<UmbraStoreState>()(
             availableOnChainBalance: undefined,
             selectedTokenTicker: undefined,
             selectedTokenDecimals: undefined,
+            lastScannedAddress: undefined,
 
             // Setters
             setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -99,6 +102,11 @@ export const useUmbraStore = create<UmbraStoreState>()(
                 set(() => ({
                     umbraAddress: newAddress,
                     hasUmbraAddressBeenSet: true,
+                })),
+
+            setLastScannedAddress: (address: string) =>
+                set(() => ({
+                    lastScannedAddress: address,
                 })),
 
             setTokenList: (tokenList: Array<TokenListing>) =>
@@ -153,7 +161,10 @@ export const useUmbraStore = create<UmbraStoreState>()(
 
             getFormattedUmbraWalletBalance: () => {
                 const state = get();
-                if (state.umbraWalletBalance === undefined || state.selectedTokenDecimals === undefined) {
+                if (
+                    state.umbraWalletBalance === undefined ||
+                    state.selectedTokenDecimals === undefined
+                ) {
                     return '—';
                 }
                 const decimals = state.selectedTokenDecimals || 9;
@@ -178,6 +189,6 @@ export const useUmbraStore = create<UmbraStoreState>()(
             name: 'umbra-store', // unique name
             // Optionally, you can whitelist/blacklist state keys, or use custom storage
             // partialize: (state) => ({ ... }), // to persist only part of the state
-        }
-    )
+        },
+    ),
 );

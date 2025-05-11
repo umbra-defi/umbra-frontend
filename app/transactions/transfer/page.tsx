@@ -6,7 +6,13 @@ import { feeTypes } from '../layout';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { getTokenAccountPDA, getUserAccountPDA, transferAmount } from '@/lib/umbra-program/umbra';
-import { getConnection, getLocalnetConnection, getUmbraProgram, toastError, toastSuccess } from '@/lib/utils';
+import {
+    getConnection,
+    getLocalnetConnection,
+    getUmbraProgram,
+    toastError,
+    toastSuccess,
+} from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { mxePublicKey } from '@/lib/constants';
 import { randomBytes } from 'crypto';
@@ -16,10 +22,13 @@ import { Connection } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import bs58 from 'bs58';
 import React from 'react';
+import { ScanBarcodeIcon, ScanQrCode, ScanQrCodeIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
     const [searchToken, setSearchToken] = useState<string>('');
+    const router = useRouter();
     const wallet = useWallet();
     const umbraStore = useUmbraStore();
     const tokenList = umbraStore.getTokenList();
@@ -120,6 +129,10 @@ export default function TransferPage() {
         };
     }, [wallet.publicKey, selectedToken]);
 
+    useEffect(() => {
+        setRecipientAddress(umbraStore.lastScannedAddress || '');
+    }, [umbraStore.lastScannedAddress]);
+
     // Fetch Umbra wallet balance
     useEffect(() => {
         let isMounted = true;
@@ -174,7 +187,7 @@ export default function TransferPage() {
         return () => {
             isMounted = false;
         };
-    }, [selectedToken]);
+    }, [selectedToken, umbraStore]);
 
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);
@@ -239,7 +252,9 @@ export default function TransferPage() {
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-            const receiverAccountPDA = getUserAccountPDA(Buffer.from(bs58.decode(recipientAddress)));
+            const receiverAccountPDA = getUserAccountPDA(
+                Buffer.from(bs58.decode(recipientAddress)),
+            );
             const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
 
             const cipher = new RescueCipher(
@@ -247,7 +262,10 @@ export default function TransferPage() {
             );
             let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
             const nonce = tokenAccount.nonce[0].toArray('le', 16);
-            let decryptedBalance = cipher.decrypt([tokenAccount.balance[0]], Uint8Array.from(nonce))[0];
+            let decryptedBalance = cipher.decrypt(
+                [tokenAccount.balance[0]],
+                Uint8Array.from(nonce),
+            )[0];
             console.log(decryptedBalance);
             let encryptedBalance = cipher.encrypt(
                 [decryptedBalance, BigInt(rawAmount)],
@@ -479,15 +497,24 @@ export default function TransferPage() {
             </div>
 
             {/* Recipient Address Input */}
-            <div className="relative mt-4" data-oid="xaaa9:-">
+            <div className="relative mt-4 flex" data-oid="xaaa9:-">
                 <input
                     type="text"
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
-                    className="w-full bg-transparent text-white border border-gray-800 p-4 outline-none"
+                    className="w-10/12 flex-1 bg-transparent text-white border border-gray-800 p-4 outline-none"
                     placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
                 />
+                <div className="flex items-center justify-center bg-black border border-gray-800 p-2 cursor-pointer sm:hidden">
+                    <ScanQrCodeIcon
+                        size={24}
+                        className="text-white"
+                        onClick={() => {
+                            router.push('/scan');
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Fees Section */}
@@ -575,7 +602,12 @@ export default function TransferPage() {
                 {balanceLoading ? (
                     <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
                 ) : (
-                    <span className="text-white">{typeof umbraStore.umbraWalletBalance === 'number' && typeof umbraStore.selectedTokenDecimals === 'number' ? (umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals)) : 0}</span>
+                    <span className="text-white">
+                        {typeof umbraStore.umbraWalletBalance === 'number' &&
+                        typeof umbraStore.selectedTokenDecimals === 'number'
+                            ? umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals
+                            : 0}
+                    </span>
                 )}
                 {selectedToken}
             </div>
@@ -609,8 +641,12 @@ export default function TransferPage() {
                     display: inline-block;
                 }
                 @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
                 }
             `}</style>
         </>
