@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
+import { useUmbraStore } from '@/app/store/umbraStore';
+import { fetchTokenList } from '../auth/signup/utils';
+import { PublicKey } from '@solana/web3.js';
 
 export default function FaucetPage() {
     const [mintAddress, setMintAddress] = useState<string>('');
@@ -13,16 +16,17 @@ export default function FaucetPage() {
     const [result, setResult] = useState<string>('');
 
     const wallet = useWallet();
+    const umbraStore = useUmbraStore();
 
     // List of famous tokens with their mint addresses
     const famousTokens = [
-        { label: 'Solana (SOL)', symbol: 'SOL', mint: 'So11111111111111111111111111111111111111112' },
+        { label: 'Solana (SOL)', symbol: 'wSOL', mint: 'So11111111111111111111111111111111111111112' },
         { label: 'USD Coin (USDC)', symbol: 'USDC', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
         { label: 'Tether (USDT)', symbol: 'USDT', mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB' },
         { label: 'Jupiter (JUP)', symbol: 'JUP', mint: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN' },
         { label: 'Raydium (RAY)', symbol: 'RAY', mint: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R' },
         { label: 'Jito (JTO)', symbol: 'JTO', mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL' },
-        { label: 'Orca (ORCA)', symbol: 'ORCA', mint: 'orcaEKta1tGJ5yY6zTz6z5QdE5Q3QkektZE' },
+        // { label: 'Orca (ORCA)', symbol: 'ORCA', mint: 'orcaEKta1tGJ5yY6zTz6z5QdE5Q3QkektZE' },
         { label: 'Other token', symbol: '', mint: '' },
     ];
     const [selectedToken, setSelectedToken] = useState<string>('');
@@ -56,6 +60,16 @@ export default function FaucetPage() {
                 setResult(
                     `Success! Token ${data.tokenName ? `"${data.tokenName}" (${data.tokenSymbol})` : mintTicker} minted at address: ${data.mintAddress}`
                 );
+                // Fetch and update token list from Supabase
+                if (wallet.publicKey) {
+                    let tokenListRaw = await fetchTokenList(wallet.publicKey);
+                    const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
+                    const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
+                        ...token,
+                        mintAddress: new PublicKey(token.mintAddress)
+                    })): [];
+                    umbraStore.setTokenList(tokenListWithPubkeys);
+                }
             } else {
                 setResult(`Error: ${data.error}`);
             }

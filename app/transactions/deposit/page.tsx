@@ -52,6 +52,7 @@ export default function DepositPage() {
     const [showTokenDropdown, setShowTokenDropdown] = useState<boolean>(false);
     const [showFeeDropdown, setShowFeeDropdown] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
+    const [balanceLoading, setBalanceLoading] = useState(false);
 
     // If the token list changes and selected token is not in the list, update it
     useEffect(() => {
@@ -80,7 +81,7 @@ export default function DepositPage() {
 
         async function fetchOnChainBalance() {
             if (!wallet.publicKey || !selectedToken) return;
-
+            setBalanceLoading(true);
             try {
                 const selectedTokenData = umbraStore.tokenList.find(
                     (token) => token.ticker === selectedToken,
@@ -138,6 +139,8 @@ export default function DepositPage() {
                 }
             } catch (error) {
                 console.error('Error fetching on-chain balance:', error);
+            } finally {
+                if (isMounted) setBalanceLoading(false);
             }
         }
 
@@ -154,7 +157,7 @@ export default function DepositPage() {
 
         async function fetchUmbraWalletBalance() {
             if (!selectedToken) return;
-
+            setBalanceLoading(true);
             try {
                 const selectedTokenData = umbraStore.tokenList.find(
                     (token) => token.ticker === selectedToken,
@@ -192,6 +195,8 @@ export default function DepositPage() {
                 }
             } catch (error) {
                 console.error('Error fetching Umbra wallet balance:', error);
+            } finally {
+                if (isMounted) setBalanceLoading(false);
             }
         }
 
@@ -411,6 +416,17 @@ export default function DepositPage() {
                     Need test tokens? Visit our <span className="underline">Token Simulator</span>{' '}
                     to mint tokens of your choice.
                 </Link>
+            </div>
+
+            {/* Example balance display */}
+            <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+                Balance:
+                {balanceLoading ? (
+                    <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
+                ) : (
+                    <span className="text-white">{typeof umbraStore.availableOnChainBalance === 'number' && typeof umbraStore.selectedTokenDecimals === 'number' ? (umbraStore.availableOnChainBalance / (10 ** umbraStore.selectedTokenDecimals)) : 0}</span>
+                )}
+                {selectedToken}
             </div>
 
             {/* Amount Input */}
