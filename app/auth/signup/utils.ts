@@ -24,10 +24,14 @@ export function generateX25519Keypair(): X25519Keypair {
 
 export type UmbraAddress = Uint8Array<ArrayBuffer>;
 
-export function generateUmbraAddress(): UmbraAddress {
-    const randomBytes = new Uint8Array(32);
-    crypto.getRandomValues(randomBytes);
-    return randomBytes;
+export async function generateUmbraAddress(
+    signer: (message: Uint8Array) => Promise<Uint8Array>,
+): Promise<UmbraAddress> {
+    const message = new TextEncoder().encode('UmbraPrivacy');
+    const signature = await signer(message);
+    // Ed25519 signatures are 64 bytes, but UmbraAddress expects 32 bytes. We'll use the first 32 bytes.
+    // If you want to hash instead, replace this with a hash function.
+    return signature.slice(0, 32);
 }
 
 export async function generateAesKey(password: string): Promise<CryptoKey> {

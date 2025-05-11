@@ -274,8 +274,8 @@ export default function DepositPage() {
                 wallet.publicKey!
             )
     
-            const signedTransaction = await wallet.signTransaction!(createTokenTx);
-            const txSignature = await (await sendTransactionToRelayer(signedTransaction)).json();
+            // const signedTransaction = await wallet.signTransaction!(createTokenTx);
+            const txSignature = await (await sendTransactionToRelayer(createTokenTx)).json();
             console.log(txSignature);
         }
 
@@ -294,9 +294,9 @@ export default function DepositPage() {
             wallet.publicKey!
         );
         console.log("Signing");
-        const depositTxSigned = await wallet.signTransaction!(depositTx);
+        // const depositTxSigned = await wallet.signTransaction!(depositTx);
         console.log("Signing Done");
-        const txSignature = await (await sendTransactionToRelayer(depositTxSigned)).json();
+        const txSignature = await (await sendTransactionToRelayer(depositTx)).json();
         console.log("Transaction Signature Finalization: ", txSignature);
         await awaitComputationFinalization(
             new AnchorProvider(

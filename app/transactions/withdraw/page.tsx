@@ -215,8 +215,8 @@ export default function WithdrawPage() {
             new PublicKey(firstRelayer.pdaAddress),
         );
 
-        const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
-        const txSignature = await (await sendTransactionToRelayer(withdrawTxSigned)).json();
+        // const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
+        const txSignature = await (await sendTransactionToRelayer(withdrawTx)).json();
         await awaitComputationFinalization(
             new AnchorProvider(
                 program.provider.connection,
@@ -276,8 +276,8 @@ export default function WithdrawPage() {
         tx.lastValidBlockHeight = recentData.lastValidBlockHeight;
         tx.feePayer = wallet.publicKey!;
     
-        const signedTx = await wallet.signTransaction!(tx);
-        const txSign = await (await sendTransactionToRelayer(signedTx)).json();
+        // const signedTx = await wallet.signTransaction!(tx);
+        const txSign = await (await sendTransactionToRelayer(tx)).json();
         console.log(txSign);
 
         try {
