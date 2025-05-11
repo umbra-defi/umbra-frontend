@@ -73,9 +73,9 @@ export default function TransactionsLayout({ children }: { children: React.React
     const umbraWalletBalance = umbraStore.umbraWalletBalance;
     const umbraAddress = umbraStore.umbraAddress;
     // Check if umbraAddress exists and is in the correct format
-    const base58WalletAddress = umbraStore.umbraAddress ? 
-        bs58.encode(Buffer.from(JSON.stringify(umbraStore.umbraAddress))) : 
-        'No address available';
+    const base58WalletAddress = umbraStore.umbraAddress
+        ? bs58.encode(Buffer.from(JSON.stringify(umbraStore.umbraAddress)))
+        : 'No address available';
     const minifiedAddress = base58WalletAddress
         ? `${base58WalletAddress.slice(0, 4)}...${base58WalletAddress.slice(-4)}`
         : 'No address available';
@@ -94,7 +94,7 @@ export default function TransactionsLayout({ children }: { children: React.React
         });
     };
 
-    console.log({umbraStore})
+    console.log({ umbraStore });
 
     return (
         <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
@@ -112,7 +112,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                 <div className="flex items-center gap-6" data-oid="u07fqct">
                     <div className="flex flex-col gap-2" data-oid="6zqx0vr">
                         <div className="text-white/70 text-sm tracking-wide">
-                            Wallet Balance: 
+                            Wallet Balance:
                             <span className="ml-2 text-white font-medium">
                                 {formattedOnChainBalance} {selectedTokenTicker || ''}
                             </span>
@@ -120,7 +120,9 @@ export default function TransactionsLayout({ children }: { children: React.React
                         <div className="flex items-center gap-2">
                             <div className="text-white/70 text-sm tracking-wide">
                                 Wallet Address
-                                <span className="ml-2 text-white font-medium">{minifiedAddress}</span>
+                                <span className="ml-2 text-white font-medium">
+                                    {minifiedAddress}
+                                </span>
                             </div>
                             <button
                                 onClick={handleCopyAddress}
@@ -209,19 +211,27 @@ export default function TransactionsLayout({ children }: { children: React.React
                         >
                             <div className="flex flex-col">
                                 <div className="tracking-wide" data-oid="g9ygc3n">
-                                    Umbra Wallet Balance: {formattedUmbraBalance} {selectedTokenTicker || ''}
+                                    Umbra Wallet Balance: {formattedUmbraBalance}{' '}
+                                    {selectedTokenTicker || ''}
                                 </div>
-                                <div className="tracking-wide mt-1 text-gray-400">
-                                    Available on-chain balance: {formattedOnChainBalance} {selectedTokenTicker || ''}
-                                </div>
+                                {activeTab !== 'transfer' && (
+                                    <div className="tracking-wide mt-1 text-gray-400">
+                                        Connected wallet balance: {formattedOnChainBalance}{' '}
+                                        {selectedTokenTicker || ''}
+                                    </div>
+                                )}
                             </div>
                             <div className="flex gap-3" data-oid=".5vit.a">
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
                                     data-oid="nu_x:by"
                                     onClick={() => {
-                                        const hexAddress = Buffer.from(umbraStore.umbraAddress).toString('hex');
-                                        const base58Address = bs58.encode(Buffer.from(umbraStore.umbraAddress));
+                                        const hexAddress = Buffer.from(
+                                            umbraStore.umbraAddress,
+                                        ).toString('hex');
+                                        const base58Address = bs58.encode(
+                                            Buffer.from(umbraStore.umbraAddress),
+                                        );
                                         navigator.clipboard.writeText(base58Address);
                                     }}
                                 >
