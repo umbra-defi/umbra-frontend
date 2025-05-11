@@ -74,14 +74,14 @@ export default function TransactionsLayout({ children }: { children: React.React
     const umbraAddress = umbraStore.umbraAddress;
     // Check if umbraAddress exists and is in the correct format
     const base58WalletAddress = umbraStore.umbraAddress
-        ? bs58.encode(Buffer.from(JSON.stringify(umbraStore.umbraAddress)))
+        ? bs58.encode(Buffer.from(umbraStore.umbraAddress))
         : 'No address available';
     const minifiedAddress = base58WalletAddress
         ? `${base58WalletAddress.slice(0, 4)}...${base58WalletAddress.slice(-4)}`
         : 'No address available';
 
     const handleCopyAddress = () => {
-        const base58Address = bs58.encode(Buffer.from(JSON.stringify(umbraAddress)));
+        const base58Address = bs58.encode(Buffer.from(umbraAddress));
         navigator.clipboard.writeText(base58Address);
         toast.success('Wallet address copied to clipboard', {
             style: {
@@ -225,15 +225,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 <button
                                     className="p-1 hover:text-gray-300 transition-colors"
                                     data-oid="nu_x:by"
-                                    onClick={() => {
-                                        const hexAddress = Buffer.from(
-                                            umbraStore.umbraAddress,
-                                        ).toString('hex');
-                                        const base58Address = bs58.encode(
-                                            Buffer.from(umbraStore.umbraAddress),
-                                        );
-                                        navigator.clipboard.writeText(base58Address);
-                                    }}
+                                    onClick={handleCopyAddress}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"

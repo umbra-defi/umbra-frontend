@@ -14,6 +14,7 @@ import { AnchorProvider, BN } from '@coral-xyz/anchor';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
 import { Connection } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
+import bs58 from 'bs58';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -228,7 +229,7 @@ export default function TransferPage() {
         const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
         const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-        const receiverAccountPDA = getUserAccountPDA(Buffer.from(recipientAddress, 'hex'));
+        const receiverAccountPDA = getUserAccountPDA(Buffer.from(bs58.decode(recipientAddress)));
         const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
 
         const cipher = new RescueCipher(
