@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn, toastError } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUmbraStore } from '../store/umbraStore';
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 
 // // Mock data for tokens
 // export const tokens = [
@@ -172,7 +173,8 @@ export default function TransactionsLayout({ children }: { children: React.React
                                     data-oid="nu_x:by"
                                     onClick={() => {
                                         const hexAddress = Buffer.from(umbraStore.umbraAddress).toString('hex');
-                                        navigator.clipboard.writeText(hexAddress);
+                                        const base58Address = bs58.encode(Buffer.from(umbraStore.umbraAddress));
+                                        navigator.clipboard.writeText(base58Address);
                                     }}
                                 >
                                     <svg
