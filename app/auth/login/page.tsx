@@ -88,8 +88,12 @@ export default function LoginPage() {
     };
 
     const resetState = () => {
+        if (wallet.connected) {
+            wallet.disconnect();
+        }
         setPassword('');
     };
+
 
     return (
         <>
