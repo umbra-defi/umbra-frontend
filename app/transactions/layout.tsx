@@ -1,20 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn, toastError } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUmbraStore } from '../store/umbraStore';
-
-// // Mock data for tokens
-// export const tokens = [
-//     { symbol: 'SOL', name: 'Solana' },
-//     { symbol: 'USDC', name: 'USD Coin' },
-//     { symbol: 'USDT', name: 'Tether' },
-//     { symbol: 'BTC', name: 'Bitcoin (Wrapped)' },
-//     { symbol: 'ETH', name: 'Ethereum (Wrapped)' },
-// ];
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
+import toast from 'react-hot-toast';
 
 // Fee types
 export const feeTypes = [
@@ -77,6 +70,31 @@ export default function TransactionsLayout({ children }: { children: React.React
     const tokenList = umbraStore.getTokenList();
     const tokens = Array.isArray(tokenList) ? tokenList : [];
     const activeToken = tokens.length > 0 ? tokens[0].ticker : '';
+    const umbraWalletBalance = umbraStore.umbraWalletBalance;
+    const umbraAddress = umbraStore.umbraAddress;
+    // Check if umbraAddress exists and is in the correct format
+    const base58WalletAddress = umbraStore.umbraAddress ? 
+        bs58.encode(Buffer.from(JSON.stringify(umbraStore.umbraAddress))) : 
+        'No address available';
+    const minifiedAddress = base58WalletAddress
+        ? `${base58WalletAddress.slice(0, 4)}...${base58WalletAddress.slice(-4)}`
+        : 'No address available';
+
+    const handleCopyAddress = () => {
+        const base58Address = bs58.encode(Buffer.from(JSON.stringify(umbraAddress)));
+        navigator.clipboard.writeText(base58Address);
+        toast.success('Wallet address copied to clipboard', {
+            style: {
+                background: '#333',
+                color: '#fff',
+                border: '1px solid #444',
+            },
+            duration: 2000,
+            position: 'bottom-right',
+        });
+    };
+
+    console.log({umbraStore})
 
     return (
         <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
@@ -92,10 +110,41 @@ export default function TransactionsLayout({ children }: { children: React.React
                     UMBRA
                 </div>
                 <div className="flex items-center gap-6" data-oid="u07fqct">
-                    <div className="text-white tracking-wide" data-oid="6zqx0vr">
-                        WALLET BALANCE: {}
+                    <div className="flex flex-col gap-2" data-oid="6zqx0vr">
+                        <div className="text-white/70 text-sm tracking-wide">
+                            Wallet Balance: 
+                            <span className="ml-2 text-white font-medium">
+                                {formattedOnChainBalance} {selectedTokenTicker || ''}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="text-white/70 text-sm tracking-wide">
+                                Wallet Address
+                                <span className="ml-2 text-white font-medium">{minifiedAddress}</span>
+                            </div>
+                            <button
+                                onClick={handleCopyAddress}
+                                className="p-1.5 hover:bg-gray-800 rounded-md transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="text-gray-400"
+                                >
+                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <Link href="/auth" data-oid="e3vl4-z">
+                    <Link href="/auth/login" data-oid="e3vl4-z">
                         <button
                             className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
                             data-oid="muq2emp"
@@ -120,16 +169,6 @@ export default function TransactionsLayout({ children }: { children: React.React
                         <button
                             className={cn(
                                 'py-4 text-center text-white uppercase tracking-wider transition-colors',
-                                activeTab === 'withdraw' && 'bg-[#111]',
-                            )}
-                            onClick={() => handleTabChange('withdraw')}
-                            data-oid="k66ti06"
-                        >
-                            Withdraw
-                        </button>
-                        <button
-                            className={cn(
-                                'py-4 text-center text-white uppercase tracking-wider transition-colors',
                                 activeTab === 'deposit' && 'bg-[#111]',
                             )}
                             onClick={() => handleTabChange('deposit')}
@@ -147,6 +186,16 @@ export default function TransactionsLayout({ children }: { children: React.React
                         >
                             Transfer
                         </button>
+                        <button
+                            className={cn(
+                                'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                activeTab === 'withdraw' && 'bg-[#111]',
+                            )}
+                            onClick={() => handleTabChange('withdraw')}
+                            data-oid="k66ti06"
+                        >
+                            Withdraw
+                        </button>
                     </div>
 
                     {/* Form Content */}
@@ -160,10 +209,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                         >
                             <div className="flex flex-col">
                                 <div className="tracking-wide" data-oid="g9ygc3n">
-                                    UMBRA WALLET BALANCE: {formattedUmbraBalance} {selectedTokenTicker || ''}
+                                    Umbra Wallet Balance: {formattedUmbraBalance} {selectedTokenTicker || ''}
                                 </div>
                                 <div className="tracking-wide mt-1 text-gray-400">
-                                    AVAILABLE ON-CHAIN BALANCE: {formattedOnChainBalance} {selectedTokenTicker || ''}
+                                    Available on-chain balance: {formattedOnChainBalance} {selectedTokenTicker || ''}
                                 </div>
                             </div>
                             <div className="flex gap-3" data-oid=".5vit.a">
@@ -172,7 +221,8 @@ export default function TransactionsLayout({ children }: { children: React.React
                                     data-oid="nu_x:by"
                                     onClick={() => {
                                         const hexAddress = Buffer.from(umbraStore.umbraAddress).toString('hex');
-                                        navigator.clipboard.writeText(hexAddress);
+                                        const base58Address = bs58.encode(Buffer.from(umbraStore.umbraAddress));
+                                        navigator.clipboard.writeText(base58Address);
                                     }}
                                 >
                                     <svg

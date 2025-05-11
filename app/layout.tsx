@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
     return (
-        <html lang="en" data-oid="h87ffk2">
+        <html lang="en" data-oid="h87ffk2" suppressHydrationWarning={true}>
             <body className="" data-oid="-x-.vry">
                 <Toaster position="top-right" />
                 <SolanaWalletProvider>
