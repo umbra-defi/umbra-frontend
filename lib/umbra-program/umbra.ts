@@ -177,6 +177,7 @@ export function getUserAccountPDA(umbraAddress: Buffer): PublicKey {
 }
 
 export function getTokenAccountPDA(userAccountPDA: PublicKey, mintAddress: PublicKey): PublicKey {
+    console.log(mintAddress);
     const [tokenAccountPDA, _bump] = PublicKey.findProgramAddressSync(
         [
             Buffer.from(UMBRA_PDA_DERIVATION_SEED),

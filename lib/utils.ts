@@ -30,6 +30,21 @@ export function toastError(error: string) {
     });
 }
 
+export function toastSuccess(message: string) {
+    toast.success(message, {
+        style: {
+            border: '1px solid #166534',
+            padding: '16px',
+            color: '#166534',
+            backgroundColor: '#DCFCE7',
+        },
+        iconTheme: {
+            primary: '#166534',
+            secondary: '#ECFDF5',
+        },
+    });
+}
+
 import { Connection, PublicKey } from '@solana/web3.js';
 import { AnchorProvider, Program, setProvider, Wallet } from '@coral-xyz/anchor';
 import { UmbraOnchain } from './umbra-program/umbra_onchain';

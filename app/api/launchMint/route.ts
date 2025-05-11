@@ -234,7 +234,7 @@ export async function createLaunchAndMintTokens(
         }
 
         // If recipient is provided, mint tokens to them
-        if (amountToMint > 0 && recipient) {
+        if (amountToMint >= 0 && recipient) {
             const recipientPubkey = new PublicKey(recipient);
 
             // Get mainnet mint info for decimals (needed for both new and existing mints)
