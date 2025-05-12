@@ -8,7 +8,7 @@ export const metadata: Metadata = {
      openGraph: {
         images: [
             {
-                url: 'https://umbra-frontend.vercel.app/IMG1.png',
+                url: '/IMG1.png',
                 width: 800,
                 height: 600,
                 alt: 'Umbra',
