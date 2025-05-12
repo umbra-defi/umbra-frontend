@@ -5,6 +5,14 @@ import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
     title: 'Umbra - Solana Web3 App',
     description: 'A secure Solana web3 application for transactions',
+     images: [
+            {
+                url: 'https://umbra-frontend.vercel.app/IMG1.png',
+                width: 800,
+                height: 600,
+                alt: 'Umbra',
+            },
+        ],
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
