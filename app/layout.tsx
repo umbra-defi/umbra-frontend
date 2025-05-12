@@ -3,9 +3,10 @@ import './globals.css';
 import { SolanaWalletProvider } from './providers/WalletProvider';
 import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
-    title: 'Umbra - Solana Web3 App',
-    description: 'A secure Solana web3 application for transactions',
-     images: [
+    title: 'Umbra',
+    description: 'End-to-end encrypted transfers on Solana powered by Arcium',
+     openGraph: {
+        images: [
             {
                 url: 'https://umbra-frontend.vercel.app/IMG1.png',
                 width: 800,
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
                 alt: 'Umbra',
             },
         ],
+    },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
