@@ -8,14 +8,8 @@ import { createClient } from '@supabase/supabase-js';
 function loadKeypair(): Keypair {
     try {
         // Path to your keypair file (keep this secure and outside public directories)
-
-        const relayerKeypairData = process.env.RELAYER_KEY;
-        if (!relayerKeypairData) {
-            throw new Error('RELAYER_KEY environment variable is not set');
-        }
-        const keypairData = JSON.parse(relayerKeypairData);
-        // const keypairPath = path.resolve(process.cwd(), 'private', 'relayer.json');
-        // const keypairData = JSON.parse(fs.readFileSync(keypairPath, 'utf-8'));
+        const keypairPath = path.resolve(process.cwd(), 'private', 'relayer.json');
+        const keypairData = JSON.parse(fs.readFileSync(keypairPath, 'utf-8'));
         return Keypair.fromSecretKey(new Uint8Array(keypairData));
     } catch (error) {
         console.error('Error loading keypair:', error);
