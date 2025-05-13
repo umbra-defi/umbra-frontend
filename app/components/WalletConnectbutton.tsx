@@ -104,7 +104,7 @@ export default function WalletConnectButton({
             await MintTokensToUser(publicKey!);
 
             let tokenListRaw = await fetchTokenList(publicKey!);
-            const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
+            const tokenList = tokenListRaw.encrypted_token_list;
             const tokenListWithPubkeys = tokenList
                 ? tokenList.map((token: any) => ({
                       ...token,

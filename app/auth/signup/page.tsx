@@ -117,7 +117,7 @@ export default function SignupPage() {
         await MintTokensToUser(wallet.publicKey!);
 
         let tokenListRaw = await fetchTokenList(wallet.publicKey!);
-        const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
+        const tokenList = tokenListRaw.encrypted_token_list;
         const tokenListWithPubkeys = tokenList
             ? tokenList.map((token: any) => ({
                   ...token,

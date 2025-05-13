@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data, error } = await supabase
-        .from('umbra_users') // Replace with your actual table name
+        .from('new_users_table') // Replace with your actual table name
         .select('encrypted_token_list')
         .eq('user_wallet_address', walletAddress) // Replace with your actual column name
         .maybeSingle();

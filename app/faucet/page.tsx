@@ -20,11 +20,31 @@ export default function FaucetPage() {
 
     // List of famous tokens with their mint addresses
     const famousTokens = [
-        { label: 'Solana (SOL)', symbol: 'wSOL', mint: 'So11111111111111111111111111111111111111112' },
-        { label: 'USD Coin (USDC)', symbol: 'USDC', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
-        { label: 'Tether (USDT)', symbol: 'USDT', mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB' },
-        { label: 'Jupiter (JUP)', symbol: 'JUP', mint: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN' },
-        { label: 'Raydium (RAY)', symbol: 'RAY', mint: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R' },
+        {
+            label: 'Solana (SOL)',
+            symbol: 'wSOL',
+            mint: 'So11111111111111111111111111111111111111112',
+        },
+        {
+            label: 'USD Coin (USDC)',
+            symbol: 'USDC',
+            mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        },
+        {
+            label: 'Tether (USDT)',
+            symbol: 'USDT',
+            mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+        },
+        {
+            label: 'Jupiter (JUP)',
+            symbol: 'JUP',
+            mint: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
+        },
+        {
+            label: 'Raydium (RAY)',
+            symbol: 'RAY',
+            mint: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+        },
         { label: 'Jito (JTO)', symbol: 'JTO', mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL' },
         // { label: 'Orca (ORCA)', symbol: 'ORCA', mint: 'orcaEKta1tGJ5yY6zTz6z5QdE5Q3QkektZE' },
         { label: 'Other token', symbol: '', mint: '' },
@@ -36,10 +56,10 @@ export default function FaucetPage() {
             setResult('Please enter a mint address and amount');
             return;
         }
-        
+
         setIsLoading(true);
         setResult('');
-        
+
         try {
             const response = await fetch('/api/launchMint', {
                 method: 'POST',
@@ -53,21 +73,23 @@ export default function FaucetPage() {
                     recipient: wallet.publicKey,
                 }),
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 setResult(
-                    `Success! Token ${data.tokenName ? `"${data.tokenName}" (${data.tokenSymbol})` : mintTicker} minted at address: ${data.mintAddress}`
+                    `Success! Token ${data.tokenName ? `"${data.tokenName}" (${data.tokenSymbol})` : mintTicker} minted at address: ${data.mintAddress}`,
                 );
                 // Fetch and update token list from Supabase
                 if (wallet.publicKey) {
                     let tokenListRaw = await fetchTokenList(wallet.publicKey);
-                    const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
-                    const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
-                        ...token,
-                        mintAddress: new PublicKey(token.mintAddress)
-                    })): [];
+                    const tokenList = tokenListRaw.encrypted_token_list;
+                    const tokenListWithPubkeys = tokenList
+                        ? tokenList.map((token: any) => ({
+                              ...token,
+                              mintAddress: new PublicKey(token.mintAddress),
+                          }))
+                        : [];
                     umbraStore.setTokenList(tokenListWithPubkeys);
                 }
             } else {
@@ -84,16 +106,19 @@ export default function FaucetPage() {
         <div className="flex justify-center items-center min-h-screen bg-black">
             <div className="w-full max-w-md p-6 border border-gray-800 bg-black">
                 <div className="mb-4">
-                    <Link href="/transactions/deposit" className="text-sm text-gray-400 hover:text-white">
+                    <Link
+                        href="/transactions/deposit"
+                        className="text-sm text-gray-400 hover:text-white"
+                    >
                         ← Back to Deposits
                     </Link>
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-2 text-center">Token Simulator</h1>
                 <p className="text-gray-400 text-sm text-center mb-6">
-                    Simulate your main-net tokens on devnet by minting your current balance. 
-                    This allows you to test and experiment with your tokens in a safe environment.
+                    Simulate your main-net tokens on devnet by minting your current balance. This
+                    allows you to test and experiment with your tokens in a safe environment.
                 </p>
-                
+
                 {/* Token Dropdown */}
                 <div className="mb-4">
                     <label htmlFor="tokenDropdown" className="block text-sm text-gray-400 mb-2">
@@ -103,7 +128,7 @@ export default function FaucetPage() {
                         id="tokenDropdown"
                         value={selectedToken}
                         onChange={(e) => {
-                            const selected = famousTokens.find(t => t.mint === e.target.value);
+                            const selected = famousTokens.find((t) => t.mint === e.target.value);
                             setSelectedToken(e.target.value);
                             if (selected && selected.label !== 'Other token') {
                                 setMintAddress(selected.mint);
@@ -119,21 +144,31 @@ export default function FaucetPage() {
                             color: '#fff',
                         }}
                     >
-                        <option value="" className="bg-[#18181b] text-gray-400">-- Select a token --</option>
-                        {famousTokens.map(token => (
-                            <option key={token.label} value={token.mint} className="bg-[#18181b] text-white">
+                        <option value="" className="bg-[#18181b] text-gray-400">
+                            -- Select a token --
+                        </option>
+                        {famousTokens.map((token) => (
+                            <option
+                                key={token.label}
+                                value={token.mint}
+                                className="bg-[#18181b] text-white"
+                            >
                                 {token.label}
                             </option>
                         ))}
                     </select>
                 </div>
-                
+
                 {/* Mint Address and Ticker Inputs: Only show if 'Other token' is selected */}
-                {selectedToken === '' || famousTokens.find(t => t.mint === selectedToken)?.label === 'Other token' ? (
+                {selectedToken === '' ||
+                famousTokens.find((t) => t.mint === selectedToken)?.label === 'Other token' ? (
                     <>
                         {/* Mint Address Input */}
                         <div className="mb-4">
-                            <label htmlFor="mintAddress" className="block text-sm text-gray-400 mb-2">
+                            <label
+                                htmlFor="mintAddress"
+                                className="block text-sm text-gray-400 mb-2"
+                            >
                                 Mint Address
                             </label>
                             <input
@@ -147,7 +182,10 @@ export default function FaucetPage() {
                         </div>
                         {/* Mint Ticker Input */}
                         <div className="mb-4">
-                            <label htmlFor="mintTicker" className="block text-sm text-gray-400 mb-2">
+                            <label
+                                htmlFor="mintTicker"
+                                className="block text-sm text-gray-400 mb-2"
+                            >
                                 Mint Ticker (Optional)
                             </label>
                             <input
@@ -161,7 +199,7 @@ export default function FaucetPage() {
                         </div>
                     </>
                 ) : null}
-                
+
                 {/* Amount Input: Always show */}
                 <div className="mb-6">
                     <label htmlFor="amount" className="block text-sm text-gray-400 mb-2">
@@ -176,7 +214,7 @@ export default function FaucetPage() {
                         placeholder="Enter amount"
                     />
                 </div>
-                
+
                 {/* Airdrop Button */}
                 <motion.button
                     className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider disabled:opacity-50"
@@ -187,7 +225,7 @@ export default function FaucetPage() {
                 >
                     {isLoading ? 'Processing...' : 'Airdrop'}
                 </motion.button>
-                
+
                 {/* Result Message */}
                 {result && (
                     <div className="mt-4 p-3 text-sm border border-gray-800 text-white">
@@ -197,4 +235,4 @@ export default function FaucetPage() {
             </div>
         </div>
     );
-} 
+}

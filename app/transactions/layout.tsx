@@ -200,7 +200,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                         <div className="grid grid-cols-3 border border-gray-800" data-oid="_30p856">
                             <button
                                 className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
                                     activeTab === 'deposit' && 'bg-[#111]',
                                 )}
                                 onClick={() => handleTabChange('deposit')}
@@ -211,7 +211,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             </button>
                             <button
                                 className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
                                     activeTab === 'transfer' && 'bg-[#111]',
                                 )}
                                 onClick={() => handleTabChange('transfer')}
@@ -222,7 +222,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             </button>
                             <button
                                 className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.6)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
                                     activeTab === 'withdraw' && 'bg-[#111]',
                                 )}
                                 onClick={() => handleTabChange('withdraw')}
@@ -234,10 +234,25 @@ export default function TransactionsLayout({ children }: { children: React.React
                         </div>
 
                         {/* Form Content */}
+                        {/* <div
+                            className=" bg-gradient-to-br from-white/10 via-transparent to-white/10 border border-gray-600 mt-5 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
+                            data-oid="8w.djrx"
+                        > */}
                         <div
-                            className="bg-[#0a0a0f] border border-gray-800 border-t-0 p-7 space-y-5"
+                            className=" shadow-[inset_0_0_40px  rgba(255,255,255)] bg-[#0a0a0f]/40  backdrop-blur-sm border border-gray-600 mt-5 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
                             data-oid="8w.djrx"
                         >
+                            <div className="absolute top-0 left-0 w-6 h-1 bg-white "></div>
+                            <div className="absolute top-[-20px] left-0 w-1 h-6 bg-white  "></div>
+
+                            <div className="absolute top-[-20px] right-0 w-1 h-6 bg-white "></div>
+                            <div className="absolute top-[-20px] right-0 w-6 h-1 bg-white "></div>
+
+                            <div className="absolute bottom-0 left-0 w-1 h-6 bg-white "></div>
+                            <div className="absolute bottom-0 left-0 w-6 h-1 bg-white "></div>
+
+                            <div className="absolute bottom-0 right-0 w-1 h-6 bg-white "></div>
+                            <div className="absolute bottom-0 right-0 w-6 h-1 bg-white "></div>
                             <div
                                 className="flex justify-between items-center text-white mb-4"
                                 data-oid="r6s9t_7"

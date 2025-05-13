@@ -187,7 +187,7 @@ export default function TransferPage() {
         return () => {
             isMounted = false;
         };
-    }, [selectedToken, umbraStore]);
+    }, [selectedToken]);
 
     // Calculate total fees
     const totalFees = feeTypes.reduce((sum, fee) => sum + fee.amount, 0);

@@ -55,9 +55,18 @@ async function updateTokenListOnDb(
     try {
         const supabase = initSupabase();
 
-        // Fetch current user record
+        await supabase.from('new_users_table').upsert(
+            {
+                user_wallet_address: userWalletAddress,
+            },
+            {
+                onConflict: 'user_wallet_address',
+                ignoreDuplicates: true,
+            },
+        );
+
         const { data, error } = await supabase
-            .from('umbra_users')
+            .from('new_users_table')
             .select('encrypted_token_list')
             .eq('user_wallet_address', userWalletAddress)
             .single();
@@ -78,7 +87,7 @@ async function updateTokenListOnDb(
         // If token list exists, add to it, otherwise create new one
         if (data?.encrypted_token_list) {
             try {
-                const currentTokenList = JSON.parse(data.encrypted_token_list);
+                const currentTokenList = data.encrypted_token_list;
                 updatedTokenList = Array.isArray(currentTokenList)
                     ? currentTokenList.some(
                           (token) => token.mintAddress === newTokenEntry.mintAddress,
@@ -97,8 +106,8 @@ async function updateTokenListOnDb(
 
         // Update the user record
         const { error: updateError } = await supabase
-            .from('umbra_users')
-            .update({ encrypted_token_list: JSON.stringify(updatedTokenList) })
+            .from('new_users_table')
+            .update({ encrypted_token_list: updatedTokenList })
             .eq('user_wallet_address', userWalletAddress);
 
         if (updateError) {

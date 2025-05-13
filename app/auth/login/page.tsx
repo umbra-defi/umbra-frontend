@@ -22,8 +22,8 @@ export default function LoginPage() {
 
     useEffect(() => {
         wallet.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const wallets = [
         { id: 'phantom', name: 'PHANTOM', icon: '🟣', wallet_name: PhantomWalletName },
@@ -34,7 +34,7 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            await wallet.select(walletName)
+            await wallet.select(walletName);
             await wallet.connect();
         } catch (err) {
             console.log(err);
@@ -59,24 +59,29 @@ export default function LoginPage() {
 
         const walletDetails = await tryLogin(wallet.publicKey!.toBase58(), password);
         if (walletDetails === null) {
-            toastError("Wallet is not registered! Redirecting to Signup...")
+            toastError('Wallet is not registered! Redirecting to Signup...');
             setLoading(false);
             router.push('/auth/signup');
             return;
         }
         if (!(await compare(password, walletDetails.password))) {
-            toastError("Incorrect Password!");
+            toastError('Incorrect Password!');
             setPassword('');
             return;
         }
 
-        const tokenList = JSON.parse(walletDetails.encrypted_token_list);
-        const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
-            ...token,
-            mintAddress: new PublicKey(token.mintAddress)
-        })): [];
+        const tokenList = walletDetails.encrypted_token_list;
+        const tokenListWithPubkeys = tokenList
+            ? tokenList.map((token: any) => ({
+                  ...token,
+                  mintAddress: new PublicKey(token.mintAddress),
+              }))
+            : [];
         const aesKey = await generateAesKey(password);
-        const {x25519Keypair, umbraAddress} = await decryptUserInformationWithAesKey(walletDetails.encrypted_data, aesKey);
+        const { x25519Keypair, umbraAddress } = await decryptUserInformationWithAesKey(
+            walletDetails.encrypted_data,
+            aesKey,
+        );
 
         umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
         umbraStore.setUmbraAddress(umbraAddress);
@@ -84,7 +89,6 @@ export default function LoginPage() {
 
         router.push('/transactions/deposit');
         setLoading(false);
-
     };
 
     const resetState = () => {
@@ -93,7 +97,6 @@ export default function LoginPage() {
         }
         setPassword('');
     };
-
 
     return (
         <>
@@ -125,7 +128,9 @@ export default function LoginPage() {
                         </motion.button>
                     ))}
                 </div>
-            ) : wallet.disconnecting ? "Wallet Disconnecting.." : (
+            ) : wallet.disconnecting ? (
+                'Wallet Disconnecting..'
+            ) : (
                 <div data-oid="06zufpo">
                     <form onSubmit={handleLogin} className="space-y-5" data-oid="6zp6d57">
                         <div
