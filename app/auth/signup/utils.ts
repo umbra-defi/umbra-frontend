@@ -12,8 +12,9 @@ import { x25519 } from '@arcium-hq/client';
 import { PublicKey, Transaction } from '@solana/web3.js';
 import { tokens } from '@/lib/constants';
 
-export function generateX25519Keypair(): X25519Keypair {
-    const x25519PrivKey = x25519.utils.randomPrivateKey();
+export function generateX25519Keypair(umbraAddress: UmbraAddress): X25519Keypair {
+    // const x25519PrivKey = x25519.utils.randomPrivateKey();
+    const x25519PrivKey = x25519.scalarMultBase(umbraAddress);
     const x25519PublicKey = x25519.getPublicKey(x25519PrivKey);
 
     return {

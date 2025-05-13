@@ -75,6 +75,10 @@ export function getConnection() {
 
 export function getUmbraProgram() {
     const connection = getConnection();
+    if (!window.solana) {
+        throw new Error('Solana wallet extension (e.g., Phantom) is not installed');
+    }
+
     const provider = new AnchorProvider(connection, window.solana, {});
     const program = new Program<UmbraOnchain>(umbraOnChainIDL, provider);
     return program;

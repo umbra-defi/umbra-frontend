@@ -362,6 +362,7 @@ export default function WithdrawPage() {
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
                         data-oid="8lswkbm"
+                        data-withdraw-amount
                     />
 
                     <div className="flex gap-2 mr-3">
@@ -508,7 +509,12 @@ export default function WithdrawPage() {
                 {balanceLoading ? (
                     <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
                 ) : (
-                    <span className="text-white">{typeof umbraStore.umbraWalletBalance === 'number' && typeof umbraStore.selectedTokenDecimals === 'number' ? (umbraStore.umbraWalletBalance / (10 ** umbraStore.selectedTokenDecimals)) : 0}</span>
+                    <span className="text-white">
+                        {typeof umbraStore.umbraWalletBalance === 'number' &&
+                        typeof umbraStore.selectedTokenDecimals === 'number'
+                            ? umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals
+                            : 0}
+                    </span>
                 )}
                 {selectedToken}
             </div>
@@ -600,6 +606,7 @@ export default function WithdrawPage() {
                 whileTap={{ scale: 0.98 }}
                 data-oid="l--tjxg"
                 disabled={loading}
+                data-withdraw-submit
             >
                 {loading ? (
                     <span className="flex items-center gap-2">
@@ -621,8 +628,12 @@ export default function WithdrawPage() {
                     display: inline-block;
                 }
                 @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
                 }
             `}</style>
         </>

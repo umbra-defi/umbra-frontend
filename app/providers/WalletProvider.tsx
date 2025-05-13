@@ -3,8 +3,14 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {
+    CoinbaseWalletAdapter,
+    PhantomWalletAdapter,
+    SolflareWalletAdapter,
+    TorusWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 
 export const SolanaWalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
     // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'
@@ -18,16 +24,18 @@ export const SolanaWalletProvider: FC<{ children: ReactNode }> = ({ children }) 
         () => [
             new PhantomWalletAdapter(),
             new SolflareWalletAdapter(),
+            new CoinbaseWalletAdapter(),
+            new TorusWalletAdapter(),
         ],
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [network]
+        [network],
     );
 
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
-                { children }
+                <WalletModalProvider> {children}</WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
     );
-}; 
+};

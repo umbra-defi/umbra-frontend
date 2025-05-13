@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Instrument_Sans, Inter } from 'next/font/google';
+
 import { SolanaWalletProvider } from './providers/WalletProvider';
 import { Toaster } from 'react-hot-toast';
 export const metadata: Metadata = {
@@ -18,6 +20,11 @@ export const metadata: Metadata = {
         ],
     },
 };
+
+const instrument_Sans = Instrument_Sans({ subsets: ['latin'] });
+
+// const inter = Inter({ subsets: ['latin'] });
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" data-oid="h87ffk2" suppressHydrationWarning={true}>

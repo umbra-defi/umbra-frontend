@@ -3,19 +3,19 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { 
+import {
     generateX25519Keypair,
-    generateUmbraAddress, 
-    generateAesKey, 
-    encryptUserInformationWithAesKey, 
-    pushRegistrationToUmbraBackend, 
-    checkIfDatabaseEntryExists, 
+    generateUmbraAddress,
+    generateAesKey,
+    encryptUserInformationWithAesKey,
+    pushRegistrationToUmbraBackend,
+    checkIfDatabaseEntryExists,
     getFirstRelayer,
     createUserAccountCreationTransaction,
     MintTokensToUser,
     fetchTokenList,
-    sendTransactionToRelayer} 
-from '@/app/auth/signup/utils';
+    sendTransactionToRelayer,
+} from '@/app/auth/signup/utils';
 import { useUmbraStore } from '@/app/store/umbraStore';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PhantomWalletName, SolflareWalletName } from '@solana/wallet-adapter-wallets';
@@ -29,14 +29,14 @@ export default function SignupPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [mintingTokens, setMintingTokens] = useState<boolean>(false);
- 
+
     const wallet = useWallet();
     const umbraStore = useUmbraStore();
 
     useEffect(() => {
         wallet.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const wallets = [
         { id: 'phantom', name: 'PHANTOM', icon: '🟣', wallet_name: PhantomWalletName },
@@ -47,7 +47,7 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-            await wallet.select(walletName)
+            await wallet.select(walletName);
             await wallet.connect();
         } catch (err) {
             console.log(err);
@@ -60,69 +60,70 @@ export default function SignupPage() {
         e.preventDefault();
 
         if (!wallet.connected) {
-            toastError('Please connect a wallet first...')
+            toastError('Please connect a wallet first...');
             return;
         }
 
-        if (password !== confirmPassword) {
-            toastError('Passwords do not match');
-            return;
-        }
+        // if (password !== confirmPassword) {
+        //     toastError('Passwords do not match');
+        //     return;
+        // }
 
-        if (password.length < 8) {
-            toastError('Password must be at least 8 characters');
-            return;
-        }
+        // if (password.length < 8) {
+        //     toastError('Password must be at least 8 characters');
+        //     return;
+        // }
 
         setLoading(true);
-        const isUserRegistered = await checkIfDatabaseEntryExists(wallet.publicKey!.toBase58())
+        const isUserRegistered = await checkIfDatabaseEntryExists(wallet.publicKey!.toBase58());
         if (isUserRegistered) {
-            toastError('User with this wallet already exists! Redirecting to Login...')
+            toastError('User with this wallet already exists! Redirecting to Login...');
             setLoading(false);
             wallet.disconnect();
             while (wallet.disconnecting);
-            router.push('/auth/login')
+            router.push('/auth/login');
             return;
         }
 
         // Client Side Creation!
-        const x25519Keypair = generateX25519Keypair();
         const umbraAddress = await generateUmbraAddress(wallet.signMessage!);
-        const aesKey = await generateAesKey(password);
-        const encryptedUserInformation = await encryptUserInformationWithAesKey(
-            x25519Keypair.privateKey,
-            umbraAddress,
-            aesKey
-        );
-        const walletAddress = wallet.publicKey!;
+        const x25519Keypair = generateX25519Keypair(umbraAddress);
+        // const aesKey = await generateAesKey(password);
+        // const encryptedUserInformation = await encryptUserInformationWithAesKey(
+        //     x25519Keypair.privateKey,
+        //     umbraAddress,
+        //     aesKey,
+        // );
+        // const walletAddress = wallet.publicKey!;
 
         // Setting the Zustand Store
         umbraStore.setUmbraAddress(umbraAddress);
         umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
 
-
         // Sending the blockchain transactions
-        const tx = await createUserAccountCreationTransaction(x25519Keypair.publicKey, umbraAddress, wallet.publicKey!)
+        const tx = await createUserAccountCreationTransaction(
+            x25519Keypair.publicKey,
+            umbraAddress,
+            wallet.publicKey!,
+        );
         await wallet.signTransaction!(tx);
         let response = await sendTransactionToRelayer(tx);
         console.log((await response.json()).signature);
 
-        await pushRegistrationToUmbraBackend(
-            walletAddress,
-            password,
-            encryptedUserInformation
-        );
-        setMintingTokens(true)
+        // await pushRegistrationToUmbraBackend(walletAddress, password, encryptedUserInformation);
+        setMintingTokens(true);
 
         // Mint balances on equivalent mints
-        await MintTokensToUser(wallet.publicKey!)
+        await MintTokensToUser(wallet.publicKey!);
 
-        let tokenListRaw = await fetchTokenList(wallet.publicKey!)
+        let tokenListRaw = await fetchTokenList(wallet.publicKey!);
         const tokenList = JSON.parse(tokenListRaw.encrypted_token_list);
-        const tokenListWithPubkeys = tokenList ? tokenList.map((token: any) => ({
-            ...token,
-            mintAddress: new PublicKey(token.mintAddress)
-        })): [];
+        const tokenListWithPubkeys = tokenList
+            ? tokenList.map((token: any) => ({
+                  ...token,
+                  mintAddress: new PublicKey(token.mintAddress),
+              }))
+            : [];
 
         umbraStore.setTokenList(tokenListWithPubkeys);
         router.push('/transactions/deposit');
@@ -130,11 +131,10 @@ export default function SignupPage() {
     };
 
     const resetState = () => {
-
         if (wallet.connected) {
             wallet.disconnect();
         }
-    
+
         setPassword('');
         setConfirmPassword('');
     };
@@ -166,7 +166,9 @@ export default function SignupPage() {
                         </motion.button>
                     ))}
                 </div>
-            ) : wallet.disconnecting? "Wallet Disconnecting" : (
+            ) : wallet.disconnecting ? (
+                'Wallet Disconnecting'
+            ) : (
                 <div data-oid="b8uatyb">
                     <form onSubmit={handleSignup} className="space-y-5" data-oid="u9di9hc">
                         <div
@@ -174,14 +176,18 @@ export default function SignupPage() {
                             data-oid="--k:-9w"
                         >
                             <p className="text-sm text-gray-400" data-oid="r.jh0lo">
-                                {wallet.connected ? "Connected Wallet Address" : wallet.connecting ? "Connecting Your Wallet..." : "Connect Your Wallet..."}
+                                {wallet.connected
+                                    ? 'Connected Wallet Address'
+                                    : wallet.connecting
+                                      ? 'Connecting Your Wallet...'
+                                      : 'Connect Your Wallet...'}
                             </p>
                             <p className="text-sm text-gray-400 font-mono mt-1" data-oid="jny3uj5">
                                 {wallet.publicKey?.toBase58()}
                             </p>
                         </div>
 
-                        <div data-oid="350atx3">
+                        {/* <div data-oid="350atx3">
                             <label className="block text-sm text-gray-400 mb-2" data-oid="wwu1niw">
                                 Set Password
                             </label>
@@ -209,7 +215,7 @@ export default function SignupPage() {
                                 required
                                 data-oid="f6tcr5n"
                             />
-                        </div>
+                        </div> */}
 
                         <motion.button
                             type="submit"
@@ -219,7 +225,11 @@ export default function SignupPage() {
                             whileTap={{ scale: 0.98 }}
                             data-oid="13v3tdl"
                         >
-                            {loading ? mintingTokens ? 'Minting Your Tokens...' : "Processing..." : 'Create Account'}
+                            {loading
+                                ? mintingTokens
+                                    ? 'Minting Your Tokens...'
+                                    : 'Processing...'
+                                : 'Create Account'}
                         </motion.button>
                     </form>
 

@@ -355,6 +355,7 @@ export default function TransferPage() {
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
                         data-oid="5mng-xb"
+                        data-transfer-amount
                     />
 
                     <div className="flex gap-2 mr-3" data-oid="_njm51w">
@@ -505,6 +506,7 @@ export default function TransferPage() {
                     className="w-10/12 flex-1 bg-transparent text-white border border-gray-800 p-4 outline-none"
                     placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
+                    data-transfer-recipient
                 />
                 <div className="flex items-center justify-center bg-black border border-gray-800 p-2 cursor-pointer sm:hidden">
                     <ScanQrCodeIcon
@@ -620,6 +622,7 @@ export default function TransferPage() {
                 whileTap={{ scale: 0.98 }}
                 data-oid="x-bpec_"
                 disabled={loading}
+                data-transfer-submit
             >
                 {loading ? (
                     <span className="flex items-center gap-2">

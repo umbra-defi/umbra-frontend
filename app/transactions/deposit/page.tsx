@@ -19,7 +19,13 @@ import {
     getTokenAccountPDA,
     getUserAccountPDA,
 } from '@/lib/umbra-program/umbra';
-import { getConnection, getDevnetConnection, getUmbraProgram, toastError, toastSuccess } from '@/lib/utils';
+import {
+    getConnection,
+    getDevnetConnection,
+    getUmbraProgram,
+    toastError,
+    toastSuccess,
+} from '@/lib/utils';
 import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
 import { randomBytes, sign } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
@@ -338,7 +344,10 @@ export default function DepositPage() {
             }
 
             const nonce = randomBytes(16);
-            const newDepositCipherText = cipher.encrypt([BigInt(rawAmount)], Uint8Array.from(nonce));
+            const newDepositCipherText = cipher.encrypt(
+                [BigInt(rawAmount)],
+                Uint8Array.from(nonce),
+            );
 
             const computationOffset = new BN(randomBytes(8), 'hex');
             const depositTx = await depositAmount(
@@ -367,7 +376,10 @@ export default function DepositPage() {
             );
             console.log(txSignature);
 
-            tokenAccount = await program.account.umbraTokenAccount.fetch(tokenAccountPDA, 'confirmed');
+            tokenAccount = await program.account.umbraTokenAccount.fetch(
+                tokenAccountPDA,
+                'confirmed',
+            );
             const encryptedBalance = tokenAccount.balance[0];
             const encryptionNonce = tokenAccount.nonce[0].toArray('le', 16);
             const decryptedBalance = cipher.decrypt(
@@ -424,7 +436,13 @@ export default function DepositPage() {
                 {balanceLoading ? (
                     <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
                 ) : (
-                    <span className="text-white">{typeof umbraStore.availableOnChainBalance === 'number' && typeof umbraStore.selectedTokenDecimals === 'number' ? (umbraStore.availableOnChainBalance / (10 ** umbraStore.selectedTokenDecimals)) : 0}</span>
+                    <span className="text-white">
+                        {typeof umbraStore.availableOnChainBalance === 'number' &&
+                        typeof umbraStore.selectedTokenDecimals === 'number'
+                            ? umbraStore.availableOnChainBalance /
+                              10 ** umbraStore.selectedTokenDecimals
+                            : 0}
+                    </span>
                 )}
                 {selectedToken}
             </div>
@@ -436,6 +454,7 @@ export default function DepositPage() {
                     data-oid="9zh0u1."
                 >
                     <input
+                        data-deposit-amount
                         type="text"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
@@ -669,6 +688,7 @@ export default function DepositPage() {
                 whileTap={{ scale: 0.98 }}
                 data-oid=":xcq1mj"
                 disabled={loading}
+                data-deposit-submit
             >
                 {loading ? (
                     <span className="flex items-center gap-2">
@@ -690,8 +710,12 @@ export default function DepositPage() {
                     display: inline-block;
                 }
                 @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
                 }
             `}</style>
         </>

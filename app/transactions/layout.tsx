@@ -8,6 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUmbraStore } from '../store/umbraStore';
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import toast from 'react-hot-toast';
+import { TooltipProvider } from '../context/tooltip-context';
+import { TooltipTour } from '../components/tooltip-tour';
+import { TourButton } from '../components/tour-button';
+import WalletConnectButton from '../components/WalletConnectbutton';
+import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 // Fee types
 export const feeTypes = [
@@ -45,6 +51,7 @@ export default function TransactionsLayout({ children }: { children: React.React
     const pathname = usePathname();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<string>('deposit');
+    const { connected, publicKey, disconnect } = useWallet();
 
     // Determine active tab from URL
     useEffect(() => {
@@ -61,6 +68,22 @@ export default function TransactionsLayout({ children }: { children: React.React
 
     const handleTabChange = (tab: string) => {
         router.push(`/transactions/${tab}`);
+    };
+
+    const handleDisconnect = async () => {
+        try {
+            // Disconnect wallet using Solana wallet adapter
+            await disconnect();
+
+            // Show toast notification
+            // showToast('Wallet disconnected successfully', 'success');
+
+            // Redirect to home page
+            router.push('/');
+        } catch (error) {
+            console.error('Error disconnecting wallet:', error);
+            // showToast('Failed to disconnect wallet', 'error');
+        }
     };
 
     const umbraStore = useUmbraStore();
@@ -97,183 +120,196 @@ export default function TransactionsLayout({ children }: { children: React.React
     console.log({ umbraStore });
 
     return (
-        <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
-            {/* Header */}
-            <motion.header
-                className="w-full p-6 flex justify-between items-center border-b border-gray-800 bg-black"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                data-oid=".joyuax"
-            >
-                <div className="text-white font-bold text-xl tracking-wide" data-oid=".7xj-a8">
-                    UMBRA
-                </div>
-                <div className="flex items-center gap-6" data-oid="u07fqct">
-                    <div className="flex flex-col gap-2" data-oid="6zqx0vr">
-                        <div className="text-white/70 text-sm tracking-wide">
-                            Wallet Balance:
-                            <span className="ml-2 text-white font-medium">
-                                {formattedOnChainBalance} {selectedTokenTicker || ''}
-                            </span>
+        <TooltipProvider>
+            <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
+                {/* Header */}
+                <motion.header
+                    className="w-full p-6 flex justify-between items-center border-b border-gray-800 bg-black"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    data-oid=".joyuax"
+                >
+                    <Link href="/" data-oid="e3vl4-z">
+                        <div
+                            className="text-white font-bold text-xl tracking-wide hover:cursor:pointer"
+                            data-oid=".7xj-a8"
+                        >
+                            UMBRA
                         </div>
-                        <div className="flex items-center gap-2">
+                    </Link>
+                    <div className="flex items-center gap-6" data-oid="u07fqct">
+                        <div className="flex flex-col gap-2" data-oid="6zqx0vr">
                             <div className="text-white/70 text-sm tracking-wide">
-                                Wallet Address
+                                Wallet Balance:
                                 <span className="ml-2 text-white font-medium">
-                                    {minifiedAddress}
+                                    {formattedOnChainBalance} {selectedTokenTicker || ''}
                                 </span>
                             </div>
-                            <button
-                                onClick={handleCopyAddress}
-                                className="p-1.5 hover:bg-gray-800 rounded-md transition-colors"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="text-gray-400"
-                                >
-                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <Link href="/auth/login" data-oid="e3vl4-z">
-                        <button
-                            className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
-                            data-oid="muq2emp"
-                        >
-                            Logout
-                        </button>
-                    </Link>
-                </div>
-            </motion.header>
-
-            {/* Main Content */}
-            <div className="flex-1 flex items-center justify-center p-6" data-oid="vfsf9yc">
-                <motion.div
-                    className="w-full max-w-[590px]"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    data-oid="a7tr4c_"
-                >
-                    {/* Tabs */}
-                    <div className="grid grid-cols-3 border border-gray-800" data-oid="_30p856">
-                        <button
-                            className={cn(
-                                'py-4 text-center text-white uppercase tracking-wider transition-colors',
-                                activeTab === 'deposit' && 'bg-[#111]',
-                            )}
-                            onClick={() => handleTabChange('deposit')}
-                            data-oid="uzxgac-"
-                        >
-                            Deposit
-                        </button>
-                        <button
-                            className={cn(
-                                'py-4 text-center text-white uppercase tracking-wider transition-colors',
-                                activeTab === 'transfer' && 'bg-[#111]',
-                            )}
-                            onClick={() => handleTabChange('transfer')}
-                            data-oid="wfa_9-6"
-                        >
-                            Transfer
-                        </button>
-                        <button
-                            className={cn(
-                                'py-4 text-center text-white uppercase tracking-wider transition-colors',
-                                activeTab === 'withdraw' && 'bg-[#111]',
-                            )}
-                            onClick={() => handleTabChange('withdraw')}
-                            data-oid="k66ti06"
-                        >
-                            Withdraw
-                        </button>
-                    </div>
-
-                    {/* Form Content */}
-                    <div
-                        className="bg-[#0a0a0f] border border-gray-800 border-t-0 p-7 space-y-5"
-                        data-oid="8w.djrx"
-                    >
-                        <div
-                            className="flex justify-between items-center text-white mb-4"
-                            data-oid="r6s9t_7"
-                        >
-                            <div className="flex flex-col">
-                                <div className="tracking-wide" data-oid="g9ygc3n">
-                                    Umbra Wallet Balance: {formattedUmbraBalance}{' '}
-                                    {selectedTokenTicker || ''}
+                            <div className="flex items-center gap-2">
+                                <div className="text-white/70 text-sm tracking-wide">
+                                    Wallet Address
+                                    <span className="ml-2 text-white font-medium">
+                                        {minifiedAddress}
+                                    </span>
                                 </div>
-                                {activeTab !== 'transfer' && (
-                                    <div className="tracking-wide mt-1 text-gray-400">
-                                        Connected wallet balance: {formattedOnChainBalance}{' '}
-                                        {selectedTokenTicker || ''}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex gap-3" data-oid=".5vit.a">
                                 <button
-                                    className="p-1 hover:text-gray-300 transition-colors"
-                                    data-oid="nu_x:by"
                                     onClick={handleCopyAddress}
+                                    className="p-1.5 hover:bg-gray-800 rounded-md transition-colors"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        width="22"
-                                        height="22"
+                                        width="16"
+                                        height="16"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="currentColor"
-                                        strokeWidth="1.5"
+                                        strokeWidth="2"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        className="lucide lucide-copy"
-                                        data-oid="5s-7heq"
+                                        className="text-gray-400"
                                     >
-                                        <rect
-                                            width="14"
-                                            height="14"
-                                            x="8"
-                                            y="8"
-                                            rx="0"
-                                            ry="0"
-                                            data-oid="7vtxoaz"
-                                        />
-
-                                        <path
-                                            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                            data-oid=":iq44jv"
-                                        />
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                                     </svg>
                                 </button>
                             </div>
                         </div>
-
-                        <AnimatePresence mode="wait" data-oid="2whknka">
-                            <motion.div
-                                key={activeTab}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.2 }}
-                                data-oid="nsvx_xd"
+                        <Link href="/" data-oid="e3vl4-z">
+                            <button
+                                className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
+                                data-oid="muq2emp"
+                                onClick={handleDisconnect}
                             >
-                                {children}
-                            </motion.div>
-                        </AnimatePresence>
+                                Disconnect
+                            </button>
+                        </Link>
                     </div>
-                </motion.div>
+                </motion.header>
+
+                {/* Main Content */}
+                <div className="flex-1 flex items-center justify-center p-6" data-oid="vfsf9yc">
+                    <motion.div
+                        className="w-full max-w-[590px]"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        data-oid="a7tr4c_"
+                    >
+                        {/* Tabs */}
+                        <div className="grid grid-cols-3 border border-gray-800" data-oid="_30p856">
+                            <button
+                                className={cn(
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    activeTab === 'deposit' && 'bg-[#111]',
+                                )}
+                                onClick={() => handleTabChange('deposit')}
+                                data-oid="uzxgac-"
+                                data-tab="deposit"
+                            >
+                                Deposit
+                            </button>
+                            <button
+                                className={cn(
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    activeTab === 'transfer' && 'bg-[#111]',
+                                )}
+                                onClick={() => handleTabChange('transfer')}
+                                data-oid="wfa_9-6"
+                                data-tab="transfer"
+                            >
+                                Transfer
+                            </button>
+                            <button
+                                className={cn(
+                                    'py-4 text-center text-white uppercase tracking-wider transition-colors',
+                                    activeTab === 'withdraw' && 'bg-[#111]',
+                                )}
+                                onClick={() => handleTabChange('withdraw')}
+                                data-oid="k66ti06"
+                                data-tab="withdraw"
+                            >
+                                Withdraw
+                            </button>
+                        </div>
+
+                        {/* Form Content */}
+                        <div
+                            className="bg-[#0a0a0f] border border-gray-800 border-t-0 p-7 space-y-5"
+                            data-oid="8w.djrx"
+                        >
+                            <div
+                                className="flex justify-between items-center text-white mb-4"
+                                data-oid="r6s9t_7"
+                            >
+                                <div className="flex flex-col">
+                                    <div className="tracking-wide" data-oid="g9ygc3n">
+                                        Umbra Wallet Balance: {formattedUmbraBalance}{' '}
+                                        {selectedTokenTicker || ''}
+                                    </div>
+                                    {activeTab !== 'transfer' && (
+                                        <div className="tracking-wide mt-1 text-gray-400">
+                                            Connected wallet balance: {formattedOnChainBalance}{' '}
+                                            {selectedTokenTicker || ''}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex gap-3" data-oid=".5vit.a">
+                                    <button
+                                        className="p-1 hover:text-gray-300 transition-colors"
+                                        data-oid="nu_x:by"
+                                        onClick={handleCopyAddress}
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="22"
+                                            height="22"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="lucide lucide-copy"
+                                            data-oid="5s-7heq"
+                                        >
+                                            <rect
+                                                width="14"
+                                                height="14"
+                                                x="8"
+                                                y="8"
+                                                rx="0"
+                                                ry="0"
+                                                data-oid="7vtxoaz"
+                                            />
+
+                                            <path
+                                                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                                                data-oid=":iq44jv"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <AnimatePresence mode="wait" data-oid="2whknka">
+                                <motion.div
+                                    key={activeTab}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.2 }}
+                                    data-oid="nsvx_xd"
+                                >
+                                    {children}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                    </motion.div>
+                </div>
+                <TooltipTour />
+                <TourButton />
             </div>
-        </div>
+        </TooltipProvider>
     );
 }
