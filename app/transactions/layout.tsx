@@ -15,6 +15,7 @@ import WalletConnectButton from '../components/WalletConnectbutton';
 import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
+import WalletModal from '../components/ui/WalletModal';
 
 // Fee types
 export const feeTypes = [
@@ -146,7 +147,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                     </Link>
                     <div className="flex items-center gap-6" data-oid="u07fqct">
                         <div className="flex flex-col gap-2" data-oid="6zqx0vr">
-                            <div className="text-white/70 text-sm tracking-wide">
+                            {/* <div className="text-white/70 text-sm tracking-wide">
                                 Wallet Balance:
                                 <span className="ml-2 text-white font-medium">
                                     {formattedOnChainBalance} {selectedTokenTicker || ''}
@@ -179,7 +180,13 @@ export default function TransactionsLayout({ children }: { children: React.React
                                         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                                     </svg>
                                 </button>
-                            </div>
+                            </div> */}
+
+                            <WalletModal
+                                formattedOnChainBalance={formattedOnChainBalance}
+                                selectedTokenTicker={selectedTokenTicker}
+                                walletAddress={minifiedAddress}
+                            />
                         </div>
                         <Link href="/" data-oid="e3vl4-z">
                             <button
