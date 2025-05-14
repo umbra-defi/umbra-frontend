@@ -180,13 +180,12 @@ export default function DepositPage() {
 
                 const program = getUmbraProgram();
 
-                console.log(umbraStore.x25519PrivKey, 'priv key');
                 console.log(mxePublicKey, 'mxePublicKey');
+
+                const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+                console.log(privKey, 'priv key');
                 const cipher = new RescueCipher(
-                    x25519.getSharedSecret(
-                        Uint8Array.from(umbraStore.x25519PrivKey),
-                        Uint8Array.from(mxePublicKey),
-                    ),
+                    x25519.getSharedSecret(Uint8Array.from(privKey), Uint8Array.from(mxePublicKey)),
                 );
 
                 try {
@@ -303,20 +302,28 @@ export default function DepositPage() {
 
             // Create and sign transaction
             const transaction = new Transaction().add(transferInstruction);
-            const { blockhash } = await connection.getLatestBlockhash();
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = wallet.publicKey!;
+            transaction.lastValidBlockHeight = lastValidBlockHeight;
 
-            const signedTx = await wallet.signTransaction!(transaction);
-            const signature = await connection.sendRawTransaction(signedTx.serialize());
-            await connection.confirmTransaction(signature);
+            try {
+                console.log('triggered deposit', transaction);
+                const signedTx = await wallet.signTransaction!(transaction);
+                console.log('triggered deposit again');
+                const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+                    skipPreflight: true,
+                });
+                await connection.confirmTransaction(signature);
+            } catch (error) {
+                console.log(error);
+            }
 
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-            const cipher = new RescueCipher(
-                x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-            );
+            const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+            const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
 
             const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
                 await getFirstRelayer();
@@ -339,7 +346,7 @@ export default function DepositPage() {
 
                 const createTokenTx = await createTokenAccount(
                     getUmbraProgram(),
-                    mintAddress,
+                    new PublicKey(mintAddress),
                     Buffer.from(zeroBalanceCipherText[0]),
                     nonce,
                     userAccountPDA,

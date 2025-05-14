@@ -51,39 +51,15 @@ export default function WalletConnectButton({
         setMounted(true);
     }, []);
 
-    // This runs after wallet connection state is determined
     useEffect(() => {
-        console.log(connected);
-        if (!mounted) return;
-
-        const processWalletConnection = async () => {
-            if (connected && publicKey) {
-                // Fast path: Check if the user already has an account and redirect immediately
-                try {
-                    const umbraAddress = await generateUmbraAddress(signMessage!);
-                    const result = await tryFetchUserAccount(umbraAddress);
-                    if (result) {
-                        router.push('/transactions/deposit');
-                        return;
-                    }
-
-                    // Continue with wallet connection flow if user account not found
-                    // if (trigger) {
-                    await handleWalletConnected(publicKey);
-                    setTrigger(false);
-                    // }
-                } catch (err) {
-                    console.error('Error during wallet processing:', err);
-                }
-            } else {
-                // Reset state if disconnected
-                setBalance(null);
-                setIsLoading(false);
-            }
-        };
-
-        processWalletConnection();
-    }, [connected]);
+        if (connected && publicKey) {
+            handleWalletConnected(publicKey);
+        } else {
+            // Reset state when wallet disconnects
+            setBalance(null);
+            setIsLoading(false);
+        }
+    }, [connected, publicKey, onConnect]);
 
     // Function to handle actions when wallet connects
     const handleWalletConnected = async (publicKey: PublicKey) => {
@@ -93,6 +69,8 @@ export default function WalletConnectButton({
             //     toastError('Please connect a wallet first...');
             //     return;
             // }
+
+            console.log('triggered');
 
             const umbraAddress = await generateUmbraAddress(signMessage!);
             const x25519Keypair = generateX25519Keypair(umbraAddress);
@@ -109,6 +87,17 @@ export default function WalletConnectButton({
             const result = tryFetchUserAccount(umbraAddress);
 
             if (await result) {
+                let tokenListRaw = await fetchTokenList(publicKey!);
+                const tokenList = tokenListRaw.encrypted_token_list;
+                const tokenListWithPubkeys = tokenList
+                    ? tokenList.map((token: any) => ({
+                          ...token,
+                          mintAddress: new PublicKey(token.mintAddress),
+                      }))
+                    : [];
+
+                umbraStore.setTokenList(tokenListWithPubkeys);
+
                 // do something with the result
                 console.log('User account found:', result);
                 router.push('/transactions/deposit');
@@ -140,6 +129,7 @@ export default function WalletConnectButton({
                 : [];
 
             umbraStore.setTokenList(tokenListWithPubkeys);
+
             router.push('/transactions/deposit');
             setIsLoading(false);
 

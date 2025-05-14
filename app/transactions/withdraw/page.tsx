@@ -136,10 +136,10 @@ export default function WithdrawPage() {
                 const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
                 const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
+                const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+
                 const program = getUmbraProgram();
-                const cipher = new RescueCipher(
-                    x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-                );
+                const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
 
                 try {
                     const tokenAccount =
@@ -228,9 +228,9 @@ export default function WithdrawPage() {
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const userTokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
-            const cipher = new RescueCipher(
-                x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-            );
+            const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+
+            const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
             const nonce = randomBytes(16);
             const withdrawalAmountEncrypted = cipher.encrypt(
                 [BigInt(rawAmount)],

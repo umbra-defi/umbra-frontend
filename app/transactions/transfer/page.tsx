@@ -151,10 +151,10 @@ export default function TransferPage() {
                 const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
                 const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
+                const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+
                 const program = getUmbraProgram();
-                const cipher = new RescueCipher(
-                    x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-                );
+                const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
 
                 try {
                     const tokenAccount =
@@ -258,9 +258,9 @@ export default function TransferPage() {
             );
             const receiverTokenAccountPDA = getTokenAccountPDA(receiverAccountPDA, mintAddress);
 
-            const cipher = new RescueCipher(
-                x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
-            );
+            const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
+
+            const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
             let tokenAccount = await program.account.umbraTokenAccount.fetch(userTokenAccountPDA);
             const nonce = tokenAccount.nonce[0].toArray('le', 16);
             let decryptedBalance = cipher.decrypt(
