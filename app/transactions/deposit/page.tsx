@@ -171,6 +171,7 @@ export default function DepositPage() {
                 if (!selectedTokenData) return;
 
                 const mintAddress = selectedTokenData.mintAddress;
+                console.log(mintAddress, 'mintadress deposit tab');
                 const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
                 const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 

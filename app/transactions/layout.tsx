@@ -124,7 +124,7 @@ export default function TransactionsLayout({ children }: { children: React.React
             <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
                 {/* Header */}
                 <motion.header
-                    className="w-full p-6 flex justify-between items-center border-b border-gray-800 bg-black"
+                    className="w-full p-6 flex justify-between items-center"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
@@ -177,7 +177,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                         </div>
                         <Link href="/" data-oid="e3vl4-z">
                             <button
-                                className="text-white border border-gray-800 px-5 py-2 hover:bg-gray-900 transition-colors"
+                                className=" border border-gray-800 px-5 py-2 text-white bg-[#2D2E34] transition-colors"
                                 data-oid="muq2emp"
                                 onClick={handleDisconnect}
                             >
@@ -188,49 +188,83 @@ export default function TransactionsLayout({ children }: { children: React.React
                 </motion.header>
 
                 {/* Main Content */}
-                <div className="flex-1 flex items-center justify-center p-6" data-oid="vfsf9yc">
+                <div className="flex-1 flex items-center justify-center p-6">
                     <motion.div
                         className="w-full max-w-[590px]"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.3 }}
-                        data-oid="a7tr4c_"
                     >
                         {/* Tabs */}
-                        <div className="grid grid-cols-3 border border-gray-800" data-oid="_30p856">
-                            <button
-                                className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
-                                    activeTab === 'deposit' && 'bg-[#111]',
+                        <div className="grid grid-cols-3 border border-gray-800">
+                            <div className="relative">
+                                <button
+                                    className={cn(
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        activeTab === 'deposit' && 'bg-[#2D2E34]',
+                                    )}
+                                    onClick={() => handleTabChange('deposit')}
+                                    data-tab="deposit"
+                                >
+                                    Deposit
+                                </button>
+
+                                {/* Dots for deposit tab */}
+                                {activeTab === 'deposit' && (
+                                    <>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                    </>
                                 )}
-                                onClick={() => handleTabChange('deposit')}
-                                data-oid="uzxgac-"
-                                data-tab="deposit"
-                            >
-                                Deposit
-                            </button>
-                            <button
-                                className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
-                                    activeTab === 'transfer' && 'bg-[#111]',
+                            </div>
+
+                            <div className="relative">
+                                <button
+                                    className={cn(
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        activeTab === 'transfer' && 'bg-[#2D2E34]',
+                                    )}
+                                    onClick={() => handleTabChange('transfer')}
+                                    data-tab="transfer"
+                                >
+                                    Transfer
+                                </button>
+
+                                {/* Dots for transfer tab */}
+                                {activeTab === 'transfer' && (
+                                    <>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                    </>
                                 )}
-                                onClick={() => handleTabChange('transfer')}
-                                data-oid="wfa_9-6"
-                                data-tab="transfer"
-                            >
-                                Transfer
-                            </button>
-                            <button
-                                className={cn(
-                                    'py-4 text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px  rgba(255,255,255,0.6)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600',
-                                    activeTab === 'withdraw' && 'bg-[#111]',
+                            </div>
+
+                            <div className="relative">
+                                <button
+                                    className={cn(
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        activeTab === 'withdraw' && 'bg-[#2D2E34]',
+                                    )}
+                                    onClick={() => handleTabChange('withdraw')}
+                                    data-tab="withdraw"
+                                >
+                                    Withdraw
+                                </button>
+
+                                {/* Dots for withdraw tab */}
+                                {activeTab === 'withdraw' && (
+                                    <>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                    </>
                                 )}
-                                onClick={() => handleTabChange('withdraw')}
-                                data-oid="k66ti06"
-                                data-tab="withdraw"
-                            >
-                                Withdraw
-                            </button>
+                            </div>
                         </div>
 
                         {/* Form Content */}
@@ -239,20 +273,21 @@ export default function TransactionsLayout({ children }: { children: React.React
                             data-oid="8w.djrx"
                         > */}
                         <div
-                            className=" shadow-[inset_0_0_40px  rgba(255,255,255)] bg-[#0a0a0f]/40  backdrop-blur-sm border border-gray-600 mt-5 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
+                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600 mt-2 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
                             data-oid="8w.djrx"
                         >
-                            <div className="absolute top-0 left-0 w-6 h-1 bg-white "></div>
-                            <div className="absolute top-[-20px] left-0 w-1 h-6 bg-white  "></div>
+                            <div className="absolute top-0 left-0 w-4 h-0.5 bg-white"></div>
+                            <div className="absolute top-[-20px] left-0 w-0.5 h-4 bg-white"></div>
 
-                            <div className="absolute top-[-20px] right-0 w-1 h-6 bg-white "></div>
-                            <div className="absolute top-[-20px] right-0 w-6 h-1 bg-white "></div>
+                            <div className="absolute top-[-20px] right-0 w-0.5 h-4 bg-white"></div>
+                            <div className="absolute top-[-20px] right-0 w-4 h-0.5 bg-white"></div>
 
-                            <div className="absolute bottom-0 left-0 w-1 h-6 bg-white "></div>
-                            <div className="absolute bottom-0 left-0 w-6 h-1 bg-white "></div>
+                            <div className="absolute bottom-0 left-0 w-0.5 h-4 bg-white"></div>
+                            <div className="absolute bottom-0 left-0 w-4 h-0.5 bg-white"></div>
 
-                            <div className="absolute bottom-0 right-0 w-1 h-6 bg-white "></div>
-                            <div className="absolute bottom-0 right-0 w-6 h-1 bg-white "></div>
+                            <div className="absolute bottom-0 right-0 w-0.5 h-4 bg-white"></div>
+                            <div className="absolute bottom-0 right-0 w-4 h-0.5 bg-white"></div>
+
                             <div
                                 className="flex justify-between items-center text-white mb-4"
                                 data-oid="r6s9t_7"
