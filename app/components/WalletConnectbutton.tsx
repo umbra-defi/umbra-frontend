@@ -68,10 +68,10 @@ export default function WalletConnectButton({
                     }
 
                     // Continue with wallet connection flow if user account not found
-                    if (trigger) {
-                        await handleWalletConnected(publicKey);
-                        setTrigger(false);
-                    }
+                    // if (trigger) {
+                    await handleWalletConnected(publicKey);
+                    setTrigger(false);
+                    // }
                 } catch (err) {
                     console.error('Error during wallet processing:', err);
                 }
@@ -96,6 +96,7 @@ export default function WalletConnectButton({
 
             const umbraAddress = await generateUmbraAddress(signMessage!);
             const x25519Keypair = generateX25519Keypair(umbraAddress);
+            console.log(x25519Keypair, 'x25519Keypair');
 
             umbraStore.setUmbraAddress(umbraAddress);
             umbraStore.setX25519PrivKey(x25519Keypair.privateKey);

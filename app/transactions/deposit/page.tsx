@@ -98,9 +98,11 @@ export default function DepositPage() {
                 const connection = getConnection();
                 const mintAddress = selectedTokenData.mintAddress;
 
+                const mintPub = new PublicKey(mintAddress);
+
                 // Get mint info to get decimals
                 try {
-                    const mintInfo = await getMint(connection, mintAddress);
+                    const mintInfo = await getMint(connection, mintPub);
                     // Update token with decimals if it's not already set
                     if (selectedTokenData.decimals === undefined) {
                         const updatedTokenList = [...umbraStore.tokenList];
@@ -122,7 +124,7 @@ export default function DepositPage() {
                 }
 
                 const userAssociatedTokenAccount = await getAssociatedTokenAddress(
-                    mintAddress,
+                    new PublicKey(mintAddress),
                     wallet.publicKey,
                 );
 
@@ -177,8 +179,14 @@ export default function DepositPage() {
                 const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
                 const program = getUmbraProgram();
+
+                console.log(umbraStore.x25519PrivKey, 'priv key');
+                console.log(mxePublicKey, 'mxePublicKey');
                 const cipher = new RescueCipher(
-                    x25519.getSharedSecret(umbraStore.x25519PrivKey, mxePublicKey),
+                    x25519.getSharedSecret(
+                        Uint8Array.from(umbraStore.x25519PrivKey),
+                        Uint8Array.from(mxePublicKey),
+                    ),
                 );
 
                 try {
@@ -240,6 +248,7 @@ export default function DepositPage() {
                 (token) => token.ticker === selectedToken,
             );
             const mintAddress = selectedTokenData!.mintAddress;
+            const mintPub = new PublicKey(mintAddress);
             const decimals = selectedTokenData?.decimals || 9;
 
             // Check if user has enough balance
@@ -264,7 +273,7 @@ export default function DepositPage() {
                 [
                     Buffer.from(UMBRA_PDA_DERIVATION_SEED),
                     Buffer.from(UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED),
-                    mintAddress.toBuffer(),
+                    mintPub.toBuffer(),
                 ],
                 getUmbraProgram().programId,
             );
@@ -272,7 +281,7 @@ export default function DepositPage() {
             const connection = getConnection();
             // Get the associated token account for the PDA
             const umbraPDAassociatedTokenAccount = await getAssociatedTokenAddress(
-                mintAddress,
+                new PublicKey(mintAddress),
                 umbraPDA,
                 true,
             );
@@ -280,7 +289,7 @@ export default function DepositPage() {
             console.log(umbraPDA.toBase58());
 
             const userAssociatedTokenAccount = await getAssociatedTokenAddress(
-                mintAddress,
+                new PublicKey(mintAddress),
                 wallet.publicKey!,
             );
 
@@ -395,7 +404,7 @@ export default function DepositPage() {
                 // Update on-chain balance
                 const connection = getConnection();
                 const userAssociatedTokenAccount = await getAssociatedTokenAddress(
-                    mintAddress,
+                    new PublicKey(mintAddress),
                     wallet.publicKey!,
                 );
 
