@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
@@ -42,24 +42,42 @@ export default function WalletConnectButton({
     const umbraStore = useUmbraStore();
     const [mintingTokens, setMintingTokens] = useState<boolean>(false);
     const router = useRouter();
+    const hasRunOperations = useRef(false);
 
     // Handle component mounting (to avoid hydration errors)
     const [mounted, setMounted] = useState(false);
 
+    console.log(publicKey);
+
     // Set mounted to true to avoid hydration issues
     useEffect(() => {
         setMounted(true);
+        disconnect().catch((err) => {
+            console.error('Error disconnecting wallet on load:', err);
+        });
     }, []);
 
     useEffect(() => {
-        if (connected && publicKey) {
-            handleWalletConnected(publicKey);
-        } else {
-            // Reset state when wallet disconnects
-            setBalance(null);
-            setIsLoading(false);
+        if (connected && !hasRunOperations.current) {
+            const alreadyConnected = localStorage.getItem('walletAlreadyConnected');
+
+            if (!alreadyConnected && publicKey) {
+                console.log('🔗 Wallet connected - running operations...');
+                // Run your one-time operations
+                // ...
+                handleWalletConnected(publicKey);
+                localStorage.setItem('walletAlreadyConnected', 'true');
+            }
+
+            hasRunOperations.current = true;
         }
-    }, [connected, publicKey, onConnect]);
+
+        if (!connected) {
+            console.log('❌ Wallet disconnected - resetting state');
+            localStorage.removeItem('walletAlreadyConnected');
+            hasRunOperations.current = false;
+        }
+    }, [connected]);
 
     // Function to handle actions when wallet connects
     const handleWalletConnected = async (publicKey: PublicKey) => {
@@ -101,6 +119,7 @@ export default function WalletConnectButton({
                 // do something with the result
                 console.log('User account found:', result);
                 router.push('/transactions/deposit');
+
                 return;
             }
 
@@ -295,7 +314,7 @@ export default function WalletConnectButton({
                 variant === 'navbar' && 'text-xs px-3 py-1.5 h-auto',
                 className,
             )}
-            onClick={() => setTrigger(true)}
+            onClick={() => setTrigger(!trigger)}
         />
     );
 }
