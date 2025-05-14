@@ -7,8 +7,8 @@ import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { Loader2 } from 'lucide-react';
 import { cn, getUmbraProgram, toastError } from '@/lib/utils';
 
-// Import wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
+
 import {
     createUserAccountCreationTransaction,
     fetchTokenList,
@@ -17,9 +17,9 @@ import {
     MintTokensToUser,
     sendTransactionToRelayer,
 } from '../auth/signup/utils';
+
 import { useUmbraStore } from '../store/umbraStore';
 import { useRouter } from 'next/navigation';
-import { getUserAccountPDA } from '@/lib/umbra-program/umbra';
 import { tryFetchUserAccount } from './utils';
 
 type WalletConnectButtonProps = {
@@ -37,75 +37,52 @@ export default function WalletConnectButton({
 }: WalletConnectButtonProps) {
     const { connected, publicKey, disconnect, signMessage, signTransaction } = useWallet();
     const [balance, setBalance] = useState<number | null>(null);
-    const [trigger, setTrigger] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState('Connecting...');
     const umbraStore = useUmbraStore();
-    const [mintingTokens, setMintingTokens] = useState<boolean>(false);
     const router = useRouter();
     const hasRunOperations = useRef(false);
-
-    // Handle component mounting (to avoid hydration errors)
     const [mounted, setMounted] = useState(false);
 
-    console.log(publicKey);
-
-    // Set mounted to true to avoid hydration issues
     useEffect(() => {
         setMounted(true);
-        disconnect().catch((err) => {
-            console.error('Error disconnecting wallet on load:', err);
-        });
+        disconnect().catch((err) => console.error('Error disconnecting wallet on load:', err));
     }, []);
 
     useEffect(() => {
         if (connected && !hasRunOperations.current) {
             const alreadyConnected = localStorage.getItem('walletAlreadyConnected');
-
             if (!alreadyConnected && publicKey) {
-                console.log('🔗 Wallet connected - running operations...');
-                // Run your one-time operations
-                // ...
                 handleWalletConnected(publicKey);
                 localStorage.setItem('walletAlreadyConnected', 'true');
             }
-
             hasRunOperations.current = true;
         }
 
         if (!connected) {
-            console.log('❌ Wallet disconnected - resetting state');
             localStorage.removeItem('walletAlreadyConnected');
             hasRunOperations.current = false;
         }
     }, [connected]);
 
-    // Function to handle actions when wallet connects
     const handleWalletConnected = async (publicKey: PublicKey) => {
         try {
             setIsLoading(true);
-            // if (!connected) {
-            //     toastError('Please connect a wallet first...');
-            //     return;
-            // }
-
-            console.log('triggered');
+            setLoadingMessage('Generating Umbra address...');
 
             const umbraAddress = await generateUmbraAddress(signMessage!);
             const x25519Keypair = generateX25519Keypair(umbraAddress);
-            console.log(x25519Keypair, 'x25519Keypair');
 
             umbraStore.setUmbraAddress(umbraAddress);
             umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
 
-            console.log('publickey', publicKey);
-            console.log('umbraAddress', umbraAddress);
-
-            // const userAccount = await program.account.umbraUserAccount.fetch(userAccountPDA);
+            setLoadingMessage('Checking user account...');
 
             const result = tryFetchUserAccount(umbraAddress);
 
             if (await result) {
-                let tokenListRaw = await fetchTokenList(publicKey!);
+                setLoadingMessage('Fetching tokens...');
+                let tokenListRaw = await fetchTokenList(publicKey);
                 const tokenList = tokenListRaw.encrypted_token_list;
                 const tokenListWithPubkeys = tokenList
                     ? tokenList.map((token: any) => ({
@@ -116,29 +93,25 @@ export default function WalletConnectButton({
 
                 umbraStore.setTokenList(tokenListWithPubkeys);
 
-                // do something with the result
-                console.log('User account found:', result);
                 router.push('/transactions/deposit');
-
                 return;
             }
 
-            // Sending the blockchain transactions
+            setLoadingMessage('Creating account...');
             const tx = await createUserAccountCreationTransaction(
                 x25519Keypair.publicKey,
                 umbraAddress,
-                publicKey!,
+                publicKey,
             );
             await signTransaction!(tx);
-            let response = await sendTransactionToRelayer(tx);
+            const response = await sendTransactionToRelayer(tx);
             console.log((await response.json()).signature);
 
-            setMintingTokens(true);
+            setLoadingMessage('Minting tokens...');
+            await MintTokensToUser(publicKey);
 
-            // Mint balances on equivalent mints
-            await MintTokensToUser(publicKey!);
-
-            let tokenListRaw = await fetchTokenList(publicKey!);
+            setLoadingMessage('Fetching tokens...');
+            let tokenListRaw = await fetchTokenList(publicKey);
             const tokenList = tokenListRaw.encrypted_token_list;
             const tokenListWithPubkeys = tokenList
                 ? tokenList.map((token: any) => ({
@@ -150,19 +123,15 @@ export default function WalletConnectButton({
             umbraStore.setTokenList(tokenListWithPubkeys);
 
             router.push('/transactions/deposit');
-            setIsLoading(false);
 
-            // 2. Fetch wallet SOL balance if needed
             if (showBalance) {
+                setLoadingMessage('Fetching balance...');
                 await fetchWalletBalance(publicKey);
             }
 
-            // 3. Call onConnect callback if provided
             if (onConnect) {
                 onConnect(publicKey);
             }
-
-            console.log('Wallet connected:', publicKey.toString());
         } catch (error) {
             console.error('Error handling wallet connection:', error);
         } finally {
@@ -170,33 +139,19 @@ export default function WalletConnectButton({
         }
     };
 
-    // Fetch wallet SOL balance
     const fetchWalletBalance = async (publicKey: PublicKey) => {
         try {
-            // Connect to Solana devnet (change to mainnet-beta for production)
             const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
-
-            // Get account balance
             const balance = await connection.getBalance(publicKey);
-
-            // Convert lamports to SOL
             const solBalance = balance / LAMPORTS_PER_SOL;
-
-            // Update state
             setBalance(solBalance);
-
-            console.log('Wallet balance:', solBalance, 'SOL');
         } catch (error) {
             console.error('Error fetching balance:', error);
         }
     };
 
-    // Format address for display
-    const formatAddress = (address: string) => {
-        return `${address.slice(0, 4)}...${address.slice(-4)}`;
-    };
+    const formatAddress = (address: string) => `${address.slice(0, 4)}...${address.slice(-4)}`;
 
-    // If not mounted yet, show a placeholder to avoid hydration mismatch
     if (!mounted) {
         return (
             <div
@@ -209,9 +164,28 @@ export default function WalletConnectButton({
         );
     }
 
-    // If connected, show the connected state with address
     if (connected && publicKey) {
-        // Minimal variant (just address and disconnect)
+        if (isLoading) {
+            return (
+                <button
+                    disabled
+                    className={cn(
+                        'flex items-center justify-center px-4 py-2 bg-gray-700 text-gray-300 rounded-md',
+                        variant === 'navbar' ? 'text-xs px-3 py-1.5' : 'text-sm',
+                        className,
+                    )}
+                >
+                    <Loader2
+                        className={cn(
+                            'animate-spin mr-2',
+                            variant === 'navbar' ? 'h-3 w-3' : 'h-4 w-4',
+                        )}
+                    />
+                    {loadingMessage}
+                </button>
+            );
+        }
+
         if (variant === 'minimal') {
             return (
                 <div className={cn('flex items-center space-x-2', className)}>
@@ -228,7 +202,6 @@ export default function WalletConnectButton({
             );
         }
 
-        // Navbar variant (more compact)
         if (variant === 'navbar') {
             return (
                 <div className={cn('flex items-center space-x-2', className)}>
@@ -251,7 +224,6 @@ export default function WalletConnectButton({
             );
         }
 
-        // Default variant
         return (
             <div className={cn('flex flex-col space-y-2', className)}>
                 <div className="flex items-center space-x-2">
@@ -267,12 +239,7 @@ export default function WalletConnectButton({
                 </div>
 
                 {showBalance &&
-                    (isLoading ? (
-                        <div className="flex items-center justify-center py-2">
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            <span className="text-sm text-gray-400">Loading balance...</span>
-                        </div>
-                    ) : balance !== null ? (
+                    (balance !== null ? (
                         <div className="px-4 py-2 bg-gray-700 rounded-md text-center">
                             <span className="text-sm text-gray-400">Balance: </span>
                             <span className="text-sm text-white font-medium">
@@ -284,7 +251,6 @@ export default function WalletConnectButton({
         );
     }
 
-    // If connecting, show loading state
     if (isLoading) {
         return (
             <button
@@ -301,12 +267,11 @@ export default function WalletConnectButton({
                         variant === 'navbar' ? 'h-3 w-3' : 'h-4 w-4',
                     )}
                 />
-                Connecting...
+                {loadingMessage}
             </button>
         );
     }
 
-    // Default: show the wallet adapter button with appropriate styling
     return (
         <WalletMultiButton
             className={cn(
@@ -314,7 +279,6 @@ export default function WalletConnectButton({
                 variant === 'navbar' && 'text-xs px-3 py-1.5 h-auto',
                 className,
             )}
-            onClick={() => setTrigger(!trigger)}
         />
     );
 }
