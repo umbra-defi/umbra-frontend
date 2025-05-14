@@ -19,6 +19,7 @@ import { AnchorProvider, BN, Provider } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import React from 'react';
+import CornerBorders from '@/app/components/corner';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -351,6 +352,9 @@ export default function WithdrawPage() {
         <>
             {/* Amount Input */}
             <div className="relative" data-oid="_kzx3_s">
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    <CornerBorders color="white" />
+                </div>
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
                     data-oid="_x4iyq7"

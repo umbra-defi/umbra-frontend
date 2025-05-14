@@ -24,6 +24,7 @@ import bs58 from 'bs58';
 import React from 'react';
 import { ScanBarcodeIcon, ScanQrCode, ScanQrCodeIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import CornerBorders from '@/app/components/corner';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -344,6 +345,10 @@ export default function TransferPage() {
         <>
             {/* Amount Input */}
             <div className="relative" data-oid="9.izn3.">
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    <CornerBorders color="white" />
+                </div>
+
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
                     data-oid="enfy:jn"
@@ -499,6 +504,9 @@ export default function TransferPage() {
 
             {/* Recipient Address Input */}
             <div className="relative mt-4 flex" data-oid="xaaa9:-">
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    <CornerBorders color="white" />
+                </div>
                 <input
                     type="text"
                     value={recipientAddress}

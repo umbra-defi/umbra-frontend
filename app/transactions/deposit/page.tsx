@@ -37,6 +37,7 @@ import {
     getMint,
 } from '@solana/spl-token';
 import React from 'react';
+import CornerBorders from '@/app/components/corner';
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -453,6 +454,9 @@ export default function DepositPage() {
 
             {/* Amount Input */}
             <div className="relative" data-oid="yw2qv2b">
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    <CornerBorders color="white" />
+                </div>
                 <div
                     className="flex justify-between items-center border border-gray-800 p-4"
                     data-oid="9zh0u1."
@@ -462,7 +466,7 @@ export default function DepositPage() {
                         type="text"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="bg-transparent text-white outline-none w-full text-lg"
+                        className="bg-transparent text-white outline-none w-full text-lg px-3 py-2"
                         placeholder="0"
                         data-oid="uuak1lj"
                     />

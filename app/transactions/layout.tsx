@@ -16,6 +16,8 @@ import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import WalletModal from '../components/ui/WalletModal';
+import CornerBorders from '../components/corner';
+import CornerDots from '../components/cornerDots';
 
 // Fee types
 export const feeTypes = [
@@ -213,7 +215,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <div className="relative">
                                 <button
                                     className={cn(
-                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors  bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
                                         activeTab === 'deposit' && 'bg-[#2D2E34]',
                                     )}
                                     onClick={() => handleTabChange('deposit')}
@@ -225,10 +227,9 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for deposit tab */}
                                 {activeTab === 'deposit' && (
                                     <>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute inset-0 pointer-events-none z-10">
+                                            <CornerDots color="white" size={4} />
+                                        </div>
                                     </>
                                 )}
                             </div>
@@ -236,7 +237,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <div className="relative">
                                 <button
                                     className={cn(
-                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors  bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
                                         activeTab === 'transfer' && 'bg-[#2D2E34]',
                                     )}
                                     onClick={() => handleTabChange('transfer')}
@@ -248,10 +249,9 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for transfer tab */}
                                 {activeTab === 'transfer' && (
                                     <>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute inset-0 pointer-events-none z-10">
+                                            <CornerDots color="white" size={4} />
+                                        </div>
                                     </>
                                 )}
                             </div>
@@ -259,7 +259,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <div className="relative">
                                 <button
                                     className={cn(
-                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors shadow-[inset_0_0_10px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
+                                        'py-4 w-full text-center text-white uppercase tracking-wider transition-colors  bg-[#0a0a0f]/40 backdrop-blur-lg border border-gray-600',
                                         activeTab === 'withdraw' && 'bg-[#2D2E34]',
                                     )}
                                     onClick={() => handleTabChange('withdraw')}
@@ -271,10 +271,9 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for withdraw tab */}
                                 {activeTab === 'withdraw' && (
                                     <>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute inset-0 pointer-events-none z-10">
+                                            <CornerDots color="white" size={4} />
+                                        </div>
                                     </>
                                 )}
                             </div>
@@ -286,20 +285,12 @@ export default function TransactionsLayout({ children }: { children: React.React
                             data-oid="8w.djrx"
                         > */}
                         <div
-                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-lg border border-gray-600 mt-2 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
+                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-3xl border border-gray-600 mt-2 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
                             data-oid="8w.djrx"
                         >
-                            <div className="absolute top-0 left-0 w-4 h-0.5 bg-white"></div>
-                            <div className="absolute top-[-20px] left-0 w-0.5 h-4 bg-white"></div>
-
-                            <div className="absolute top-[-20px] right-0 w-0.5 h-4 bg-white"></div>
-                            <div className="absolute top-[-20px] right-0 w-4 h-0.5 bg-white"></div>
-
-                            <div className="absolute bottom-0 left-0 w-0.5 h-4 bg-white"></div>
-                            <div className="absolute bottom-0 left-0 w-4 h-0.5 bg-white"></div>
-
-                            <div className="absolute bottom-0 right-0 w-0.5 h-4 bg-white"></div>
-                            <div className="absolute bottom-0 right-0 w-4 h-0.5 bg-white"></div>
+                            <div className="absolute inset-0 pointer-events-none z-10">
+                                <CornerBorders color="white" />
+                            </div>
 
                             <div
                                 className="flex justify-between items-center text-white mb-4"
