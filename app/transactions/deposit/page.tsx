@@ -311,9 +311,7 @@ export default function DepositPage() {
                 console.log('triggered deposit', transaction);
                 const signedTx = await wallet.signTransaction!(transaction);
                 console.log('triggered deposit again');
-                const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-                    skipPreflight: true,
-                });
+                const signature = await connection.sendRawTransaction(signedTx.serialize());
                 await connection.confirmTransaction(signature);
             } catch (error) {
                 console.log(error);
