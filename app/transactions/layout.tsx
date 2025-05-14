@@ -218,10 +218,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for deposit tab */}
                                 {activeTab === 'deposit' && (
                                     <>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
                                     </>
                                 )}
                             </div>
@@ -241,10 +241,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for transfer tab */}
                                 {activeTab === 'transfer' && (
                                     <>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
                                     </>
                                 )}
                             </div>
@@ -264,10 +264,10 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 {/* Dots for withdraw tab */}
                                 {activeTab === 'withdraw' && (
                                     <>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -top-1 -right-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -left-1"></div>
-                                        <div className="absolute w-2 h-2 bg-white rounded-full -bottom-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -top-1 -right-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -left-1"></div>
+                                        <div className="absolute w-1 h-1 bg-white rounded-full -bottom-1 -right-1"></div>
                                     </>
                                 )}
                             </div>

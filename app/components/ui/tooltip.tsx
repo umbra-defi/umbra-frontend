@@ -200,7 +200,7 @@ export function Tooltip({
                         onClick={onNext}
                         className="bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 transition-colors"
                     >
-                        {currentStep === totalSteps - 1 ? 'Finish' : 'Next'}
+                        {currentStep === totalSteps - 1 ? 'Finish 🎉' : 'Next ➔'}
                     </button>
                 </div>
             </div>
