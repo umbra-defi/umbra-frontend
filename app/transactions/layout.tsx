@@ -14,6 +14,7 @@ import { TourButton } from '../components/tour-button';
 import WalletConnectButton from '../components/WalletConnectbutton';
 import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
+import Image from 'next/image';
 
 // Fee types
 export const feeTypes = [
@@ -135,7 +136,12 @@ export default function TransactionsLayout({ children }: { children: React.React
                             className="text-white font-bold text-xl tracking-wide hover:cursor:pointer"
                             data-oid=".7xj-a8"
                         >
-                            UMBRA
+                            <Image
+                                src="/images/umbra.svg"
+                                alt="Umbra Logo"
+                                width={100}
+                                height={100}
+                            />
                         </div>
                     </Link>
                     <div className="flex items-center gap-6" data-oid="u07fqct">

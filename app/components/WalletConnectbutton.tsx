@@ -36,28 +36,54 @@ export default function WalletConnectButton({
     onConnect,
 }: WalletConnectButtonProps) {
     const { connected, publicKey, disconnect, signMessage, signTransaction } = useWallet();
-    const [mounted, setMounted] = useState(false);
     const [balance, setBalance] = useState<number | null>(null);
+    const [trigger, setTrigger] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
     const umbraStore = useUmbraStore();
     const [mintingTokens, setMintingTokens] = useState<boolean>(false);
     const router = useRouter();
 
     // Handle component mounting (to avoid hydration errors)
+    const [mounted, setMounted] = useState(false);
+
+    // Set mounted to true to avoid hydration issues
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // This effect runs whenever the connection state or public key changes
+    // This runs after wallet connection state is determined
     useEffect(() => {
-        if (connected && publicKey) {
-            handleWalletConnected(publicKey);
-        } else {
-            // Reset state when wallet disconnects
-            setBalance(null);
-            setIsLoading(false);
-        }
-    }, [connected, publicKey, onConnect]);
+        console.log(connected);
+        if (!mounted) return;
+
+        const processWalletConnection = async () => {
+            if (connected && publicKey) {
+                // Fast path: Check if the user already has an account and redirect immediately
+                try {
+                    const umbraAddress = await generateUmbraAddress(signMessage!);
+                    const result = await tryFetchUserAccount(umbraAddress);
+                    if (result) {
+                        router.push('/transactions/deposit');
+                        return;
+                    }
+
+                    // Continue with wallet connection flow if user account not found
+                    if (trigger) {
+                        await handleWalletConnected(publicKey);
+                        setTrigger(false);
+                    }
+                } catch (err) {
+                    console.error('Error during wallet processing:', err);
+                }
+            } else {
+                // Reset state if disconnected
+                setBalance(null);
+                setIsLoading(false);
+            }
+        };
+
+        processWalletConnection();
+    }, [connected]);
 
     // Function to handle actions when wallet connects
     const handleWalletConnected = async (publicKey: PublicKey) => {
@@ -278,6 +304,7 @@ export default function WalletConnectButton({
                 variant === 'navbar' && 'text-xs px-3 py-1.5 h-auto',
                 className,
             )}
+            onClick={() => setTrigger(true)}
         />
     );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 // import { WalletConnectButton } from '@solana/wallet-adapter-react-ui';
 import WalletConnectButton from './components/WalletConnectbutton';
+import Image from 'next/image';
 
 export default function Page() {
     const router = useRouter();
@@ -12,12 +13,9 @@ export default function Page() {
     return (
         <div className="w-full min-h-screen flex flex-col text-white" data-oid="0ae9oo:">
             {/* Header */}
-            <header
-                className="w-full p-6 flex justify-between items-center border-b border-gray-900 bg-black"
-                data-oid="169-oi4"
-            >
+            <header className="w-full p-6 flex justify-between items-center " data-oid="169-oi4">
                 <div className="text-white font-bold text-xl" data-oid="0dflmx4">
-                    UMBRA
+                    <Image src="/images/umbra.svg" alt="Umbra Logo" width={100} height={100} />
                 </div>
                 <div className="flex items-center gap-4" data-oid="k9zem8w">
                     {/* <Link href="/auth/login" data-oid="4nqdbn8">
