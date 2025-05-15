@@ -30,6 +30,8 @@ interface UmbraStoreState {
     hasUmbraAddressBeenSet: boolean;
     hasTokenListBeenSet: boolean;
     lastScannedAddress: string | undefined;
+    loading: boolean;
+    loadingMessage: string;
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
@@ -47,6 +49,8 @@ interface UmbraStoreState {
     getTokenList: () => Array<TokenListing> | UmbraStoreError;
     getFormattedUmbraWalletBalance: () => string;
     getFormattedOnChainBalance: () => string;
+    setLoading: (val: boolean) => void;
+    setLoadingMessage: (msg: string) => void;
 
     // Reset all state
     reset: () => void;
@@ -86,6 +90,8 @@ export const useUmbraStore = create<UmbraStoreState>()(
             hasUmbraAddressBeenSet: false,
             hasTokenListBeenSet: false,
             lastScannedAddress: undefined,
+            loading: false,
+            loadingMessage: '',
 
             // Setters
             setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -185,6 +191,8 @@ export const useUmbraStore = create<UmbraStoreState>()(
                     maximumFractionDigits: state.selectedTokenDecimals,
                 });
             },
+            setLoading: (val: boolean) => set(() => ({ loading: val })),
+            setLoadingMessage: (msg: string) => set(() => ({ loadingMessage: msg })),
 
             // ✅ Reset method
             reset: () => {

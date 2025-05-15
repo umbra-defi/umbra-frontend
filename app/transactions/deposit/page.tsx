@@ -705,7 +705,7 @@ export default function DepositPage() {
             </div> */}
 
             {/* Action Button */}
-            {wallet.connected && wallet.publicKey ? (
+            {wallet.connected && wallet.publicKey && !umbraStore.loading ? (
                 <motion.button
                     className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handleSubmit}

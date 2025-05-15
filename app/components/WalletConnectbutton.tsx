@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import {
-    useWalletModal,
-    WalletDisconnectButton,
-    WalletMultiButton,
-} from '@solana/wallet-adapter-react-ui';
+import { useWalletModal, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { Loader2 } from 'lucide-react';
 import { cn, toastError } from '@/lib/utils';
@@ -23,7 +19,6 @@ import {
 } from '../auth/signup/utils';
 
 import { useUmbraStore } from '../store/umbraStore';
-import { useRouter } from 'next/navigation';
 import { tryFetchUserAccount } from './utils';
 import { motion } from 'framer-motion';
 
@@ -63,7 +58,7 @@ export default function WalletConnectButton({
                 // Run your one-time operations
                 // ...
                 handleWalletConnected(publicKey);
-                localStorage.setItem('walletAlreadyConnected', 'true');
+                umbraStore.setLoading(true);
             }
 
             hasRunOperations.current = true;
@@ -84,7 +79,10 @@ export default function WalletConnectButton({
             }
 
             console.log('trigger 2');
+            umbraStore.setLoading(true);
             setIsLoading(true);
+
+            umbraStore.setLoadingMessage('Generating Umbra address...');
             setLoadingMessage('Generating Umbra address...');
 
             const umbraAddress = await generateUmbraAddress(signMessage);
@@ -93,10 +91,12 @@ export default function WalletConnectButton({
             umbraStore.setUmbraAddress(umbraAddress);
             umbraStore.setX25519PrivKey(x25519Keypair.privateKey);
 
+            umbraStore.setLoadingMessage('Checking user account...');
             setLoadingMessage('Checking user account...');
             const result = await tryFetchUserAccount(umbraAddress);
 
             if (result) {
+                umbraStore.setLoadingMessage('Fetching tokens...');
                 setLoadingMessage('Fetching tokens...');
                 const tokenListRaw = await fetchTokenList(publicKey);
                 const tokenList = tokenListRaw.encrypted_token_list ?? [];
@@ -109,12 +109,16 @@ export default function WalletConnectButton({
                 );
 
                 if (showBalance) {
+                    umbraStore.setLoadingMessage('Fetching balance...');
+
                     setLoadingMessage('Fetching balance...');
                     await fetchWalletBalance(publicKey);
                 }
 
                 return;
             }
+
+            umbraStore.setLoadingMessage('Creating account...');
 
             setLoadingMessage('Creating account...');
             const tx = await createUserAccountCreationTransaction(
@@ -130,8 +134,12 @@ export default function WalletConnectButton({
             const data = await response.json();
             console.log('Relayer Signature:', data.signature);
 
+            umbraStore.setLoadingMessage('Minting tokens...');
+
             setLoadingMessage('Minting tokens...');
             await MintTokensToUser(publicKey);
+
+            umbraStore.setLoadingMessage('Fetching tokens...');
 
             setLoadingMessage('Fetching tokens...');
             const updatedTokenListRaw = await fetchTokenList(publicKey);
@@ -145,6 +153,7 @@ export default function WalletConnectButton({
             );
 
             if (showBalance) {
+                umbraStore.setLoadingMessage('Fetching balance...');
                 setLoadingMessage('Fetching balance...');
                 await fetchWalletBalance(publicKey);
             }
@@ -153,6 +162,7 @@ export default function WalletConnectButton({
             disconnect();
             toastError(error?.message || 'Wallet connection failed. Please try again.');
         } finally {
+            umbraStore.setLoading(false);
             setIsLoading(false);
         }
     };
@@ -167,31 +177,18 @@ export default function WalletConnectButton({
         }
     };
 
-    const formatAddress = (address: string) => `${address.slice(0, 4)}...${address.slice(-4)}`;
-
-    // While mounting: show skeleton
-    if (!mounted) {
-        return (
-            <div
-                className={cn(
-                    'h-10 bg-gray-700 rounded-md animate-pulse',
-                    variant === 'navbar' ? 'w-32' : 'w-48',
-                    className,
-                )}
-            />
-        );
-    }
+    const handleDisconnect = async () => {
+        await disconnect();
+        umbraStore.reset();
+        return;
+    };
 
     // If loading
     if (isLoading) {
         return (
             <button
                 disabled
-                className={cn(
-                    'flex items-center justify-center px-4 py-2 bg-gray-700 text-gray-300 rounded-md',
-                    variant === 'navbar' ? 'text-xs px-3 py-1.5' : 'text-sm',
-                    className,
-                )}
+                className=" bg-white text-black px-4 py-2  uppercase   flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
             >
                 <Loader2
                     className={cn(
@@ -207,11 +204,15 @@ export default function WalletConnectButton({
     // If connected
     if (connected && publicKey) {
         return (
-            <div className={cn('flex flex-col space-y-2', className)}>
-                <div className="flex items-center space-x-2">
-                    <WalletDisconnectButton />
-                </div>
-            </div>
+            <motion.button
+                className=" bg-white text-black px-4 py-2  uppercase   flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                onClick={handleDisconnect}
+                whileHover={{ backgroundColor: '#f0f0f0' }}
+                whileTap={{ scale: 0.98 }}
+                data-oid=":xcq1mj"
+            >
+                Disconnect
+            </motion.button>
         );
     }
 

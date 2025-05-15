@@ -625,7 +625,7 @@ export default function TransferPage() {
             </div>
 
             {/* Action Button */}
-            {wallet.connected ? (
+            {wallet.connected && !umbraStore.loading ? (
                 <motion.button
                     className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handleSubmit}
