@@ -103,6 +103,7 @@ export default function TransactionsLayout({ children }: { children: React.React
     const activeToken = tokens.length > 0 ? tokens[0].ticker : '';
     const umbraWalletBalance = umbraStore.umbraWalletBalance;
     const umbraAddress = umbraStore.umbraAddress;
+
     // Check if umbraAddress exists and is in the correct format
 
     const handleCopyAddress = () => {
@@ -118,9 +119,7 @@ export default function TransactionsLayout({ children }: { children: React.React
             position: 'bottom-right',
         });
     };
-    const buf = Buffer.from(umbraAddress);
-    const addressStr = bs58.encode(buf);
-    const minifiedAddress = `${addressStr.slice(0, 6)}...${addressStr.slice(-4)}`;
+
     return (
         <TooltipProvider>
             <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
@@ -146,48 +145,15 @@ export default function TransactionsLayout({ children }: { children: React.React
                         </div>
                     </Link>
                     <div className="flex items-center gap-3" data-oid="u07fqct">
-                        <div className="flex flex-col gap-2" data-oid="6zqx0vr">
-                            {/* <div className="text-white/70 text-sm tracking-wide">
-                                Wallet Balance:
-                                <span className="ml-2 text-white font-medium">
-                                    {formattedOnChainBalance} {selectedTokenTicker || ''}
-                                </span>
+                        {umbraAddress instanceof Uint8Array ? (
+                            <div className="flex flex-col gap-2" data-oid="6zqx0vr">
+                                <WalletModal
+                                    formattedOnChainBalance={formattedOnChainBalance}
+                                    selectedTokenTicker={selectedTokenTicker}
+                                    walletAddress={umbraAddress}
+                                />
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="text-white/70 text-sm tracking-wide">
-                                    Wallet Address
-                                    <span className="ml-2 text-white font-medium">
-                                        {minifiedAddress}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={handleCopyAddress}
-                                    className="p-1.5 hover:bg-gray-800 rounded-md transition-colors"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="text-gray-400"
-                                    >
-                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                                    </svg>
-                                </button>
-                            </div> */}
-
-                            <WalletModal
-                                formattedOnChainBalance={formattedOnChainBalance}
-                                selectedTokenTicker={selectedTokenTicker}
-                                walletAddress={minifiedAddress}
-                            />
-                        </div>
+                        ) : null}
 
                         <div
                             // onClick={handleConnect}
