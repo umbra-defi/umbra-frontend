@@ -34,6 +34,13 @@ const tourSteps: TooltipStep[] = [
     // Deposit tab steps
     {
         id: 'deposit-intro',
+        title: 'Connect Wallet',
+        content: 'Please connect a wallet before moving ahead',
+        targetSelector: '[data-tab-connect]',
+        tab: 'deposit',
+    },
+    {
+        id: 'deposit-intro',
         title: 'Deposit Funds',
         content:
             'Click Deposit to move tokens from your connected wallet into your Umbra’s private wallet.',
@@ -123,7 +130,7 @@ const tourSteps: TooltipStep[] = [
 
 export const TooltipProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(true);
     const [hasSeenTour, setHasSeenTour] = useState<boolean>(false);
     const router = useRouter();
     const pathname = usePathname();
