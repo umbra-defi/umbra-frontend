@@ -5,11 +5,12 @@ import QrCode from 'react-qr-code';
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
+import { UmbraAddress } from '@/app/auth/signup/utils';
 
 type WalletModalProps = {
     formattedOnChainBalance: string;
     selectedTokenTicker?: string;
-    walletAddress: string;
+    walletAddress: UmbraAddress;
 };
 
 const WalletModal = ({
@@ -20,7 +21,11 @@ const WalletModal = ({
     const [isOpen, setIsOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
 
-    const minifiedAddress = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+    const buf = Buffer.from(walletAddress);
+    const addressStr = bs58.encode(buf);
+    const minifiedAddress = `${addressStr.slice(0, 6)}...${addressStr.slice(-4)}`;
+
+    const base58Address = bs58.encode(Buffer.from(walletAddress));
 
     const handleCopyAddress = async () => {
         const base58Address = bs58.encode(Buffer.from(walletAddress));
@@ -113,7 +118,7 @@ const WalletModal = ({
                                 <QrCode
                                     size={256}
                                     style={{ width: '100%', height: 'auto', display: 'block' }}
-                                    value={minifiedAddress}
+                                    value={base58Address}
                                     viewBox="0 0 256 256"
                                 />
                             </div>
