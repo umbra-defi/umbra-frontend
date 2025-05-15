@@ -1,6 +1,7 @@
 'use client';
 
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
+import QrCode from 'react-qr-code';
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
@@ -89,9 +90,35 @@ const WalletModal = ({
                                 </svg>
                             </button>
 
-                            <h2 className="text-white text-lg font-semibold mb-4">Wallet Info</h2>
+                            <div className=" w-full text-center">
+                                <h2 className="text-white text-lg font-semibold mb-4">
+                                    Wallet Info
+                                </h2>
+                            </div>
 
-                            <div className="flex flex-col gap-2">
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    margin: '1.5rem auto',
+                                    maxWidth: 256,
+                                    width: '100%',
+                                    padding: '1rem',
+                                    boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
+                                    backgroundColor: '#fff',
+                                    border: '2px solid #4B5563',
+                                }}
+                            >
+                                <QrCode
+                                    size={256}
+                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                    value={minifiedAddress}
+                                    viewBox="0 0 256 256"
+                                />
+                            </div>
+
+                            <div className="flex flex-col gap-2 ">
                                 <div className="text-white/70 text-sm tracking-wide">
                                     Wallet Balance:
                                     <span className="ml-2 text-white font-medium">
@@ -99,7 +126,7 @@ const WalletModal = ({
                                     </span>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-between gap-2 ">
                                     <div className="text-white/70 text-sm tracking-wide">
                                         Wallet Address
                                         <span className="ml-2 text-white font-medium">
@@ -112,8 +139,8 @@ const WalletModal = ({
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
+                                            width="24"
+                                            height="24"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="currentColor"

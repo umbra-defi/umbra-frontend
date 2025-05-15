@@ -118,9 +118,9 @@ export default function TransactionsLayout({ children }: { children: React.React
             position: 'bottom-right',
         });
     };
-
-    console.log({ umbraStore });
-
+    const buf = Buffer.from(umbraAddress);
+    const addressStr = bs58.encode(buf);
+    const minifiedAddress = `${addressStr.slice(0, 6)}...${addressStr.slice(-4)}`;
     return (
         <TooltipProvider>
             <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
@@ -185,7 +185,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <WalletModal
                                 formattedOnChainBalance={formattedOnChainBalance}
                                 selectedTokenTicker={selectedTokenTicker}
-                                walletAddress={''}
+                                walletAddress={minifiedAddress}
                             />
                         </div>
 
