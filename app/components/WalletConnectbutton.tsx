@@ -45,6 +45,7 @@ export default function WalletConnectButton({
     const umbraStore = useUmbraStore();
     const [mounted, setMounted] = useState(false);
     const { setVisible } = useWalletModal();
+    const hasRunOperations = useRef(false);
 
     useEffect(() => {
         setMounted(true);
@@ -53,19 +54,25 @@ export default function WalletConnectButton({
         });
     }, []);
 
-    const umbraAddress = useUmbraStore((state) => state.umbraAddress);
-    const x25519PrivKey = useUmbraStore((state) => state.x25519PrivKey);
     useEffect(() => {
-        if (connected && publicKey) {
-            const isUmbraAddressEmpty = umbraAddress.length === 0;
-            const isPrivKeyEmpty = x25519PrivKey.length === 0;
+        if (connected && !hasRunOperations.current) {
+            const alreadyConnected = localStorage.getItem('walletAlreadyConnected');
 
-            if (!isUmbraAddressEmpty && !isPrivKeyEmpty) {
+            if (!alreadyConnected && publicKey) {
                 console.log('🔗 Wallet connected - running operations...');
+                // Run your one-time operations
+                // ...
                 handleWalletConnected(publicKey);
+                localStorage.setItem('walletAlreadyConnected', 'true');
             }
-        } else {
-            umbraStore.reset();
+
+            hasRunOperations.current = true;
+        }
+
+        if (!connected) {
+            console.log('❌ Wallet disconnected - resetting state');
+            localStorage.removeItem('walletAlreadyConnected');
+            hasRunOperations.current = false;
         }
     }, [connected]);
 
