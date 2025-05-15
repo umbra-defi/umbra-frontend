@@ -20,6 +20,8 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import React from 'react';
 import CornerBorders from '@/app/components/corner';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { StyledWalletMultiButton } from '@/app/components/styledButton';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -356,7 +358,7 @@ export default function WithdrawPage() {
                     <CornerBorders color="white" />
                 </div>
                 <div
-                    className="flex justify-between items-center border border-gray-800 p-4"
+                    className="flex justify-between items-center border border-[#4B5563] p-4"
                     data-oid="_x4iyq7"
                 >
                     <input
@@ -517,7 +519,7 @@ export default function WithdrawPage() {
                         {typeof umbraStore.umbraWalletBalance === 'number' &&
                         typeof umbraStore.selectedTokenDecimals === 'number'
                             ? umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals
-                            : 0}
+                            : '-'}
                     </span>
                 )}
                 {selectedToken}
@@ -603,24 +605,28 @@ export default function WithdrawPage() {
             </div> */}
 
             {/* Action Button */}
-            <motion.button
-                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-                onClick={handleSubmit}
-                whileHover={{ backgroundColor: '#f0f0f0' }}
-                whileTap={{ scale: 0.98 }}
-                data-oid="l--tjxg"
-                disabled={loading}
-                data-withdraw-submit
-            >
-                {loading ? (
-                    <span className="flex items-center gap-2">
-                        <span className="loader-spinner"></span>
-                        Processing...
-                    </span>
-                ) : (
-                    'Withdraw'
-                )}
-            </motion.button>
+            {wallet.connected ? (
+                <motion.button
+                    className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleSubmit}
+                    whileHover={{ backgroundColor: '#f0f0f0' }}
+                    whileTap={{ scale: 0.98 }}
+                    data-oid=":xcq1mj"
+                    disabled={loading}
+                    data-deposit-submit
+                >
+                    {loading ? (
+                        <span className="flex items-center gap-2">
+                            <span className="loader-spinner"></span>
+                            Processing...
+                        </span>
+                    ) : (
+                        'Withdraw'
+                    )}
+                </motion.button>
+            ) : (
+                <StyledWalletMultiButton />
+            )}
             <style jsx global>{`
                 .loader-spinner {
                     border: 3px solid #f3f3f3;

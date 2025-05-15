@@ -11,13 +11,13 @@ import toast from 'react-hot-toast';
 import { TooltipProvider } from '../context/tooltip-context';
 import { TooltipTour } from '../components/tooltip-tour';
 import { TourButton } from '../components/tour-button';
-import WalletConnectButton from '../components/WalletConnectbutton';
-import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import WalletModal from '../components/ui/WalletModal';
 import CornerBorders from '../components/corner';
 import CornerDots from '../components/cornerDots';
+import WalletConnectButton from '../components/WalletConnectbutton';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 // Fee types
 export const feeTypes = [
@@ -57,6 +57,13 @@ export default function TransactionsLayout({ children }: { children: React.React
     const [activeTab, setActiveTab] = useState<string>('deposit');
     const { connected, publicKey, disconnect } = useWallet();
 
+    // useEffect(() => {
+    //     const isWalletConnected = localStorage.getItem('walletAlreadyConnected');
+    //     if (!isWalletConnected) {
+    //         router.replace('/'); // Redirect to homepage or connect page
+    //     }
+    // }, []);
+
     // Determine active tab from URL
     useEffect(() => {
         if (pathname === '/transactions') {
@@ -81,9 +88,6 @@ export default function TransactionsLayout({ children }: { children: React.React
 
             // Show toast notification
             // showToast('Wallet disconnected successfully', 'success');
-
-            // Redirect to home page
-            router.push('/');
         } catch (error) {
             console.error('Error disconnecting wallet:', error);
             // showToast('Failed to disconnect wallet', 'error');
@@ -100,12 +104,6 @@ export default function TransactionsLayout({ children }: { children: React.React
     const umbraWalletBalance = umbraStore.umbraWalletBalance;
     const umbraAddress = umbraStore.umbraAddress;
     // Check if umbraAddress exists and is in the correct format
-    const base58WalletAddress = umbraStore.umbraAddress
-        ? bs58.encode(Buffer.from(umbraStore.umbraAddress))
-        : 'No address available';
-    const minifiedAddress = base58WalletAddress
-        ? `${base58WalletAddress.slice(0, 4)}...${base58WalletAddress.slice(-4)}`
-        : 'No address available';
 
     const handleCopyAddress = () => {
         const base58Address = bs58.encode(Buffer.from(umbraAddress));
@@ -147,7 +145,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             />
                         </div>
                     </Link>
-                    <div className="flex items-center gap-6" data-oid="u07fqct">
+                    <div className="flex items-center gap-3" data-oid="u07fqct">
                         <div className="flex flex-col gap-2" data-oid="6zqx0vr">
                             {/* <div className="text-white/70 text-sm tracking-wide">
                                 Wallet Balance:
@@ -187,18 +185,19 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <WalletModal
                                 formattedOnChainBalance={formattedOnChainBalance}
                                 selectedTokenTicker={selectedTokenTicker}
-                                walletAddress={minifiedAddress}
+                                walletAddress={''}
                             />
                         </div>
-                        <Link href="/" data-oid="e3vl4-z">
-                            <button
-                                className=" border border-gray-800 px-5 py-2 text-white bg-[#2D2E34] transition-colors"
-                                data-oid="muq2emp"
-                                onClick={handleDisconnect}
-                            >
-                                Disconnect
-                            </button>
-                        </Link>
+
+                        <div
+                            // onClick={handleConnect}
+                            className="  px-8 py-3 font-medium "
+                            data-oid="v5:x_xf"
+                        >
+                            <WalletConnectButton />
+
+                            {/* <WalletMultiButton /> */}
+                        </div>
                     </div>
                 </motion.header>
 

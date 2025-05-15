@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware'; // <-- Add this import
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { UmbraAddress } from '@/app/auth/signup/utils';
 import { X25519Keypair, X25519PrivateKey } from '@/lib/cryptography';
 import { x25519 } from '@arcium-hq/client';
@@ -18,7 +18,6 @@ export type TokenListing = {
 };
 
 interface UmbraStoreState {
-    // Example state values
     x25519PrivKey: X25519PrivateKey;
     umbraAddress: UmbraAddress;
     tokenList: Array<TokenListing>;
@@ -36,9 +35,7 @@ interface UmbraStoreState {
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
     setUmbraAddress: (newAddress: UmbraAddress) => void;
     setLastScannedAddress: (address: string) => void;
-    setTokenList: (
-        tokenList: Array<{ mintAddress: PublicKey; ticker: string; decimals?: number }>,
-    ) => void;
+    setTokenList: (tokenList: Array<TokenListing>) => void;
     setUmbraWalletBalance: (balance: number) => void;
     setAvailableOnChainBalance: (balance: number) => void;
     setSelectedTokenTicker: (ticker: string) => void;
@@ -50,19 +47,19 @@ interface UmbraStoreState {
     getTokenList: () => Array<TokenListing> | UmbraStoreError;
     getFormattedUmbraWalletBalance: () => string;
     getFormattedOnChainBalance: () => string;
+
+    // Reset all state
+    reset: () => void;
 }
 
-// Create initial garbage values (random bytes)
+// Helper to create new garbage key/address
 const createInitialGarbageValues = (): {
     x25519PrivKey: X25519PrivateKey;
     umbraAddress: UmbraAddress;
 } => {
-    // Create garbage X25519 private key (32 bytes)
     const garbagePrivKey = new Uint8Array(32);
-    crypto.getRandomValues(garbagePrivKey);
-
-    // Create garbage Umbra address (32 bytes)
     const garbageAddress = new Uint8Array(32);
+    crypto.getRandomValues(garbagePrivKey);
     crypto.getRandomValues(garbageAddress);
 
     return {
@@ -71,24 +68,23 @@ const createInitialGarbageValues = (): {
     };
 };
 
-// Initial garbage values
+// Create store
 const { x25519PrivKey: initialX25519PrivKey, umbraAddress: initialUmbraAddress } =
     createInitialGarbageValues();
 
 export const useUmbraStore = create<UmbraStoreState>()(
     persist(
         (set, get) => ({
-            // Initial state with garbage values
             x25519PrivKey: initialX25519PrivKey,
             umbraAddress: initialUmbraAddress,
-            hasX25519PrivKeyBeenSet: false,
-            hasUmbraAddressBeenSet: false,
-            hasTokenListBeenSet: false,
             tokenList: [],
             umbraWalletBalance: undefined,
             availableOnChainBalance: undefined,
             selectedTokenTicker: undefined,
             selectedTokenDecimals: undefined,
+            hasX25519PrivKeyBeenSet: false,
+            hasUmbraAddressBeenSet: false,
+            hasTokenListBeenSet: false,
             lastScannedAddress: undefined,
 
             // Setters
@@ -111,7 +107,7 @@ export const useUmbraStore = create<UmbraStoreState>()(
 
             setTokenList: (tokenList: Array<TokenListing>) =>
                 set(() => ({
-                    tokenList: tokenList,
+                    tokenList,
                     hasTokenListBeenSet: true,
                 })),
 
@@ -143,7 +139,10 @@ export const useUmbraStore = create<UmbraStoreState>()(
             getX25519Keypair: () => {
                 const state = get();
                 const x25519PublicKey = x25519.getPublicKey(state.x25519PrivKey);
-                return { privateKey: state.x25519PrivKey, publicKey: x25519PublicKey };
+                return {
+                    privateKey: state.x25519PrivKey,
+                    publicKey: x25519PublicKey,
+                };
             },
 
             getUmbraAddress: () => {
@@ -167,9 +166,10 @@ export const useUmbraStore = create<UmbraStoreState>()(
                 ) {
                     return '—';
                 }
-                const decimals = state.selectedTokenDecimals || 9;
-                const formatted = state.umbraWalletBalance / 10 ** decimals;
-                return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
+                const formatted = state.umbraWalletBalance / 10 ** state.selectedTokenDecimals;
+                return formatted.toLocaleString(undefined, {
+                    maximumFractionDigits: state.selectedTokenDecimals,
+                });
             },
 
             getFormattedOnChainBalance: () => {
@@ -180,15 +180,35 @@ export const useUmbraStore = create<UmbraStoreState>()(
                 ) {
                     return '—';
                 }
-                const decimals = state.selectedTokenDecimals || 9;
-                const formatted = state.availableOnChainBalance / 10 ** decimals;
-                return formatted.toLocaleString(undefined, { maximumFractionDigits: decimals });
+                const formatted = state.availableOnChainBalance / 10 ** state.selectedTokenDecimals;
+                return formatted.toLocaleString(undefined, {
+                    maximumFractionDigits: state.selectedTokenDecimals,
+                });
+            },
+
+            // ✅ Reset method
+            reset: () => {
+                const emptyPrivKey = new Uint8Array(0);
+                const emptyAddress = new Uint8Array(0);
+
+                set(() => ({
+                    emptyPrivKey,
+                    emptyAddress,
+                    hasX25519PrivKeyBeenSet: false,
+                    hasUmbraAddressBeenSet: false,
+                    hasTokenListBeenSet: false,
+                    tokenList: [],
+                    umbraWalletBalance: undefined,
+                    availableOnChainBalance: undefined,
+                    selectedTokenTicker: undefined,
+                    selectedTokenDecimals: undefined,
+                    lastScannedAddress: undefined,
+                }));
             },
         }),
         {
-            name: 'umbra-store', // unique name
-            // Optionally, you can whitelist/blacklist state keys, or use custom storage
-            // partialize: (state) => ({ ... }), // to persist only part of the state
+            name: 'umbra-store',
+            storage: createJSONStorage(() => sessionStorage),
         },
     ),
 );

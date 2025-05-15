@@ -38,6 +38,8 @@ import {
 } from '@solana/spl-token';
 import React from 'react';
 import CornerBorders from '@/app/components/corner';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { StyledWalletMultiButton } from '@/app/components/styledButton';
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -460,7 +462,7 @@ export default function DepositPage() {
                         typeof umbraStore.selectedTokenDecimals === 'number'
                             ? umbraStore.availableOnChainBalance /
                               10 ** umbraStore.selectedTokenDecimals
-                            : 0}
+                            : '-'}
                     </span>
                 )}
                 {selectedToken}
@@ -472,7 +474,7 @@ export default function DepositPage() {
                     <CornerBorders color="white" />
                 </div>
                 <div
-                    className="flex justify-between items-center border border-gray-800 p-4"
+                    className="flex justify-between items-center border border-[#4B5563] p-4"
                     data-oid="9zh0u1."
                 >
                     <input
@@ -703,24 +705,29 @@ export default function DepositPage() {
             </div> */}
 
             {/* Action Button */}
-            <motion.button
-                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-                onClick={handleSubmit}
-                whileHover={{ backgroundColor: '#f0f0f0' }}
-                whileTap={{ scale: 0.98 }}
-                data-oid=":xcq1mj"
-                disabled={loading}
-                data-deposit-submit
-            >
-                {loading ? (
-                    <span className="flex items-center gap-2">
-                        <span className="loader-spinner"></span>
-                        Processing...
-                    </span>
-                ) : (
-                    'Deposit'
-                )}
-            </motion.button>
+            {wallet.connected && wallet.publicKey ? (
+                <motion.button
+                    className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleSubmit}
+                    whileHover={{ backgroundColor: '#f0f0f0' }}
+                    whileTap={{ scale: 0.98 }}
+                    data-oid=":xcq1mj"
+                    disabled={loading}
+                    data-deposit-submit
+                >
+                    {loading ? (
+                        <span className="flex items-center gap-2">
+                            <span className="loader-spinner"></span>
+                            Processing...
+                        </span>
+                    ) : (
+                        'Deposit'
+                    )}
+                </motion.button>
+            ) : (
+                <StyledWalletMultiButton />
+            )}
+
             <style jsx global>{`
                 .loader-spinner {
                     border: 3px solid #f3f3f3;

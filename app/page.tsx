@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// import { WalletConnectButton } from '@solana/wallet-adapter-react-ui';
-import WalletConnectButton from './components/WalletConnectbutton';
+import '@solana/wallet-adapter-react-ui/styles.css';
 import Image from 'next/image';
 
 export default function Page() {
@@ -43,13 +42,13 @@ export default function Page() {
                         Connect your wallet to start making secure deposits, withdrawals, and
                         transfers on the Solana blockchain.
                     </p>
-                    <div
+                    {/* <div
                         // onClick={handleConnect}
                         className=" text-black px-8 py-3 font-medium "
                         data-oid="v5:x_xf"
                     >
                         <WalletConnectButton />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

@@ -25,6 +25,8 @@ import React from 'react';
 import { ScanBarcodeIcon, ScanQrCode, ScanQrCodeIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CornerBorders from '@/app/components/corner';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { StyledWalletMultiButton } from '@/app/components/styledButton';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -350,7 +352,7 @@ export default function TransferPage() {
                 </div>
 
                 <div
-                    className="flex justify-between items-center border border-gray-800 p-4"
+                    className="flex justify-between items-center border border-[#4B5563] p-4"
                     data-oid="enfy:jn"
                 >
                     <input
@@ -511,7 +513,7 @@ export default function TransferPage() {
                     type="text"
                     value={recipientAddress}
                     onChange={(e) => setRecipientAddress(e.target.value)}
-                    className="w-10/12 flex-1 bg-transparent text-white border border-gray-800 p-4 outline-none"
+                    className="w-10/12 flex-1 bg-transparent text-white border border-[#4B5563] p-4 outline-none"
                     placeholder="Enter recipient umbra address"
                     data-oid="0fslce."
                     data-transfer-recipient
@@ -616,31 +618,35 @@ export default function TransferPage() {
                         {typeof umbraStore.umbraWalletBalance === 'number' &&
                         typeof umbraStore.selectedTokenDecimals === 'number'
                             ? umbraStore.umbraWalletBalance / 10 ** umbraStore.selectedTokenDecimals
-                            : 0}
+                            : '-'}
                     </span>
                 )}
                 {selectedToken}
             </div>
 
             {/* Action Button */}
-            <motion.button
-                className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
-                onClick={handleSubmit}
-                whileHover={{ backgroundColor: '#f0f0f0' }}
-                whileTap={{ scale: 0.98 }}
-                data-oid="x-bpec_"
-                disabled={loading}
-                data-transfer-submit
-            >
-                {loading ? (
-                    <span className="flex items-center gap-2">
-                        <span className="loader-spinner"></span>
-                        Processing...
-                    </span>
-                ) : (
-                    'Transfer'
-                )}
-            </motion.button>
+            {wallet.connected ? (
+                <motion.button
+                    className="w-full bg-white text-black py-3 font-medium uppercase tracking-wider mt-6 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleSubmit}
+                    whileHover={{ backgroundColor: '#f0f0f0' }}
+                    whileTap={{ scale: 0.98 }}
+                    data-oid=":xcq1mj"
+                    disabled={loading}
+                    data-deposit-submit
+                >
+                    {loading ? (
+                        <span className="flex items-center gap-2">
+                            <span className="loader-spinner"></span>
+                            Processing...
+                        </span>
+                    ) : (
+                        'Transfer'
+                    )}
+                </motion.button>
+            ) : (
+                <StyledWalletMultiButton />
+            )}
             <style jsx global>{`
                 .loader-spinner {
                     border: 3px solid #f3f3f3;
