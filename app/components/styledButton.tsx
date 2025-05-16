@@ -39,7 +39,6 @@ export function StyledWalletMultiButton({ loading = false }: { loading?: boolean
             whileHover={{ backgroundColor: '#f0f0f0' }}
             whileTap={{ scale: 0.98 }}
             data-oid=":xcq1mj"
-            data-tab-connect
         >
             Connect Wallet
         </motion.button>
