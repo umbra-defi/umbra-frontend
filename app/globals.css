@@ -117,3 +117,91 @@
         }
     }
 }
+
+/* Enhanced Tooltip target highlight with transition */
+.tooltip-target {
+    position: relative;
+    z-index: 45;
+    box-shadow:
+        0 0 0 2px #1f2937,
+        0 0 0 4px rgba(59, 130, 246, 0.5);
+    outline: none;
+    transition: all 0.5s ease;
+}
+
+/* Tooltip target highlight animation */
+@keyframes pulse {
+    0% {
+        box-shadow:
+            0 0 0 2px #1f2937,
+            0 0 0 4px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        box-shadow:
+            0 0 0 2px #1f2937,
+            0 0 0 8px rgba(59, 130, 246, 0.3);
+    }
+    100% {
+        box-shadow:
+            0 0 0 2px #1f2937,
+            0 0 0 4px rgba(59, 130, 246, 0.5);
+    }
+}
+
+.tooltip-target {
+    animation: pulse 2s infinite;
+}
+
+/* Add a highlight overlay with transition */
+.tooltip-target::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(59, 130, 246, 0.1);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tooltip-target:hover::after {
+    opacity: 1;
+}
+
+/* Specific highlighting for different elements with transitions */
+button.tooltip-target {
+    /* background-color: rgba(31, 41, 55, 0.8) !important; */
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+input.tooltip-target {
+    border-color: #3b82f6 !important;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* New highlight style for div elements with transition */
+div.tooltip-target {
+    background-color: rgba(31, 41, 55, 0.4) !important;
+    border: 1px dashed #3b82f6 !important;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* Custom highlight classes with transitions */
+.div-highlight.tooltip-target {
+    background-color: rgba(31, 41, 55, 0.4) !important;
+    border: 1px dashed #3b82f6 !important;
+    box-shadow:
+        0 0 0 2px #1f2937,
+        0 0 0 4px rgba(59, 130, 246, 0.5);
+    transition: all 0.3s ease;
+}

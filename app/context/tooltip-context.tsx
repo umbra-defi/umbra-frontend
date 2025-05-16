@@ -11,6 +11,7 @@ type TooltipStep = {
     targetSelector: string;
     placement?: 'top' | 'right' | 'bottom' | 'left';
     tab?: 'deposit' | 'transfer' | 'withdraw';
+    highlightClass?: string;
 };
 
 type TooltipContextType = {
@@ -38,6 +39,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Please connect a wallet before moving ahead',
         targetSelector: '[data-tab-connect]',
         tab: 'deposit',
+        highlightClass: 'button-highlight',
     },
     {
         id: 'deposit-intro',
@@ -46,6 +48,7 @@ const tourSteps: TooltipStep[] = [
             'Click Deposit to move tokens from your connected wallet into your Umbra’s private wallet.',
         targetSelector: '[data-tab="deposit"]',
         tab: 'deposit',
+        highlightClass: 'tab-highlight',
     },
     {
         id: 'deposit-balance',
@@ -54,6 +57,7 @@ const tourSteps: TooltipStep[] = [
             'Your private (Umbra) vs. on-chain (connected) balances—so you know what you can deposit.',
         targetSelector: '[data-deposit-balance]',
         tab: 'deposit',
+        highlightClass: 'div-highlight',
     },
 
     {
@@ -62,6 +66,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Enter (or shortcut) how much you want to deposit, and choose your token.',
         targetSelector: '[data-deposit-amount]',
         tab: 'deposit',
+        highlightClass: 'div-highlight',
     },
     {
         id: 'deposit-submit',
@@ -70,6 +75,7 @@ const tourSteps: TooltipStep[] = [
             'Press Deposit and approve in your wallet. Funds will be privately deposited to your Umbra wallet.',
         targetSelector: '[data-deposit-submit]',
         tab: 'deposit',
+        highlightClass: 'button-highlight',
     },
 
     // Transfer tab steps
@@ -80,6 +86,7 @@ const tourSteps: TooltipStep[] = [
             'Switch to Transfer when you’re ready to send private funds to another Umbra user.',
         targetSelector: '[data-tab="transfer"]',
         tab: 'transfer',
+        highlightClass: 'tab-highlight',
     },
     {
         id: 'transfer-amount',
@@ -87,6 +94,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Specify how much SOL or another token you want to send.',
         targetSelector: '[data-transfer-amount]',
         tab: 'transfer',
+        highlightClass: 'div-highlight',
     },
     {
         id: 'transfer-recipient',
@@ -94,6 +102,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Paste your recipient’s Umbra address here.',
         targetSelector: '[data-transfer-recipient]',
         tab: 'transfer',
+        highlightClass: 'input-highlight',
     },
 
     {
@@ -102,6 +111,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Click Transfer and confirm in your wallet to send privately.',
         targetSelector: '[data-transfer-submit]',
         tab: 'transfer',
+        highlightClass: 'button-highlight',
     },
 
     // Withdraw tab steps
@@ -111,6 +121,7 @@ const tourSteps: TooltipStep[] = [
         content: 'To take funds back on-chain, select Withdraw.',
         targetSelector: '[data-tab="withdraw"]',
         tab: 'withdraw',
+        highlightClass: 'tab-highlight',
     },
     {
         id: 'withdraw-amount',
@@ -118,6 +129,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Enter how much you’d like to withdraw.',
         targetSelector: '[data-withdraw-amount]',
         tab: 'withdraw',
+        highlightClass: 'div-highlight',
     },
     {
         id: 'withdraw-submit',
@@ -125,6 +137,7 @@ const tourSteps: TooltipStep[] = [
         content: 'Hit Withdraw and your token returns to your connected on-chain wallet.',
         targetSelector: '[data-withdraw-submit]',
         tab: 'withdraw',
+        highlightClass: 'button-highlight',
     },
 ];
 

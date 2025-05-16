@@ -159,7 +159,6 @@ export default function TransactionsLayout({ children }: { children: React.React
                             // onClick={handleConnect}
                             className="  px-8 py-3 font-medium "
                             data-oid="v5:x_xf"
-                            data-tab-connect
                         >
                             <WalletConnectButton />
 

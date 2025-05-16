@@ -350,7 +350,7 @@ export default function TransferPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="9.izn3.">
+            <div className="relative" data-oid="9.izn3." data-transfer-amount>
                 <div className="absolute inset-0 pointer-events-none z-10">
                     <CornerBorders color="white" />
                 </div>
@@ -366,7 +366,6 @@ export default function TransferPage() {
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
                         data-oid="5mng-xb"
-                        data-transfer-amount
                     />
 
                     <div className="flex gap-2 mr-3" data-oid="_njm51w">

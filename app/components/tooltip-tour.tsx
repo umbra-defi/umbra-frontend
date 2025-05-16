@@ -1,10 +1,7 @@
 'use client';
-
+import { AnimatePresence } from 'framer-motion';
+import { Tooltip, TooltipProvider } from '../components/ui/tooltip';
 import { useTooltip } from '../context/tooltip-context';
-import { Tooltip, TooltipProvider } from './ui/tooltip';
-
-// import { Tooltip, TooltipProvider } from "@/components/ui/tooltip"
-// import { useTooltip } from "@/contexts/tooltip-context"
 
 export function TooltipTour() {
     const { steps, currentStepIndex, isOpen, nextStep, prevStep, endTour } = useTooltip();
@@ -26,6 +23,7 @@ export function TooltipTour() {
                 placement={currentStep.placement || 'bottom'}
                 currentStep={currentStepIndex}
                 totalSteps={steps.length}
+                highlightClass={currentStep.highlightClass}
             />
         </TooltipProvider>
     );

@@ -357,7 +357,7 @@ export default function WithdrawPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="_kzx3_s">
+            <div className="relative" data-oid="_kzx3_s" data-withdraw-amount>
                 <div className="absolute inset-0 pointer-events-none z-10">
                     <CornerBorders color="white" />
                 </div>
@@ -372,7 +372,6 @@ export default function WithdrawPage() {
                         className="bg-transparent text-white outline-none w-full text-lg"
                         placeholder="0"
                         data-oid="8lswkbm"
-                        data-withdraw-amount
                     />
 
                     <div className="flex gap-2 mr-3">

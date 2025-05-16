@@ -479,7 +479,7 @@ export default function DepositPage() {
             </div>
 
             {/* Amount Input */}
-            <div className="relative" data-oid="yw2qv2b">
+            <div className="relative" data-oid="yw2qv2b" data-deposit-amount>
                 <div className="absolute inset-0 pointer-events-none z-10">
                     <CornerBorders color="white" />
                 </div>
@@ -488,7 +488,6 @@ export default function DepositPage() {
                     data-oid="9zh0u1."
                 >
                     <input
-                        data-deposit-amount
                         type="text"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
@@ -735,7 +734,9 @@ export default function DepositPage() {
                     )}
                 </motion.button>
             ) : (
-                <StyledWalletMultiButton />
+                <div>
+                    <StyledWalletMultiButton />
+                </div>
             )}
 
             <style jsx global>{`
