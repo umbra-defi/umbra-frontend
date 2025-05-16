@@ -393,7 +393,7 @@ export default function DepositPage() {
             const txSignature = await (await sendTransactionToRelayer(depositTx)).json();
             console.log('Transaction Signature Finalization: ', txSignature);
 
-            const res = awaitComputationFinalization(
+            const res = await awaitComputationFinalization(
                 new AnchorProvider(getDevnetConnection(), program.provider.wallet!, {
                     commitment: 'confirmed',
                 }),

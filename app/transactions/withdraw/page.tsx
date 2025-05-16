@@ -261,7 +261,7 @@ export default function WithdrawPage() {
 
             // const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
             const txSignature = await (await sendTransactionToRelayer(withdrawTx)).json();
-            awaitComputationFinalization(
+            await awaitComputationFinalization(
                 new AnchorProvider(program.provider.connection, program.provider.wallet!, {
                     commitment: 'confirmed',
                 }),
