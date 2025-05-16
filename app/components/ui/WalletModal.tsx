@@ -62,9 +62,9 @@ const WalletModal = ({
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className=" text-white px-4 py-2 border-[1px] border-[#4B5563]   bg-[#2D2E33]   uppercase   flex items-center justify-center"
+                className=" text-black px-4 py-2    bg-white   uppercase   flex items-center justify-center"
             >
-                Wallet Details
+                Recieve
             </button>
 
             {isOpen &&

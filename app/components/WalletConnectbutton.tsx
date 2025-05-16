@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { Loader2 } from 'lucide-react';
 import { cn, toastError } from '@/lib/utils';
@@ -40,36 +40,35 @@ export default function WalletConnectButton({
     const umbraStore = useUmbraStore();
     const [mounted, setMounted] = useState(false);
     const { setVisible } = useWalletModal();
-    const hasRunOperations = useRef(false);
+    const isInitialMount = useRef(true);
 
     useEffect(() => {
         setMounted(true);
-        disconnect().catch((err) => {
-            console.error('Error disconnecting wallet on load:', err);
-        });
     }, []);
 
+    // Handle wallet connection state
     useEffect(() => {
-        if (connected && !hasRunOperations.current) {
-            const alreadyConnected = localStorage.getItem('walletAlreadyConnected');
+        // Skip the first render to avoid running on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
 
-            if (!alreadyConnected && publicKey) {
-                console.log('🔗 Wallet connected - running operations...');
-                // Run your one-time operations
-                // ...
+        if (connected && publicKey) {
+            // Check if this is a first-time connection or a reconnection after refresh
+
+            if (!umbraStore.walletConnected) {
+                console.log('🔗 First-time wallet connection - running operations...');
                 handleWalletConnected(publicKey);
                 umbraStore.setLoading(true);
+                umbraStore.setWalletConnected(true);
+
+                // Mark wallet as connected in localStorage
+            } else {
+                console.log('🔄 Wallet already connected - skipping operations');
             }
-
-            hasRunOperations.current = true;
         }
-
-        if (!connected) {
-            console.log('❌ Wallet disconnected - resetting state');
-            localStorage.removeItem('walletAlreadyConnected');
-            hasRunOperations.current = false;
-        }
-    }, [connected]);
+    }, [connected, publicKey]);
 
     const handleWalletConnected = async (publicKey: PublicKey) => {
         try {
@@ -180,6 +179,7 @@ export default function WalletConnectButton({
     const handleDisconnect = async () => {
         await disconnect();
         umbraStore.reset();
+        umbraStore.setWalletConnected(false);
         return;
     };
 
@@ -205,7 +205,7 @@ export default function WalletConnectButton({
     if (connected && publicKey) {
         return (
             <motion.button
-                className=" bg-white text-black px-4 py-2  uppercase   flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                className=" bg-[#2D2E33] border-[1px]  border-[#4B5563] text-white px-4 py-2  uppercase   flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleDisconnect}
                 whileHover={{ backgroundColor: '#f0f0f0' }}
                 whileTap={{ scale: 0.98 }}

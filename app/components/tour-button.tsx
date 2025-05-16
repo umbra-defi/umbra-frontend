@@ -8,7 +8,7 @@ export function TourButton() {
     return (
         <button
             onClick={startTour}
-            className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 flex items-center gap-2 z-30"
+            className="fixed bottom-4 right-4  text-black bg-white px-4 py-2  shadow-lg hover:bg-grey-200 flex items-center gap-2 z-30"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

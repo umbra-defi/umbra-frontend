@@ -609,7 +609,7 @@ export default function TransferPage() {
             </div> */}
 
             {/* Example balance display */}
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
+            {/* <div className="flex items-center gap-2 text-gray-400 text-sm mb-2">
                 Balance:
                 {balanceLoading ? (
                     <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></span>
@@ -622,7 +622,7 @@ export default function TransferPage() {
                     </span>
                 )}
                 {selectedToken}
-            </div>
+            </div> */}
 
             {/* Action Button */}
             {wallet.connected && !umbraStore.loading ? (

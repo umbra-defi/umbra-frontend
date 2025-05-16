@@ -32,6 +32,7 @@ interface UmbraStoreState {
     lastScannedAddress: string | undefined;
     loading: boolean;
     loadingMessage: string;
+    walletConnected: boolean;
 
     // Setters
     setX25519PrivKey: (newKey: X25519PrivateKey) => void;
@@ -50,6 +51,7 @@ interface UmbraStoreState {
     getFormattedUmbraWalletBalance: () => string;
     getFormattedOnChainBalance: () => string;
     setLoading: (val: boolean) => void;
+    setWalletConnected: (val: boolean) => void;
     setLoadingMessage: (msg: string) => void;
 
     // Reset all state
@@ -92,6 +94,7 @@ export const useUmbraStore = create<UmbraStoreState>()(
             lastScannedAddress: undefined,
             loading: false,
             loadingMessage: '',
+            walletConnected: false,
 
             // Setters
             setX25519PrivKey: (newKey: X25519PrivateKey) =>
@@ -193,6 +196,7 @@ export const useUmbraStore = create<UmbraStoreState>()(
             },
             setLoading: (val: boolean) => set(() => ({ loading: val })),
             setLoadingMessage: (msg: string) => set(() => ({ loadingMessage: msg })),
+            setWalletConnected: (val: boolean) => set(() => ({ walletConnected: val })),
 
             // ✅ Reset method
             reset: () => {

@@ -139,13 +139,13 @@ export default function TransactionsLayout({ children }: { children: React.React
                             <Image
                                 src="/images/umbra.svg"
                                 alt="Umbra Logo"
-                                width={100}
-                                height={100}
+                                width={180}
+                                height={150}
                             />
                         </div>
                     </Link>
-                    <div className="flex items-center gap-3" data-oid="u07fqct">
-                        {umbraAddress instanceof Uint8Array ? (
+                    <div className="flex items-center " data-oid="u07fqct">
+                        {bs58.encode(Buffer.from(umbraAddress)) && umbraStore.walletConnected ? (
                             <div className="flex flex-col gap-2" data-oid="6zqx0vr">
                                 <WalletModal
                                     formattedOnChainBalance={formattedOnChainBalance}
@@ -251,7 +251,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             data-oid="8w.djrx"
                         > */}
                         <div
-                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-3xl border border-gray-600 mt-2 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
+                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-3xl border border-gray-600 mt-6 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
                             data-oid="8w.djrx"
                         >
                             <div className="absolute inset-0 pointer-events-none z-10">
