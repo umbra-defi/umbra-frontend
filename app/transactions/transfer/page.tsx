@@ -350,35 +350,34 @@ export default function TransferPage() {
     return (
         <>
             {/* Amount Input */}
-            <div className="relative" data-oid="9.izn3." data-transfer-amount>
+            <div className="relative" data-oid="yw2qv2b" data-deposit-amount>
                 <div className="absolute inset-0 pointer-events-none z-10">
                     <CornerBorders color="white" />
                 </div>
 
                 <div
-                    className="flex justify-between items-center border border-[#4B5563] p-4"
-                    data-oid="enfy:jn"
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center border border-[#4B5563] p-3 sm:p-4 gap-3 sm:gap-0"
+                    data-oid="9zh0u1."
                 >
                     <input
                         type="text"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="bg-transparent text-white outline-none w-full text-lg"
+                        className="bg-transparent text-white outline-none w-full text-base sm:text-lg px-3 py-2"
                         placeholder="0"
-                        data-oid="5mng-xb"
+                        data-oid="uuak1lj"
                     />
 
-                    <div className="flex gap-2 mr-3" data-oid="_njm51w">
+                    <div className="flex gap-2 justify-between sm:justify-start sm:mr-3">
                         <button
-                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
-                            data-oid="fq8d-zn"
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors w-full sm:w-auto"
                             onClick={() => {
                                 if (
-                                    umbraStore.umbraWalletBalance !== undefined &&
+                                    umbraStore.availableOnChainBalance !== undefined &&
                                     umbraStore.selectedTokenDecimals !== undefined
                                 ) {
                                     const halfBalance =
-                                        umbraStore.umbraWalletBalance /
+                                        umbraStore.availableOnChainBalance /
                                         (2 * 10 ** umbraStore.selectedTokenDecimals);
                                     setAmount(halfBalance.toString());
                                 }
@@ -387,15 +386,14 @@ export default function TransferPage() {
                             HALF
                         </button>
                         <button
-                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors"
-                            data-oid="jxatzrh"
+                            className="text-white bg-black border border-gray-800 px-3 py-1 text-sm hover:bg-[#111] transition-colors w-full sm:w-auto"
                             onClick={() => {
                                 if (
-                                    umbraStore.umbraWalletBalance !== undefined &&
+                                    umbraStore.availableOnChainBalance !== undefined &&
                                     umbraStore.selectedTokenDecimals !== undefined
                                 ) {
                                     const maxBalance =
-                                        umbraStore.umbraWalletBalance /
+                                        umbraStore.availableOnChainBalance /
                                         10 ** umbraStore.selectedTokenDecimals;
                                     setAmount(maxBalance.toString());
                                 }
@@ -404,11 +402,12 @@ export default function TransferPage() {
                             MAX
                         </button>
                     </div>
-                    <div className="relative" data-oid="xsrjvjn">
+
+                    <div className="relative w-full sm:w-auto" data-oid="i6:f:9y">
                         <button
-                            className="flex items-center gap-2 text-white"
+                            className="flex justify-between sm:justify-start items-center w-full sm:w-auto gap-2 text-white"
                             onClick={() => setShowTokenDropdown(!showTokenDropdown)}
-                            data-oid="bhvrc.h"
+                            data-oid="5kfplm5"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -421,24 +420,22 @@ export default function TransferPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-layers"
-                                data-oid="0f3:vm."
+                                data-oid="rz79tvk"
                             >
                                 <path
                                     d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
-                                    data-oid="1:v5ijx"
+                                    data-oid="18nx49-"
                                 />
-
                                 <path
                                     d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 12.5"
-                                    data-oid="ro8i95y"
+                                    data-oid=".yy:gc0"
                                 />
-
                                 <path
                                     d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2.6 17.5"
-                                    data-oid="j.2zbo:"
+                                    data-oid="gkw8438"
                                 />
                             </svg>
-                            {selectedToken}
+                            <span className="truncate">{selectedToken}</span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -450,50 +447,50 @@ export default function TransferPage() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 className="lucide lucide-chevron-down"
-                                data-oid="7m5lq1-"
+                                data-oid="mf4j:va"
                             >
-                                <path d="m6 9 6 6 6-6" data-oid="lycs_a9" />
+                                <path d="m6 9 6 6 6-6" data-oid="1d2brj6" />
                             </svg>
                         </button>
 
                         {showTokenDropdown && (
                             <motion.div
-                                className="absolute right-0 mt-2 w-56 bg-black border border-gray-800 shadow-lg z-10"
+                                className="absolute right-0 mt-2 w-full sm:w-56 bg-black border border-gray-800 shadow-lg z-10"
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                data-oid="mxl._19"
+                                data-oid="g5mmiw:"
                             >
-                                <div className="p-2" data-oid="btritay">
+                                <div className="p-2" data-oid="tp9e5s_">
                                     <input
                                         type="text"
                                         placeholder="Search tokens..."
                                         className="w-full bg-[#0a0a0f] text-white p-2 border border-gray-800 outline-none"
                                         value={searchToken}
                                         onChange={(e) => setSearchToken(e.target.value)}
-                                        data-oid="8ivbyyo"
+                                        data-oid="88usrkm"
                                     />
                                 </div>
-                                <div className="max-h-48 overflow-y-auto" data-oid="9fsjin:">
+                                <div className="max-h-48 overflow-y-auto" data-oid="z0c:7z.">
                                     {filteredTokens.map((token) => (
                                         <button
-                                            key={token.mintAddress.toBase58()}
+                                            key={token.ticker}
                                             className="w-full text-left p-3 hover:bg-[#111] text-white"
                                             onClick={() => {
                                                 setSelectedToken(token.ticker);
                                                 setShowTokenDropdown(false);
                                                 umbraStore.setSelectedTokenTicker(token.ticker);
                                             }}
-                                            data-oid="50h46l7"
+                                            data-oid="cr8rcui"
                                         >
-                                            <div className="flex items-center" data-oid="6i25est">
-                                                <span className="font-medium" data-oid="0:n6erx">
+                                            <div className="flex items-center" data-oid="ouzqjc0">
+                                                <span className="font-medium" data-oid="25fbdnk">
                                                     {token.ticker}
                                                 </span>
                                                 <span
                                                     className="ml-2 text-gray-400 text-sm"
-                                                    data-oid="-of71fw"
+                                                    data-oid="pslpd:q"
                                                 >
                                                     {token.ticker}
                                                 </span>

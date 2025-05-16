@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import type React from 'react';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { cn, toastError } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUmbraStore } from '../store/umbraStore';
 import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
@@ -17,7 +19,6 @@ import WalletModal from '../components/ui/WalletModal';
 import CornerBorders from '../components/corner';
 import CornerDots from '../components/cornerDots';
 import WalletConnectButton from '../components/WalletConnectbutton';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 // Fee types
 export const feeTypes = [
@@ -125,7 +126,7 @@ export default function TransactionsLayout({ children }: { children: React.React
             <div className="w-full min-h-screen flex flex-col" data-oid="-.s3a6:">
                 {/* Header */}
                 <motion.header
-                    className="w-full p-6 flex justify-between items-center"
+                    className="w-full p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
@@ -141,10 +142,14 @@ export default function TransactionsLayout({ children }: { children: React.React
                                 alt="Umbra Logo"
                                 width={180}
                                 height={150}
+                                className="w-36 sm:w-44 md:w-[180px] h-auto"
                             />
                         </div>
                     </Link>
-                    <div className="flex items-center " data-oid="u07fqct">
+                    <div
+                        className="flex items-center justify-center w-full sm:w-auto"
+                        data-oid="u07fqct"
+                    >
                         {bs58.encode(Buffer.from(umbraAddress)) && umbraStore.walletConnected ? (
                             <div className="flex flex-col gap-2" data-oid="6zqx0vr">
                                 <WalletModal
@@ -156,20 +161,17 @@ export default function TransactionsLayout({ children }: { children: React.React
                         ) : null}
 
                         <div
-                            // onClick={handleConnect}
-                            className="  px-8 py-3 font-medium "
+                            className="px-4 sm:px-8 py-3 font-medium"
                             data-oid="v5:x_xf"
                             data-tab-connect
                         >
                             <WalletConnectButton />
-
-                            {/* <WalletMultiButton /> */}
                         </div>
                     </div>
                 </motion.header>
 
                 {/* Main Content */}
-                <div className="flex-1 flex items-center justify-center p-6">
+                <div className="flex-1 flex items-center sm:mb-10 md:mb-0 justify-center p-3 sm:p-6">
                     <motion.div
                         className="w-full max-w-[590px]"
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -177,7 +179,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                         transition={{ duration: 0.3 }}
                     >
                         {/* Tabs */}
-                        <div className="grid grid-cols-3 border border-gray-800">
+                        <div className="grid grid-cols-3 border border-gray-800 text-xs sm:text-sm md:text-base">
                             <div className="relative">
                                 <button
                                     className={cn(
@@ -251,7 +253,7 @@ export default function TransactionsLayout({ children }: { children: React.React
                             data-oid="8w.djrx"
                         > */}
                         <div
-                            className=" shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40  backdrop-blur-3xl border border-gray-600 mt-6 p-7 space-y-5 inset-shadow-2xs inset-shadow-white"
+                            className="shadow-[inset_0_0_20px_rgba(255,255,255,0.2)] bg-[#0a0a0f]/40 backdrop-blur-3xl border border-gray-600 mt-6 p-4 sm:p-7 space-y-5 inset-shadow-2xs inset-shadow-white relative"
                             data-oid="8w.djrx"
                         >
                             <div className="absolute inset-0 pointer-events-none z-10">
@@ -259,22 +261,25 @@ export default function TransactionsLayout({ children }: { children: React.React
                             </div>
 
                             <div
-                                className="flex justify-between items-center text-white mb-4"
+                                className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center text-white mb-4 gap-2 sm:gap-0"
                                 data-oid="r6s9t_7"
                             >
                                 <div className="flex flex-col">
-                                    <div className="tracking-wide" data-oid="g9ygc3n">
+                                    <div
+                                        className="tracking-wide text-sm sm:text-base"
+                                        data-oid="g9ygc3n"
+                                    >
                                         Umbra Wallet Balance: {formattedUmbraBalance}{' '}
                                         {selectedTokenTicker || ''}
                                     </div>
                                     {activeTab !== 'transfer' && (
-                                        <div className="tracking-wide mt-1 text-gray-400">
+                                        <div className="tracking-wide mt-1 text-gray-400 text-xs sm:text-sm">
                                             Connected wallet balance: {formattedOnChainBalance}{' '}
                                             {selectedTokenTicker || ''}
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex gap-3" data-oid=".5vit.a">
+                                {/* <div className="flex gap-3 mt-2 sm:mt-0" data-oid=".5vit.a">
                                     <button
                                         className="p-1 hover:text-gray-300 transition-colors"
                                         data-oid="nu_x:by"
@@ -282,8 +287,8 @@ export default function TransactionsLayout({ children }: { children: React.React
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            width="22"
-                                            height="22"
+                                            width="20"
+                                            height="20"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="currentColor"
@@ -302,14 +307,13 @@ export default function TransactionsLayout({ children }: { children: React.React
                                                 ry="0"
                                                 data-oid="7vtxoaz"
                                             />
-
                                             <path
                                                 d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
                                                 data-oid=":iq44jv"
                                             />
                                         </svg>
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
 
                             <AnimatePresence mode="wait" data-oid="2whknka">
