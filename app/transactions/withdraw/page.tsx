@@ -63,7 +63,8 @@ export default function WithdrawPage() {
                 if (!selectedTokenData) return;
 
                 const connection = getConnection();
-                const mintAddress = selectedTokenData.mintAddress;
+                const selectedTokenMintAddress = selectedTokenData!.mintAddress;
+                const mintAddress = new PublicKey(selectedTokenMintAddress);
 
                 // Get mint info to get decimals
                 try {
@@ -119,62 +120,6 @@ export default function WithdrawPage() {
         return () => {
             isMounted = false;
         };
-    }, [wallet.publicKey, selectedToken]);
-
-    // Fetch Umbra wallet balance
-    useEffect(() => {
-        let isMounted = true;
-
-        async function fetchUmbraWalletBalance() {
-            if (!selectedToken) return;
-            setBalanceLoading(true);
-            try {
-                const selectedTokenData = umbraStore.tokenList.find(
-                    (token) => token.ticker === selectedToken,
-                );
-                if (!selectedTokenData) return;
-
-                const mintAddress = selectedTokenData.mintAddress;
-                const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
-                const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
-
-                const privKey = new Uint8Array(Object.values(umbraStore.x25519PrivKey));
-
-                const program = getUmbraProgram();
-                const cipher = new RescueCipher(x25519.getSharedSecret(privKey, mxePublicKey));
-
-                try {
-                    const tokenAccount =
-                        await program.account.umbraTokenAccount.fetch(tokenAccountPDA);
-                    const nonce = tokenAccount.nonce[0].toArray('le', 16);
-                    const decryptedBalance = cipher.decrypt(
-                        [tokenAccount.balance[0]],
-                        Uint8Array.from(nonce),
-                    );
-
-                    if (isMounted) {
-                        umbraStore.setUmbraWalletBalance(Number(decryptedBalance[0]));
-                        umbraStore.setSelectedTokenTicker(selectedToken);
-                    }
-                } catch (error) {
-                    console.log('Umbra token account not found:', error);
-                    if (isMounted) {
-                        umbraStore.setUmbraWalletBalance(0);
-                        umbraStore.setSelectedTokenTicker(selectedToken);
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching Umbra wallet balance:', error);
-            } finally {
-                if (isMounted) setBalanceLoading(false);
-            }
-        }
-
-        fetchUmbraWalletBalance();
-
-        return () => {
-            isMounted = false;
-        };
     }, [selectedToken]);
 
     // Calculate total fees
@@ -206,7 +151,9 @@ export default function WithdrawPage() {
             const selectedTokenData = umbraStore.tokenList.find(
                 (token) => token.ticker === selectedToken,
             );
-            const mintAddress = selectedTokenData!.mintAddress;
+
+            const selectedTokenMintAddress = selectedTokenData!.mintAddress;
+            const mintAddress = new PublicKey(selectedTokenMintAddress);
             const decimals = selectedTokenData?.decimals || 9;
 
             // Check if user has enough balance in Umbra wallet
