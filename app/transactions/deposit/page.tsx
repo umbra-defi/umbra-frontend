@@ -383,7 +383,8 @@ export default function DepositPage() {
             console.log('Signing Done');
             const txSignature = await (await sendTransactionToRelayer(depositTx)).json();
             console.log('Transaction Signature Finalization: ', txSignature);
-            await awaitComputationFinalization(
+
+            const res = await awaitComputationFinalization(
                 new AnchorProvider(getDevnetConnection(), program.provider.wallet!, {
                     commitment: 'confirmed',
                 }),
@@ -391,7 +392,8 @@ export default function DepositPage() {
                 program.programId,
                 'confirmed',
             );
-            console.log(txSignature);
+
+            console.log(res, '----res of awaitComputationFinalization');
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(
                 tokenAccountPDA,
