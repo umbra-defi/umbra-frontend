@@ -168,7 +168,10 @@ export default function WalletConnectButton({
 
     const fetchWalletBalance = async (publicKey: PublicKey) => {
         try {
-            const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+            const connection = new Connection(
+                'https://devnet.helius-rpc.com/?api-key=90f66654-4a65-4c8b-8ed7-5aee8c74db53',
+                'confirmed',
+            );
             const balance = await connection.getBalance(publicKey);
             setBalance(balance / LAMPORTS_PER_SOL);
         } catch (error) {

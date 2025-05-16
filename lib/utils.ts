@@ -55,7 +55,10 @@ export function getLocalnetConnection(): Connection {
     return new Connection('http://127.0.0.1:8899', 'confirmed');
 }
 export function getDevnetConnection(): Connection {
-    return new Connection('https://api.devnet.solana.com', 'confirmed');
+    return new Connection(
+        'https://devnet.helius-rpc.com/?api-key=90f66654-4a65-4c8b-8ed7-5aee8c74db53',
+        'confirmed',
+    );
 }
 
 export function getMainnetConnection(): Connection {
