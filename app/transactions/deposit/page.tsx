@@ -6,7 +6,7 @@ import { feeTypes } from '../layout';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useUmbraStore } from '@/app/store/umbraStore';
-import { PublicKey, Transaction } from '@solana/web3.js';
+import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js';
 import {
     mxePublicKey,
     UMBRA_ASSOCIATED_TOKEN_ACCOUNT_DERIVATION_SEED,
@@ -308,17 +308,24 @@ export default function DepositPage() {
             transaction.feePayer = wallet.publicKey!;
             transaction.lastValidBlockHeight = lastValidBlockHeight;
 
-            try {
-                console.log('triggered deposit', transaction);
-                const signedTx = await wallet.signTransaction!(transaction);
-                console.log('triggered deposit again');
-                const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-                    skipPreflight: true,
-                });
-                await connection.confirmTransaction(signature);
-            } catch (error) {
-                console.log(error);
-            }
+            const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+                units: 200_000,
+            });
+
+            const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+                microLamports: 1_000_000,
+            });
+
+            transaction.add(modifyComputeUnits);
+            transaction.add(addPriorityFee);
+
+            console.log('triggered deposit', transaction);
+            const signedTx = await wallet.signTransaction!(transaction);
+            console.log('triggered deposit again');
+            const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+                skipPreflight: true,
+            });
+            await connection.confirmTransaction(signature);
 
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);

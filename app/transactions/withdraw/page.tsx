@@ -135,7 +135,8 @@ export default function WithdrawPage() {
                 );
                 if (!selectedTokenData) return;
 
-                const mintAddress = selectedTokenData.mintAddress;
+                const selectedTokenMintAddress = selectedTokenData!.mintAddress;
+                const mintAddress = new PublicKey(selectedTokenMintAddress);
                 const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
                 const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
 
@@ -483,7 +484,7 @@ export default function WithdrawPage() {
                                 <div className="max-h-48 overflow-y-auto" data-oid="pf-j7yx">
                                     {filteredTokens.map((token) => (
                                         <button
-                                            key={token.mintAddress.toBase58()}
+                                            key={new PublicKey(token.mintAddress).toBase58()}
                                             className="w-full text-left p-3 hover:bg-[#111] text-white"
                                             onClick={() => {
                                                 setSelectedToken(token.ticker);
