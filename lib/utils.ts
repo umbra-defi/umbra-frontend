@@ -56,7 +56,7 @@ export function getLocalnetConnection(): Connection {
 }
 export function getDevnetConnection(): Connection {
     return new Connection(
-        'https://devnet.helius-rpc.com/?api-key=90f66654-4a65-4c8b-8ed7-5aee8c74db53',
+        process.env.NEXT_PUBLIC_HELIUS_URL || 'https://api.devnet.solana.com',
         'confirmed',
     );
 }
