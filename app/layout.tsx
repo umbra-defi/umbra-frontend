@@ -23,8 +23,6 @@ export const metadata: Metadata = {
 
 const instrument_Sans = Instrument_Sans({ subsets: ['latin'] });
 
-// const inter = Inter({ subsets: ['latin'] });
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" data-oid="h87ffk2" suppressHydrationWarning={true}>
