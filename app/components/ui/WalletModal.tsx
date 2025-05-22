@@ -42,7 +42,6 @@ const WalletModal = ({
         });
     };
 
-    // Calculate position when opening modal
     const calculatePosition = () => {
         if (buttonRef.current) {
             const rect = buttonRef.current.getBoundingClientRect();
