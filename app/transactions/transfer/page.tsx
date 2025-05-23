@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import CornerBorders from '@/app/components/corner';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { StyledWalletMultiButton } from '@/app/components/styledButton';
+import { awaitEvent } from '../_utils/Events';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -296,14 +297,18 @@ export default function TransferPage() {
 
             // const withdrawTxSigned = await wallet.signTransaction!(tx);
             const txSignature = await (await sendTransactionToRelayer(tx)).json();
-            await awaitComputationFinalization(
-                new AnchorProvider(program.provider.connection, program.provider.wallet!, {
-                    commitment: 'confirmed',
-                }),
-                computationOffset,
-                program.programId,
-                'confirmed',
-            );
+            // await awaitComputationFinalization(
+            //     new AnchorProvider(program.provider.connection, program.provider.wallet!, {
+            //         commitment: 'confirmed',
+            //     }),
+            //     computationOffset,
+            //     program.programId,
+            //     'confirmed',
+            // );
+
+            const event = await awaitEvent('transfer_callback');
+
+            console.log(event);
             console.log(txSignature);
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(

@@ -25,10 +25,15 @@ import {
     toastError,
     toastSuccess,
 } from '@/lib/utils';
-import { awaitComputationFinalization, RescueCipher, x25519 } from '@arcium-hq/client';
+import {
+    awaitComputationFinalization,
+    getArciumProgram,
+    RescueCipher,
+    x25519,
+} from '@arcium-hq/client';
 import { randomBytes } from 'crypto';
 import { getFirstRelayer, sendTransactionToRelayer } from '@/app/auth/signup/utils';
-import { AnchorProvider, BN } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, EventManager } from '@coral-xyz/anchor';
 import {
     createTransferInstruction,
     getAssociatedTokenAddress,
@@ -39,6 +44,7 @@ import React from 'react';
 import CornerBorders from '@/app/components/corner';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { StyledWalletMultiButton } from '@/app/components/styledButton';
+import { awaitEvent } from '../_utils/Events';
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -393,16 +399,69 @@ export default function DepositPage() {
             const txSignature = await (await sendTransactionToRelayer(depositTx)).json();
             console.log('Transaction Signature Finalization: ', txSignature);
 
-            const res = await awaitComputationFinalization(
-                new AnchorProvider(getDevnetConnection(), program.provider.wallet!, {
-                    commitment: 'confirmed',
-                }),
-                computationOffset,
-                program.programId,
-                'confirmed',
-            );
+            // const awaitEvent = async (
+            //     eventListener: any,
+            //     eventName: any,
+            //     eventCheck: any,
+            //     commitment = 'confirmed',
+            // ) => {
+            //     console.log('We are now waiting for the event');
+            //     const foundEvent = await new Promise((res) => {
+            //         const listenerId = eventListener.addEventListener(
+            //             eventName,
+            //             (event: any, _slot: any, signature: any) => {
+            //                 if (eventCheck(event)) res([event, signature, listenerId]);
+            //             },
+            //             commitment,
+            //         );
+            //     });
+            //     await eventListener.removeEventListener(foundEvent[2]);
+            //     return { event: foundEvent[0], sig: foundEvent[1] };
+            // };
 
-            console.log(res, '----res of awaitComputationFinalization');
+            // const awaitComputationFinalization = async (
+            //     provider: any,
+            //     computationOffset: any,
+            //     mxeProgramId: any,
+            //     commitment = 'confirmed',
+            // ) => {
+            //     console.log('This is our front-end logic heheheheh');
+
+            //     const arciumProgram = getArciumProgram(provider);
+            //     const eventListener = new EventManager(
+            //         arciumProgram.programId,
+            //         provider,
+            //         arciumProgram.coder,
+            //     );
+            //     const finalizeComp = await awaitEvent(
+            //         eventListener,
+            //         'finalizeComputationEvent',
+            //         (e: any) => {
+            //             console.log('event recieved ', e);
+            //             console.log('Event MXE ID:', e.mxeProgramId.toBase58());
+            //             console.log(mxeProgramId.toBase58());
+            //         },
+            //         commitment,
+            //     );
+
+            //     console.log(finalizeComp);
+            //     return finalizeComp.sig;
+            // };
+
+            // const res = await awaitComputationFinalization(
+            //     new AnchorProvider(getDevnetConnection(), program.provider.wallet!, {
+            //         commitment: 'confirmed',
+            //     }),
+            //     computationOffset,
+            //     program.programId,
+            //     'confirmed',
+            // );
+
+            // console.log(res, '----res of awaitComputationFinalization');
+
+            const event = await awaitEvent('deposit_callback');
+
+            console.log(event);
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(
                 tokenAccountPDA,
