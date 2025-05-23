@@ -107,6 +107,7 @@ export default function SignupPage() {
             wallet.publicKey!,
         );
         await wallet.signTransaction!(tx);
+        console.log('PROGRAM: ', getUmbraProgram().programId.toBase58());
         let response = await sendTransactionToRelayer(tx);
         console.log((await response.json()).signature);
 

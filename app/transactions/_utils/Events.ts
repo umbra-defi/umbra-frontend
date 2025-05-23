@@ -2,41 +2,34 @@ import { Program, IdlEvents } from '@coral-xyz/anchor';
 import { getUmbraProgram } from '@/lib/utils';
 import { UmbraOnchain } from '@/lib/umbra-program/umbra_onchain';
 
-export const awaitEvent = async <E extends keyof IdlEvents<UmbraOnchain>>(
-    eventName: E,
-): Promise<IdlEvents<UmbraOnchain>[E]> => {
-    const program = getUmbraProgram();
-    let listenerId: number | undefined;
-
-    const event = await new Promise<IdlEvents<UmbraOnchain>[E]>((resolve) => {
-        listenerId = program.addEventListener(eventName, (event) => {
-            resolve(event);
-        });
+const awaitEvent = async <E extends keyof Event>(eventName: E) => {
+  let listenerId: number;
+  const event = await new Promise<Event[E]>((res) => {
+    listenerId = getUmbraProgram().addEventListener(eventName, (event) => {
+      res(event);
     });
+  });
+  await getUmbraProgram().removeEventListener(listenerId);
 
-    if (listenerId !== undefined) {
-        await program.removeEventListener(listenerId);
-    }
-
-    return event;
+  return event;
 };
 
 export const awaitDepositCallbackEvent = async (): Promise<
-    IdlEvents<UmbraOnchain>['despositCallbackEvent']
+    IdlEvents<UmbraOnchain>['emittingEvent']
 > => {
-    return awaitEvent('despositCallbackEvent');
+    return awaitEvent('emittingEvent');
 };
 
 export const awaitTransferCallbackEvent = async (): Promise<
-    IdlEvents<UmbraOnchain>['transferCallbackEvent']
+    IdlEvents<UmbraOnchain>['emittingEvent']
 > => {
-    return awaitEvent('transferCallbackEvent');
+    return awaitEvent('emittingEvent');
 };
 
 export const awaitWithdrawCallbackEvent = async (): Promise<
-    IdlEvents<UmbraOnchain>['withdrawCallbackEvent']
+    IdlEvents<UmbraOnchain>['emittingEvent']
 > => {
-    return awaitEvent('withdrawCallbackEvent');
+    return awaitEvent('emittingEvent');
 };
 
 // Example usage:

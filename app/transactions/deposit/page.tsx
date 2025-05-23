@@ -39,6 +39,7 @@ import {
     getAssociatedTokenAddress,
     getAccount,
     getMint,
+    createAssociatedTokenAccountInstruction,
 } from '@solana/spl-token';
 import React from 'react';
 import CornerBorders from '@/app/components/corner';
@@ -299,6 +300,22 @@ export default function DepositPage() {
                 wallet.publicKey!,
             );
 
+            // Check if the ATA exists for the PDA
+            let transaction = new Transaction();
+            
+            try {
+                await getAccount(connection, umbraPDAassociatedTokenAccount);
+            } catch (error) {
+                // If account doesn't exist, add creation instruction
+                const createAtaInstruction = createAssociatedTokenAccountInstruction(
+                    wallet.publicKey!, // payer
+                    umbraPDAassociatedTokenAccount, // ata
+                    umbraPDA, // owner
+                    new PublicKey(mintAddress), // mint
+                );
+                transaction.add(createAtaInstruction);
+            }
+
             // Create transfer instruction
             const transferInstruction = createTransferInstruction(
                 userAssociatedTokenAccount,
@@ -307,8 +324,9 @@ export default function DepositPage() {
                 BigInt(rawAmount),
             );
 
-            // Create and sign transaction
-            const transaction = new Transaction().add(transferInstruction);
+            // Add transfer instruction
+            transaction.add(transferInstruction);
+
             const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = wallet.publicKey!;
@@ -328,10 +346,9 @@ export default function DepositPage() {
             console.log('triggered deposit', transaction);
             const signedTx = await wallet.signTransaction!(transaction);
             console.log('triggered deposit again');
-            const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-                skipPreflight: true,
-            });
+            const signature = await connection.sendRawTransaction(signedTx.serialize());
             await connection.confirmTransaction(signature);
+            console.log('HEREHEHRHERHEHRHE');
 
             const userAccountPDA = getUserAccountPDA(Buffer.from(umbraStore.umbraAddress));
             const tokenAccountPDA = getTokenAccountPDA(userAccountPDA, mintAddress);
@@ -342,6 +359,7 @@ export default function DepositPage() {
             const firstRelayer: { publicKey: string; id: string; pdaAddress: string } =
                 await getFirstRelayer();
             const program = getUmbraProgram();
+            console.log('PROGRAM: ', program.programId.toBase58());
 
             let tokenAccount = undefined;
             try {
@@ -460,7 +478,6 @@ export default function DepositPage() {
             // console.log(res, '----res of awaitComputationFinalization');
 
             const event = await awaitDepositCallbackEvent();
-
             console.log(event);
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(

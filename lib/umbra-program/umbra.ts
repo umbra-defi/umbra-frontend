@@ -49,6 +49,7 @@ export async function createUserAccount(
 
     console.log(`Target User Account PDA: ${userAccountPda.toBase58()}`);
     console.log(`Using Relayer Account: ${relayerAccountAddress.toBase58()}`);
+    console.log('PROGRAM: ', program.programId.toBase58());
     // Construct and send the transaction calling the 'createUserAccount' instruction
     const tx = await program.methods
         // Pass arguments according to the Rust instruction definition.
