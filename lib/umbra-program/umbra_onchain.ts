@@ -7,32 +7,32 @@
 export type UmbraOnchain = {
     address: 'EUKdEnLBiJhMwq8j4UsiUJEixC8EXsLFEY6J1h9Zz5Cj';
     metadata: {
-        name: 'umbra_onchain';
+        name: 'umbraOnchain';
         version: '0.1.0';
         spec: '0.1.0';
         description: 'Created with Arcium & Anchor';
     };
     instructions: [
         {
-            name: 'claim_transfer';
+            name: 'claimTransfer';
             discriminator: [202, 178, 58, 190, 230, 234, 229, 17];
             accounts: [
                 {
-                    name: 'token_program';
+                    name: 'tokenProgram';
                     address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
                 },
                 {
                     name: 'mint';
                 },
                 {
-                    name: 'umbra_pda';
+                    name: 'umbraPda';
                 },
                 {
-                    name: 'umbra_ata_account';
+                    name: 'umbraAtaAccount';
                     writable: true;
                 },
                 {
-                    name: 'receiver_ata_account';
+                    name: 'receiverAtaAccount';
                     writable: true;
                 },
             ];
@@ -44,7 +44,7 @@ export type UmbraOnchain = {
             ];
         },
         {
-            name: 'create_relayer';
+            name: 'createRelayer';
             discriminator: [237, 140, 242, 158, 223, 25, 138, 165];
             accounts: [
                 {
@@ -57,54 +57,54 @@ export type UmbraOnchain = {
                     writable: true;
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [
                 {
-                    name: 'relayer_pubkey';
+                    name: 'relayerPubkey';
                     type: {
                         defined: {
-                            name: 'WalletPublicKey';
+                            name: 'walletPublicKey';
                         };
                     };
                 },
                 {
-                    name: 'relayer_fee';
+                    name: 'relayerFee';
                     type: {
                         defined: {
-                            name: 'RelayerFee';
+                            name: 'relayerFee';
                         };
                     };
                 },
                 {
-                    name: 'associated_token';
+                    name: 'associatedToken';
                     type: {
                         defined: {
-                            name: 'MintAddress';
+                            name: 'mintAddress';
                         };
                     };
                 },
                 {
-                    name: 'unique_identifier';
+                    name: 'uniqueIdentifier';
                     type: {
                         defined: {
-                            name: 'UniqueIdentifier';
+                            name: 'uniqueIdentifier';
                         };
                     };
                 },
             ];
         },
         {
-            name: 'create_token_account';
+            name: 'createTokenAccount';
             discriminator: [147, 241, 123, 100, 244, 132, 174, 118];
             accounts: [
                 {
-                    name: 'user_account';
+                    name: 'userAccount';
                 },
                 {
-                    name: 'token_account';
+                    name: 'tokenAccount';
                     writable: true;
                     pda: {
                         seeds: [
@@ -148,7 +148,7 @@ export type UmbraOnchain = {
                             },
                             {
                                 kind: 'account';
-                                path: 'user_account';
+                                path: 'userAccount';
                             },
                             {
                                 kind: 'arg';
@@ -166,16 +166,16 @@ export type UmbraOnchain = {
                     name: 'relayer';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [
                 {
-                    name: 'mint_token_address';
+                    name: 'mintTokenAddress';
                     type: {
                         defined: {
-                            name: 'MintAddress';
+                            name: 'mintAddress';
                         };
                     };
                 },
@@ -183,7 +183,7 @@ export type UmbraOnchain = {
                     name: 'balance';
                     type: {
                         defined: {
-                            name: 'RescueCiphertext';
+                            name: 'rescueCiphertext';
                         };
                     };
                 },
@@ -191,18 +191,18 @@ export type UmbraOnchain = {
                     name: 'nonce';
                     type: {
                         defined: {
-                            name: 'X25519Nonce';
+                            name: 'x25519Nonce';
                         };
                     };
                 },
             ];
         },
         {
-            name: 'create_user_account';
+            name: 'createUserAccount';
             discriminator: [146, 68, 100, 69, 63, 46, 182, 199];
             accounts: [
                 {
-                    name: 'user_account';
+                    name: 'userAccount';
                     writable: true;
                 },
                 {
@@ -214,31 +214,31 @@ export type UmbraOnchain = {
                     name: 'relayer';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [
                 {
-                    name: 'umbra_address';
+                    name: 'umbraAddress';
                     type: {
                         defined: {
-                            name: 'UmbraAddress';
+                            name: 'umbraAddress';
                         };
                     };
                 },
                 {
-                    name: 'encryption_pubkey';
+                    name: 'encryptionPubkey';
                     type: {
                         defined: {
-                            name: 'X25519PublicKey';
+                            name: 'x25519PublicKey';
                         };
                     };
                 },
             ];
         },
         {
-            name: 'deposit_amount';
+            name: 'depositAmount';
             discriminator: [220, 131, 39, 220, 179, 247, 241, 22];
             accounts: [
                 {
@@ -247,61 +247,61 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                 },
                 {
-                    name: 'mempool_account';
+                    name: 'mempoolAccount';
                     writable: true;
                 },
                 {
-                    name: 'executing_pool';
+                    name: 'executingPool';
                     writable: true;
                 },
                 {
-                    name: 'computation_account';
+                    name: 'computationAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'cluster_account';
+                    name: 'clusterAccount';
                     writable: true;
                 },
                 {
-                    name: 'pool_account';
+                    name: 'poolAccount';
                     writable: true;
                     address: 'DXHqHhBGNM58RLk438UiEbGe9137A7zJc6JHKN3qMZoB';
                 },
                 {
-                    name: 'clock_account';
+                    name: 'clockAccount';
                     address: 'FHriyvoZotYiFnbUzKFjzRSb2NiaC8RPWY7jtKuKhg65';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
                     name: 'relayer';
                 },
                 {
-                    name: 'user_account';
+                    name: 'userAccount';
                     writable: true;
                 },
                 {
-                    name: 'token_account';
+                    name: 'tokenAccount';
                 },
             ];
             args: [
                 {
-                    name: 'deposit_amount';
+                    name: 'depositAmount';
                     type: {
                         defined: {
-                            name: 'RescueCiphertext';
+                            name: 'rescueCiphertext';
                         };
                     };
                 },
@@ -309,18 +309,18 @@ export type UmbraOnchain = {
                     name: 'nonce';
                     type: {
                         defined: {
-                            name: 'X25519Nonce';
+                            name: 'x25519Nonce';
                         };
                     };
                 },
                 {
-                    name: 'computation_offset';
+                    name: 'computationOffset';
                     type: 'u64';
                 },
             ];
         },
         {
-            name: 'deposit_amount_callback';
+            name: 'depositAmountCallback';
             discriminator: [243, 11, 230, 57, 159, 34, 153, 11];
             accounts: [
                 {
@@ -329,18 +329,18 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'instructions_sysvar';
+                    name: 'instructionsSysvar';
                     address: 'Sysvar1nstructions1111111111111111111111111';
                 },
                 {
-                    name: 'token_account';
+                    name: 'tokenAccount';
                     writable: true;
                 },
             ];
@@ -349,14 +349,14 @@ export type UmbraOnchain = {
                     name: 'output';
                     type: {
                         defined: {
-                            name: 'ComputationOutputs';
+                            name: 'computationOutputs';
                         };
                     };
                 },
             ];
         },
         {
-            name: 'init_deposit_amount_comp_def';
+            name: 'initDepositAmountCompDef';
             discriminator: [235, 29, 183, 69, 51, 175, 106, 168];
             accounts: [
                 {
@@ -365,26 +365,26 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                     writable: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [];
         },
         {
-            name: 'init_transfer_amount_comp_def';
+            name: 'initTransferAmountCompDef';
             discriminator: [220, 227, 130, 57, 226, 179, 227, 57];
             accounts: [
                 {
@@ -393,26 +393,26 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                     writable: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [];
         },
         {
-            name: 'init_withdraw_amount_comp_def';
+            name: 'initWithdrawAmountCompDef';
             discriminator: [199, 134, 10, 84, 36, 64, 50, 99];
             accounts: [
                 {
@@ -421,26 +421,26 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                     writable: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
             ];
             args: [];
         },
         {
-            name: 'transfer_amount';
+            name: 'transferAmount';
             discriminator: [217, 57, 139, 98, 106, 41, 37, 200];
             accounts: [
                 {
@@ -449,76 +449,76 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                 },
                 {
-                    name: 'mempool_account';
+                    name: 'mempoolAccount';
                     writable: true;
                 },
                 {
-                    name: 'executing_pool';
+                    name: 'executingPool';
                     writable: true;
                 },
                 {
-                    name: 'computation_account';
+                    name: 'computationAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'cluster_account';
+                    name: 'clusterAccount';
                     writable: true;
                 },
                 {
-                    name: 'pool_account';
+                    name: 'poolAccount';
                     writable: true;
                     address: 'DXHqHhBGNM58RLk438UiEbGe9137A7zJc6JHKN3qMZoB';
                 },
                 {
-                    name: 'clock_account';
+                    name: 'clockAccount';
                     address: 'FHriyvoZotYiFnbUzKFjzRSb2NiaC8RPWY7jtKuKhg65';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'sender_user_account';
+                    name: 'senderUserAccount';
                     writable: true;
                 },
                 {
-                    name: 'token_account_sender';
+                    name: 'tokenAccountSender';
                 },
                 {
-                    name: 'receiver_user_account';
+                    name: 'receiverUserAccount';
                     writable: true;
                 },
                 {
-                    name: 'token_account_receiver';
+                    name: 'tokenAccountReceiver';
                 },
             ];
             args: [
                 {
-                    name: 'transfer_amount';
+                    name: 'transferAmount';
                     type: {
                         defined: {
-                            name: 'RescueCiphertext';
+                            name: 'rescueCiphertext';
                         };
                     };
                 },
                 {
-                    name: 'computation_offset';
+                    name: 'computationOffset';
                     type: 'u64';
                 },
             ];
         },
         {
-            name: 'transfer_amount_callback';
+            name: 'transferAmountCallback';
             discriminator: [145, 49, 230, 223, 164, 146, 201, 203];
             accounts: [
                 {
@@ -527,22 +527,22 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'instructions_sysvar';
+                    name: 'instructionsSysvar';
                     address: 'Sysvar1nstructions1111111111111111111111111';
                 },
                 {
-                    name: 'token_account_sender';
+                    name: 'tokenAccountSender';
                     writable: true;
                 },
                 {
-                    name: 'token_account_receiver';
+                    name: 'tokenAccountReceiver';
                     writable: true;
                 },
             ];
@@ -551,14 +551,14 @@ export type UmbraOnchain = {
                     name: 'output';
                     type: {
                         defined: {
-                            name: 'ComputationOutputs';
+                            name: 'computationOutputs';
                         };
                     };
                 },
             ];
         },
         {
-            name: 'withdraw_amount';
+            name: 'withdrawAmount';
             discriminator: [174, 32, 44, 71, 244, 75, 235, 8];
             accounts: [
                 {
@@ -567,61 +567,61 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'mxe_account';
+                    name: 'mxeAccount';
                 },
                 {
-                    name: 'mempool_account';
+                    name: 'mempoolAccount';
                     writable: true;
                 },
                 {
-                    name: 'executing_pool';
+                    name: 'executingPool';
                     writable: true;
                 },
                 {
-                    name: 'computation_account';
+                    name: 'computationAccount';
                     writable: true;
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'cluster_account';
+                    name: 'clusterAccount';
                     writable: true;
                 },
                 {
-                    name: 'pool_account';
+                    name: 'poolAccount';
                     writable: true;
                     address: 'DXHqHhBGNM58RLk438UiEbGe9137A7zJc6JHKN3qMZoB';
                 },
                 {
-                    name: 'clock_account';
+                    name: 'clockAccount';
                     address: 'FHriyvoZotYiFnbUzKFjzRSb2NiaC8RPWY7jtKuKhg65';
                 },
                 {
-                    name: 'system_program';
+                    name: 'systemProgram';
                     address: '11111111111111111111111111111111';
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
                     name: 'relayer';
                 },
                 {
-                    name: 'withdrawer_user_account';
+                    name: 'withdrawerUserAccount';
                     writable: true;
                 },
                 {
-                    name: 'withdrawer_token_account';
+                    name: 'withdrawerTokenAccount';
                 },
             ];
             args: [
                 {
-                    name: 'withdrawal_amount';
+                    name: 'withdrawalAmount';
                     type: {
                         defined: {
-                            name: 'RescueCiphertext';
+                            name: 'rescueCiphertext';
                         };
                     };
                 },
@@ -629,18 +629,18 @@ export type UmbraOnchain = {
                     name: 'nonce';
                     type: {
                         defined: {
-                            name: 'X25519Nonce';
+                            name: 'x25519Nonce';
                         };
                     };
                 },
                 {
-                    name: 'computation_offset';
+                    name: 'computationOffset';
                     type: 'u64';
                 },
             ];
         },
         {
-            name: 'withdraw_amount_callback';
+            name: 'withdrawAmountCallback';
             discriminator: [114, 121, 141, 69, 95, 160, 112, 198];
             accounts: [
                 {
@@ -649,18 +649,18 @@ export type UmbraOnchain = {
                     signer: true;
                 },
                 {
-                    name: 'arcium_program';
+                    name: 'arciumProgram';
                     address: 'BKck65TgoKRokMjQM3datB9oRwJ8rAj2jxPXvHXUvcL6';
                 },
                 {
-                    name: 'comp_def_account';
+                    name: 'compDefAccount';
                 },
                 {
-                    name: 'instructions_sysvar';
+                    name: 'instructionsSysvar';
                     address: 'Sysvar1nstructions1111111111111111111111111';
                 },
                 {
-                    name: 'withdrawer_token_account';
+                    name: 'withdrawerTokenAccount';
                     writable: true;
                 },
             ];
@@ -669,7 +669,7 @@ export type UmbraOnchain = {
                     name: 'output';
                     type: {
                         defined: {
-                            name: 'ComputationOutputs';
+                            name: 'computationOutputs';
                         };
                     };
                 },
@@ -678,82 +678,90 @@ export type UmbraOnchain = {
     ];
     accounts: [
         {
-            name: 'ClockAccount';
+            name: 'clockAccount';
             discriminator: [152, 171, 158, 195, 75, 61, 51, 8];
         },
         {
-            name: 'Cluster';
+            name: 'cluster';
             discriminator: [236, 225, 118, 228, 173, 106, 18, 60];
         },
         {
-            name: 'ComputationDefinitionAccount';
+            name: 'computationDefinitionAccount';
             discriminator: [245, 176, 217, 221, 253, 104, 172, 200];
         },
         {
-            name: 'PersistentMXEAccount';
+            name: 'persistentMxeAccount';
             discriminator: [32, 115, 16, 240, 209, 25, 92, 165];
         },
         {
-            name: 'RelayerAccount';
+            name: 'relayerAccount';
             discriminator: [94, 235, 98, 227, 126, 208, 77, 139];
         },
         {
-            name: 'StakingPoolAccount';
+            name: 'stakingPoolAccount';
             discriminator: [197, 149, 223, 199, 86, 73, 227, 77];
         },
         {
-            name: 'UmbraTokenAccount';
+            name: 'umbraTokenAccount';
             discriminator: [131, 122, 246, 55, 83, 8, 249, 143];
         },
         {
-            name: 'UmbraUserAccount';
+            name: 'umbraUserAccount';
             discriminator: [189, 21, 223, 27, 223, 94, 238, 92];
         },
     ];
     events: [
         {
-            name: 'DepositEvent';
+            name: 'depositEvent';
             discriminator: [120, 248, 61, 83, 31, 142, 107, 144];
         },
         {
-            name: 'EmittingEvent';
-            discriminator: [60, 40, 9, 49, 230, 46, 220, 124];
+            name: 'despositCallbackEvent';
+            discriminator: [91, 57, 115, 73, 54, 59, 175, 114];
         },
         {
-            name: 'TransferAmountEvent';
+            name: 'transferAmountEvent';
             discriminator: [118, 189, 26, 21, 55, 195, 233, 235];
         },
         {
-            name: 'WithdrawAmountEvent';
+            name: 'transferCallbackEvent';
+            discriminator: [3, 52, 77, 57, 193, 31, 249, 136];
+        },
+        {
+            name: 'withdrawAmountEvent';
             discriminator: [61, 151, 52, 195, 30, 183, 113, 8];
+        },
+        {
+            name: 'withdrawCallbackEvent';
+            discriminator: [134, 142, 156, 18, 23, 180, 183, 232];
         },
     ];
     errors: [
         {
             code: 6000;
-            name: 'RescueCipherTextInitializationError';
+            name: 'rescueCipherTextInitializationError';
             msg: 'Was not able to initialize a Rescue Cipher Text!';
         },
     ];
     types: [
         {
-            name: 'Activation';
+            name: 'activation';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'activation_epoch';
+                        name: 'activationEpoch';
                         type: {
                             defined: {
-                                name: 'Epoch';
+                                name: 'epoch';
                             };
                         };
                     },
                     {
-                        name: 'deactivation_epoch';
+                        name: 'deactivationEpoch';
                         type: {
                             defined: {
-                                name: 'Epoch';
+                                name: 'epoch';
                             };
                         };
                     },
@@ -761,26 +769,26 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'CircuitSource';
+            name: 'circuitSource';
             type: {
                 kind: 'enum';
                 variants: [
                     {
-                        name: 'OnChain';
+                        name: 'onChain';
                         fields: [
                             {
                                 defined: {
-                                    name: 'OnChainCircuitSource';
+                                    name: 'onChainCircuitSource';
                                 };
                             },
                         ];
                     },
                     {
-                        name: 'OffChain';
+                        name: 'offChain';
                         fields: [
                             {
                                 defined: {
-                                    name: 'OffChainCircuitSource';
+                                    name: 'offChainCircuitSource';
                                 };
                             },
                         ];
@@ -789,32 +797,32 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ClockAccount';
+            name: 'clockAccount';
             docs: ['An account storing the current network epoch'];
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'start_epoch';
+                        name: 'startEpoch';
                         type: {
                             defined: {
-                                name: 'Epoch';
+                                name: 'epoch';
                             };
                         };
                     },
                     {
-                        name: 'current_epoch';
+                        name: 'currentEpoch';
                         type: {
                             defined: {
-                                name: 'Epoch';
+                                name: 'epoch';
                             };
                         };
                     },
                     {
-                        name: 'start_epoch_timestamp';
+                        name: 'startEpochTimestamp';
                         type: {
                             defined: {
-                                name: 'Timestamp';
+                                name: 'timestamp';
                             };
                         };
                     },
@@ -826,7 +834,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'Cluster';
+            name: 'cluster';
             type: {
                 kind: 'struct';
                 fields: [
@@ -837,51 +845,51 @@ export type UmbraOnchain = {
                         };
                     },
                     {
-                        name: 'max_size';
+                        name: 'maxSize';
                         type: 'u32';
                     },
                     {
                         name: 'activation';
                         type: {
                             defined: {
-                                name: 'Activation';
+                                name: 'activation';
                             };
                         };
                     },
                     {
-                        name: 'max_capacity';
+                        name: 'maxCapacity';
                         type: 'u64';
                     },
                     {
-                        name: 'cu_price';
+                        name: 'cuPrice';
                         type: 'u64';
                     },
                     {
-                        name: 'cu_price_proposals';
+                        name: 'cuPriceProposals';
                         type: {
                             array: ['u64', 32];
                         };
                     },
                     {
-                        name: 'last_updated_epoch';
+                        name: 'lastUpdatedEpoch';
                         type: {
                             defined: {
-                                name: 'Epoch';
+                                name: 'epoch';
                             };
                         };
                     },
                     {
-                        name: 'encryption_key';
+                        name: 'encryptionKey';
                         type: {
                             array: ['u8', 32];
                         };
                     },
                     {
-                        name: 'composition_rules';
+                        name: 'compositionRules';
                         type: {
                             option: {
                                 defined: {
-                                    name: 'ClusterCompositionRules';
+                                    name: 'clusterCompositionRules';
                                 };
                             };
                         };
@@ -897,17 +905,17 @@ export type UmbraOnchain = {
                         type: {
                             vec: {
                                 defined: {
-                                    name: 'NodeRef';
+                                    name: 'nodeRef';
                                 };
                             };
                         };
                     },
                     {
-                        name: 'pending_nodes';
+                        name: 'pendingNodes';
                         type: {
                             vec: {
                                 defined: {
-                                    name: 'NodeRef';
+                                    name: 'nodeRef';
                                 };
                             };
                         };
@@ -920,7 +928,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ClusterCompositionRules';
+            name: 'clusterCompositionRules';
             docs: [
                 'migration_jurisdiction_filter is the locations as',
                 '[ISO 3166-1 alpha-2](https://www.iso.org/iso-3166-country-codes.html) country code',
@@ -929,15 +937,15 @@ export type UmbraOnchain = {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'migration_jurisdiction_filter';
+                        name: 'migrationJurisdictionFilter';
                         type: 'bytes';
                     },
                     {
-                        name: 'filter_positive';
+                        name: 'filterPositive';
                         type: 'bool';
                     },
                     {
-                        name: 'node_blacklist';
+                        name: 'nodeBlacklist';
                         type: {
                             vec: 'u32';
                         };
@@ -946,7 +954,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ClusterReference';
+            name: 'clusterReference';
             docs: ['A reference to a [ClusterAccount].'];
             type: {
                 kind: 'struct';
@@ -956,10 +964,10 @@ export type UmbraOnchain = {
                         type: 'u32';
                     },
                     {
-                        name: 'encryption_scheme';
+                        name: 'encryptionScheme';
                         type: {
                             defined: {
-                                name: 'EncryptionScheme';
+                                name: 'encryptionScheme';
                             };
                         };
                     },
@@ -967,38 +975,38 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ComputationDefinitionAccount';
+            name: 'computationDefinitionAccount';
             docs: ['An account representing a [ComputationDefinition] in a MXE.'];
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'finalization_authority';
+                        name: 'finalizationAuthority';
                         type: {
                             option: 'pubkey';
                         };
                     },
                     {
-                        name: 'finalize_during_callback';
+                        name: 'finalizeDuringCallback';
                         type: 'bool';
                     },
                     {
-                        name: 'cu_amount';
+                        name: 'cuAmount';
                         type: 'u64';
                     },
                     {
                         name: 'definition';
                         type: {
                             defined: {
-                                name: 'ComputationDefinitionMeta';
+                                name: 'computationDefinitionMeta';
                             };
                         };
                     },
                     {
-                        name: 'circuit_source';
+                        name: 'circuitSource';
                         type: {
                             defined: {
-                                name: 'CircuitSource';
+                                name: 'circuitSource';
                             };
                         };
                     },
@@ -1010,25 +1018,25 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ComputationDefinitionMeta';
+            name: 'computationDefinitionMeta';
             docs: ['A computation definition for execution in a MXE.'];
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'circuit_len';
+                        name: 'circuitLen';
                         type: 'u32';
                     },
                     {
                         name: 'signature';
                         type: {
                             defined: {
-                                name: 'ComputationSignature';
+                                name: 'computationSignature';
                             };
                         };
                     },
                     {
-                        name: 'callback_discriminator';
+                        name: 'callbackDiscriminator';
                         type: {
                             array: ['u8', 8];
                         };
@@ -1037,22 +1045,22 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'ComputationOutputs';
+            name: 'computationOutputs';
             type: {
                 kind: 'enum';
                 variants: [
                     {
-                        name: 'Bytes';
+                        name: 'bytes';
                         fields: ['bytes'];
                     },
                     {
-                        name: 'Abort';
+                        name: 'abort';
                     },
                 ];
             };
         },
         {
-            name: 'ComputationSignature';
+            name: 'computationSignature';
             docs: ['The signature of a computation defined in a [ComputationDefinition].'];
             type: {
                 kind: 'struct';
@@ -1062,7 +1070,7 @@ export type UmbraOnchain = {
                         type: {
                             vec: {
                                 defined: {
-                                    name: 'Parameter';
+                                    name: 'parameter';
                                 };
                             };
                         };
@@ -1072,7 +1080,7 @@ export type UmbraOnchain = {
                         type: {
                             vec: {
                                 defined: {
-                                    name: 'Output';
+                                    name: 'output';
                                 };
                             };
                         };
@@ -1081,18 +1089,18 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'DepositEvent';
+            name: 'depositEvent';
             type: {
                 kind: 'struct';
             };
         },
         {
-            name: 'EmittingEvent';
+            name: 'despositCallbackEvent';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'token_account';
+                        name: 'tokenAccount';
                         type: 'pubkey';
                     },
                     {
@@ -1103,19 +1111,19 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'EncryptionScheme';
+            name: 'encryptionScheme';
             docs: ['The encryption scheme used to encrypt the data in the Cluster'];
             type: {
                 kind: 'enum';
                 variants: [
                     {
-                        name: 'None';
+                        name: 'none';
                     },
                     {
-                        name: 'ClusterEncryption';
+                        name: 'clusterEncryption';
                     },
                     {
-                        name: 'MXEEncryption';
+                        name: 'mxeEncryption';
                         fields: [
                             {
                                 option: {
@@ -1128,7 +1136,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'Epoch';
+            name: 'epoch';
             docs: ['The network epoch'];
             type: {
                 kind: 'struct';
@@ -1136,14 +1144,14 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'MintAddress';
+            name: 'mintAddress';
             type: {
                 kind: 'struct';
                 fields: ['pubkey'];
             };
         },
         {
-            name: 'NodeRef';
+            name: 'nodeRef';
             docs: [
                 'A reference to a node in the cluster.',
                 'The offset is to derive the Node Account.',
@@ -1158,7 +1166,7 @@ export type UmbraOnchain = {
                         type: 'u32';
                     },
                     {
-                        name: 'current_total_rewards';
+                        name: 'currentTotalRewards';
                         type: 'u64';
                     },
                     {
@@ -1169,7 +1177,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'OffChainCircuitSource';
+            name: 'offChainCircuitSource';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1187,23 +1195,23 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'OnChainCircuitSource';
+            name: 'onChainCircuitSource';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'is_completed';
+                        name: 'isCompleted';
                         type: 'bool';
                     },
                     {
-                        name: 'upload_auth';
+                        name: 'uploadAuth';
                         type: 'pubkey';
                     },
                 ];
             };
         },
         {
-            name: 'Output';
+            name: 'output';
             docs: [
                 'An output of a computation.',
                 "We currently don't support encrypted outputs yet since encrypted values are passed via",
@@ -1213,37 +1221,37 @@ export type UmbraOnchain = {
                 kind: 'enum';
                 variants: [
                     {
-                        name: 'PlaintextBool';
+                        name: 'plaintextBool';
                     },
                     {
-                        name: 'PlaintextU8';
+                        name: 'plaintextU8';
                     },
                     {
-                        name: 'PlaintextU16';
+                        name: 'plaintextU16';
                     },
                     {
-                        name: 'PlaintextU32';
+                        name: 'plaintextU32';
                     },
                     {
-                        name: 'PlaintextU64';
+                        name: 'plaintextU64';
                     },
                     {
-                        name: 'PlaintextU128';
+                        name: 'plaintextU128';
                     },
                     {
-                        name: 'Ciphertext';
+                        name: 'ciphertext';
                     },
                     {
-                        name: 'ArcisPubkey';
+                        name: 'arcisPubkey';
                     },
                     {
-                        name: 'PlaintextFloat';
+                        name: 'plaintextFloat';
                     },
                 ];
             };
         },
         {
-            name: 'Parameter';
+            name: 'parameter';
             docs: [
                 'A parameter of a computation.',
                 'We differentiate between plaintext and encrypted parameters and data objects.',
@@ -1255,46 +1263,46 @@ export type UmbraOnchain = {
                 kind: 'enum';
                 variants: [
                     {
-                        name: 'PlaintextBool';
+                        name: 'plaintextBool';
                     },
                     {
-                        name: 'PlaintextU8';
+                        name: 'plaintextU8';
                     },
                     {
-                        name: 'PlaintextU16';
+                        name: 'plaintextU16';
                     },
                     {
-                        name: 'PlaintextU32';
+                        name: 'plaintextU32';
                     },
                     {
-                        name: 'PlaintextU64';
+                        name: 'plaintextU64';
                     },
                     {
-                        name: 'PlaintextU128';
+                        name: 'plaintextU128';
                     },
                     {
-                        name: 'Ciphertext';
+                        name: 'ciphertext';
                     },
                     {
-                        name: 'ArcisPubkey';
+                        name: 'arcisPubkey';
                     },
                     {
-                        name: 'ArcisSignature';
+                        name: 'arcisSignature';
                     },
                     {
-                        name: 'PlaintextFloat';
+                        name: 'plaintextFloat';
                     },
                     {
-                        name: 'ManticoreAlgo';
+                        name: 'manticoreAlgo';
                     },
                     {
-                        name: 'InputDataset';
+                        name: 'inputDataset';
                     },
                 ];
             };
         },
         {
-            name: 'PersistentMXEAccount';
+            name: 'persistentMxeAccount';
             docs: ['A persistent MPC Execution Environment.'];
             type: {
                 kind: 'struct';
@@ -1309,22 +1317,22 @@ export type UmbraOnchain = {
                         name: 'cluster';
                         type: {
                             defined: {
-                                name: 'ClusterReference';
+                                name: 'clusterReference';
                             };
                         };
                     },
                     {
-                        name: 'fallback_clusters';
+                        name: 'fallbackClusters';
                         type: {
                             vec: {
                                 defined: {
-                                    name: 'ClusterReference';
+                                    name: 'clusterReference';
                                 };
                             };
                         };
                     },
                     {
-                        name: 'computation_definitions';
+                        name: 'computationDefinitions';
                         type: {
                             vec: 'u32';
                         };
@@ -1337,43 +1345,43 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'RelayerAccount';
+            name: 'relayerAccount';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'relayer_pubkey';
+                        name: 'relayerPubkey';
                         type: {
                             defined: {
-                                name: 'WalletPublicKey';
+                                name: 'walletPublicKey';
                             };
                         };
                     },
                     {
-                        name: 'relayer_fee';
+                        name: 'relayerFee';
                         type: {
                             defined: {
-                                name: 'RelayerFee';
+                                name: 'relayerFee';
                             };
                         };
                     },
                     {
-                        name: 'relayer_last_update_time';
+                        name: 'relayerLastUpdateTime';
                         type: {
                             defined: {
-                                name: 'Time';
+                                name: 'time';
                             };
                         };
                     },
                     {
-                        name: 'relayer_is_active';
+                        name: 'relayerIsActive';
                         type: 'bool';
                     },
                     {
-                        name: 'associated_token';
+                        name: 'associatedToken';
                         type: {
                             defined: {
-                                name: 'MintAddress';
+                                name: 'mintAddress';
                             };
                         };
                     },
@@ -1381,14 +1389,14 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'RelayerFee';
+            name: 'relayerFee';
             type: {
                 kind: 'struct';
                 fields: ['u64'];
             };
         },
         {
-            name: 'RescueCiphertext';
+            name: 'rescueCiphertext';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1399,7 +1407,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'StakingPoolAccount';
+            name: 'stakingPoolAccount';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1411,14 +1419,14 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'Time';
+            name: 'time';
             type: {
                 kind: 'struct';
                 fields: ['u64'];
             };
         },
         {
-            name: 'Timestamp';
+            name: 'timestamp';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1430,19 +1438,35 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'TransferAmountEvent';
+            name: 'transferAmountEvent';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'transfer_amount';
+                        name: 'transferAmount';
                         type: 'u64';
                     },
                 ];
             };
         },
         {
-            name: 'UmbraAddress';
+            name: 'transferCallbackEvent';
+            type: {
+                kind: 'struct';
+                fields: [
+                    {
+                        name: 'tokenAccount';
+                        type: 'pubkey';
+                    },
+                    {
+                        name: 'message';
+                        type: 'string';
+                    },
+                ];
+            };
+        },
+        {
+            name: 'umbraAddress';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1453,15 +1477,15 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'UmbraTokenAccount';
+            name: 'umbraTokenAccount';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'mint_address';
+                        name: 'mintAddress';
                         type: {
                             defined: {
-                                name: 'MintAddress';
+                                name: 'mintAddress';
                             };
                         };
                     },
@@ -1469,7 +1493,7 @@ export type UmbraOnchain = {
                         name: 'balance';
                         type: {
                             defined: {
-                                name: 'RescueCiphertext';
+                                name: 'rescueCiphertext';
                             };
                         };
                     },
@@ -1477,7 +1501,7 @@ export type UmbraOnchain = {
                         name: 'nonce';
                         type: {
                             defined: {
-                                name: 'X25519Nonce';
+                                name: 'x25519Nonce';
                             };
                         };
                     },
@@ -1485,15 +1509,15 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'UmbraUserAccount';
+            name: 'umbraUserAccount';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'encryption_pubkey';
+                        name: 'encryptionPubkey';
                         type: {
                             defined: {
-                                name: 'X25519PublicKey';
+                                name: 'x25519PublicKey';
                             };
                         };
                     },
@@ -1501,7 +1525,7 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'UniqueIdentifier';
+            name: 'uniqueIdentifier';
             type: {
                 kind: 'struct';
                 fields: [
@@ -1512,33 +1536,49 @@ export type UmbraOnchain = {
             };
         },
         {
-            name: 'WalletPublicKey';
+            name: 'walletPublicKey';
             type: {
                 kind: 'struct';
                 fields: ['pubkey'];
             };
         },
         {
-            name: 'WithdrawAmountEvent';
+            name: 'withdrawAmountEvent';
             type: {
                 kind: 'struct';
                 fields: [
                     {
-                        name: 'new_balance';
+                        name: 'newBalance';
                         type: 'u64';
                     },
                 ];
             };
         },
         {
-            name: 'X25519Nonce';
+            name: 'withdrawCallbackEvent';
+            type: {
+                kind: 'struct';
+                fields: [
+                    {
+                        name: 'tokenAccount';
+                        type: 'pubkey';
+                    },
+                    {
+                        name: 'message';
+                        type: 'string';
+                    },
+                ];
+            };
+        },
+        {
+            name: 'x25519Nonce';
             type: {
                 kind: 'struct';
                 fields: ['u128'];
             };
         },
         {
-            name: 'X25519PublicKey';
+            name: 'x25519PublicKey';
             type: {
                 kind: 'struct';
                 fields: [

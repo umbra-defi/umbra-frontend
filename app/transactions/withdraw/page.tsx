@@ -22,7 +22,7 @@ import React from 'react';
 import CornerBorders from '@/app/components/corner';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { StyledWalletMultiButton } from '@/app/components/styledButton';
-import { awaitEvent } from '../_utils/Events';
+import { awaitEvent, awaitWithdrawCallbackEvent } from '../_utils/Events';
 
 export default function WithdrawPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -262,7 +262,7 @@ export default function WithdrawPage() {
 
             // const withdrawTxSigned = await wallet.signTransaction!(withdrawTx);
             const txSignature = await (await sendTransactionToRelayer(withdrawTx)).json();
-            const event = await awaitEvent('withdraw_callback');
+            const event = await awaitWithdrawCallbackEvent();
 
             console.log(event);
 

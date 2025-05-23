@@ -27,7 +27,7 @@ import { useRouter } from 'next/navigation';
 import CornerBorders from '@/app/components/corner';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { StyledWalletMultiButton } from '@/app/components/styledButton';
-import { awaitEvent } from '../_utils/Events';
+import { awaitEvent, awaitTransferCallbackEvent } from '../_utils/Events';
 
 export default function TransferPage() {
     const [recipientAddress, setRecipientAddress] = useState<string>('');
@@ -306,7 +306,7 @@ export default function TransferPage() {
             //     'confirmed',
             // );
 
-            const event = await awaitEvent('transfer_callback');
+            const event = await awaitTransferCallbackEvent();
 
             console.log(event);
             console.log(txSignature);

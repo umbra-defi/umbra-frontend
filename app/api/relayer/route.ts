@@ -26,6 +26,8 @@ function loadKeypair(): Keypair {
 export async function POST(request: Request) {
     const relayerKeypair = loadKeypair();
 
+    console.log(relayerKeypair.publicKey.toBase58(), 'relayer-accountttt');
+
     const supabaseUrl =
         process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://frfrwohcdmwwtpcibcqh.supabase.co';
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

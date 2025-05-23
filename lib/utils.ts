@@ -66,7 +66,7 @@ export function getMainnetConnection(): Connection {
 }
 
 export function getConnection() {
-    const SELECTION: string = 'DEVNET';
+    const SELECTION: string = 'LOCALNET';
     if (SELECTION === 'LOCALNET') {
         return getLocalnetConnection();
     } else if (SELECTION === 'DEVNET') {

@@ -44,7 +44,7 @@ import React from 'react';
 import CornerBorders from '@/app/components/corner';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { StyledWalletMultiButton } from '@/app/components/styledButton';
-import { awaitEvent } from '../_utils/Events';
+import { awaitDepositCallbackEvent, awaitEvent } from '../_utils/Events';
 
 export default function DepositPage() {
     const [searchToken, setSearchToken] = useState<string>('');
@@ -459,7 +459,7 @@ export default function DepositPage() {
 
             // console.log(res, '----res of awaitComputationFinalization');
 
-            const event = await awaitEvent('deposit_callback');
+            const event = await awaitDepositCallbackEvent();
 
             console.log(event);
 

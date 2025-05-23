@@ -21,14 +21,44 @@ export const awaitEvent = async <E extends keyof IdlEvents<UmbraOnchain>>(
     return event;
 };
 
+export const awaitDepositCallbackEvent = async (): Promise<
+    IdlEvents<UmbraOnchain>['despositCallbackEvent']
+> => {
+    return awaitEvent('despositCallbackEvent');
+};
+
+export const awaitTransferCallbackEvent = async (): Promise<
+    IdlEvents<UmbraOnchain>['transferCallbackEvent']
+> => {
+    return awaitEvent('transferCallbackEvent');
+};
+
+export const awaitWithdrawCallbackEvent = async (): Promise<
+    IdlEvents<UmbraOnchain>['withdrawCallbackEvent']
+> => {
+    return awaitEvent('withdrawCallbackEvent');
+};
+
 // Example usage:
 /*
-const handleEvent = async () => {
+const handleCallbackEvents = async () => {
   try {
-    const event = await awaitEvent('myEvent');
-    console.log('Event received:', event);
+    // Listen for deposit callback
+    const depositCallback = await awaitDepositCallbackEvent();
+    console.log('Deposit callback received:', depositCallback);
+    // depositCallback will have: { tokenAccount: PublicKey, message: string }
+
+    // Listen for transfer callback
+    const transferCallback = await awaitTransferCallbackEvent();
+    console.log('Transfer callback received:', transferCallback);
+    // transferCallback will have: { tokenAccount: PublicKey, message: string }
+
+    // Listen for withdraw callback
+    const withdrawCallback = await awaitWithdrawCallbackEvent();
+    console.log('Withdraw callback received:', withdrawCallback);
+    // withdrawCallback will have: { tokenAccount: PublicKey, message: string }
   } catch (error) {
-    console.error('Error waiting for event:', error);
+    console.error('Error waiting for callback events:', error);
   }
 };
 */
