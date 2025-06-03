@@ -229,6 +229,8 @@ export default function TransferPage() {
             //     return;
             // }
 
+            const connection = getConnection();
+
             const selectedTokenData = umbraStore.tokenList.find(
                 (token) => token.ticker === selectedToken,
             );
@@ -296,15 +298,29 @@ export default function TransferPage() {
 
             // const withdrawTxSigned = await wallet.signTransaction!(tx);
             const txSignature = await (await sendTransactionToRelayer(tx)).json();
-            await awaitComputationFinalization(
-                new AnchorProvider(program.provider.connection, program.provider.wallet!, {
+            // Get transaction information
+            try {
+                // Confirm transaction
+                await connection.confirmTransaction(txSignature.signature, 'confirmed');
+                console.log('Transaction confirmed!');
+
+                // Log details for debugging
+                const txDetails = await connection.getTransaction(txSignature.signature, {
                     commitment: 'confirmed',
-                }),
-                computationOffset,
-                program.programId,
-                'confirmed',
-            );
-            console.log(txSignature);
+                    maxSupportedTransactionVersion: 0,
+                });
+
+                if (txDetails?.meta?.err) {
+                    console.log('Transaction execution failed:', txDetails.meta.err);
+                    if (txDetails?.meta?.logMessages) {
+                        console.log('Transaction logs:', txDetails.meta.logMessages);
+                    }
+                } else {
+                    console.log('Transaction executed successfully!');
+                }
+            } catch (confirmError) {
+                toastError(`Transaction failed. Please try again. ${confirmError}`);
+            }
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(
                 userTokenAccountPDA,

@@ -324,7 +324,29 @@ export default function WithdrawPage() {
 
             // const signedTx = await wallet.signTransaction!(tx);
             const txSign = await (await sendTransactionToRelayer(tx)).json();
-            console.log(txSign);
+            // Get transaction information
+            try {
+                // Confirm transaction
+                await connection.confirmTransaction(txSign.signature, 'confirmed');
+                console.log('Transaction confirmed!');
+
+                // Log details for debugging
+                const txDetails = await connection.getTransaction(txSign.signature, {
+                    commitment: 'confirmed',
+                    maxSupportedTransactionVersion: 0,
+                });
+
+                if (txDetails?.meta?.err) {
+                    console.log('Transaction execution failed:', txDetails.meta.err);
+                    if (txDetails?.meta?.logMessages) {
+                        console.log('Transaction logs:', txDetails.meta.logMessages);
+                    }
+                } else {
+                    console.log('Transaction executed successfully!');
+                }
+            } catch (confirmError) {
+                toastError(`Transaction failed. Please try again. ${confirmError}`);
+            }
 
             try {
                 // Update on-chain balance

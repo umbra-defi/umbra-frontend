@@ -391,18 +391,31 @@ export default function DepositPage() {
             // const depositTxSigned = await wallet.signTransaction!(depositTx);
             console.log('Signing Done');
             const txSignature = await (await sendTransactionToRelayer(depositTx)).json();
-            console.log('Transaction Signature Finalization: ', txSignature);
+            console.log('Transaction Signature Finalization: ', txSignature.signature);
 
-            const res = await awaitComputationFinalization(
-                new AnchorProvider(getDevnetConnection(), program.provider.wallet!, {
+            // Get transaction information
+            try {
+                // Confirm transaction
+                await connection.confirmTransaction(txSignature.signature, 'confirmed');
+                console.log('Transaction confirmed!');
+
+                // Log details for debugging
+                const txDetails = await connection.getTransaction(txSignature.signature, {
                     commitment: 'confirmed',
-                }),
-                computationOffset,
-                program.programId,
-                'confirmed',
-            );
+                    maxSupportedTransactionVersion: 0,
+                });
 
-            console.log(res, '----res of awaitComputationFinalization');
+                if (txDetails?.meta?.err) {
+                    console.log('Transaction execution failed:', txDetails.meta.err);
+                    if (txDetails?.meta?.logMessages) {
+                        console.log('Transaction logs:', txDetails.meta.logMessages);
+                    }
+                } else {
+                    console.log('Transaction executed successfully!');
+                }
+            } catch (confirmError) {
+                toastError(`Transaction failed. Please try again. ${confirmError}`);
+            }
 
             tokenAccount = await program.account.umbraTokenAccount.fetch(
                 tokenAccountPDA,
