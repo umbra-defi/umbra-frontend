@@ -54,6 +54,18 @@ async function sendUpdatedTransaction(transaction: Transaction): Promise<string>
     return signature;
 }
 
+// CORS preflight handler
+export async function OPTIONS() {
+    return new Response(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+    });
+}
+
 export async function POST(request: Request) {
     const body: requestBody = await request.json();
     const receivedTransaction = convertTransactionStringToTransaction(body.transaction);
