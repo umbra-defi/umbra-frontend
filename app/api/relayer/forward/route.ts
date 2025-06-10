@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     relayerCreatedTransaction.lastValidBlockHeight = recentDetails.lastValidBlockHeight;
     relayerCreatedTransaction.feePayer = relayerKeypair.publicKey;
     console.log(relayerCreatedTransaction);
-    relayerCreatedTransaction.sign(relayerKeypair);
+    relayerCreatedTransaction.partialSign(relayerKeypair);
     const signature = await sendUpdatedTransaction(relayerCreatedTransaction);
     return NextResponse.json({ signature });
 }
